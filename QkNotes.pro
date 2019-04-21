@@ -26,10 +26,12 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        qknotes.cpp
+        qknotes.cpp \
+    contentmanager.cpp
 
 HEADERS += \
-        qknotes.h
+        qknotes.h \
+    contentmanager.h
 
 FORMS += \
         qknotes.ui
