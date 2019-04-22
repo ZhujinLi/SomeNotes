@@ -1,17 +1,17 @@
 #ifndef CONTENTMANAGER_H
 #define CONTENTMANAGER_H
-#include "qstring.h"
+#include <string>
 
 
 class ContentManager
 {
 public:
-    ContentManager(const QString& filename = ":/data/content.txt");
+    ContentManager(const std::string& filename = ":/data/content.txt");
 
-    const QString& getContent() { return m_content; }
+    const std::string& getContent() { return m_content; }
 
 private:
-    QString m_content;
+    std::string m_content;
 };
 
 #endif // CONTENTMANAGER_H

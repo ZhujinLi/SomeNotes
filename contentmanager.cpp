@@ -1,14 +1,13 @@
 #include "contentmanager.h"
+#include <fstream>
+#include <sstream>
 
-#include <QFile>
-#include <QTextStream>
 
-ContentManager::ContentManager(const QString& filename)
+ContentManager::ContentManager(const std::string& filename)
 {
-    QFile inputFile(filename);
-    if (inputFile.open(QIODevice::ReadOnly)) {
-        QTextStream in(&inputFile);
-        m_content = in.readAll();
-        inputFile.close();
-    }
+    std::ifstream inputFile(filename);
+    printf("hwllo\n");
+    std::stringstream ss;
+    ss << inputFile.rdbuf();
+    m_content = ss.str();
 }
