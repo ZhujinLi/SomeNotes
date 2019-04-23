@@ -27,6 +27,7 @@ private:
     QSystemTrayIcon* m_trayIcon;
 
     void _saveContent();
+    void _hideHelpMark();
 
 };
 
