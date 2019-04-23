@@ -23,7 +23,7 @@ QkNotes::~QkNotes()
 void QkNotes::on_textEdit_textChanged()
 {
     m_changeCount++;
-    if (m_changeCount >= 10)
+    if (m_changeCount >= 50)
     {
         _saveContent();
         m_changeCount = 0;
