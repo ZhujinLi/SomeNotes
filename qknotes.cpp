@@ -8,10 +8,10 @@ QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QkNotes)
 {
+    m_changeCount = 0;
+
     ui->setupUi(this);
     ui->textEdit->setText(m_mgr.getContent().c_str());
-
-    m_changeCount = 0;
 }
 
 QkNotes::~QkNotes()
