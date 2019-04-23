@@ -15,10 +15,14 @@ class QkNotes : public QWidget
 
 public:
     explicit QkNotes(QWidget *parent = nullptr);
-    ~QkNotes();
+    ~QkNotes() override;
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void on_textEdit_textChanged();
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     Ui::QkNotes *ui;
@@ -26,6 +30,7 @@ private:
     int m_changeCount;
     QSystemTrayIcon* m_trayIcon;
 
+    void _initTrayIcon();
     void _saveContent();
     void _hideHelpMark();
 

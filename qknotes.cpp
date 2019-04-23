@@ -1,7 +1,9 @@
 #include "qknotes.h"
 #include "ui_qknotes.h"
+#include <QCloseEvent>
 #include <QDebug>
 #include <QDir>
+#include <QMenu>
 #include <fstream>
 
 QkNotes::QkNotes(QWidget *parent) :
@@ -13,11 +15,26 @@ QkNotes::QkNotes(QWidget *parent) :
     ui->setupUi(this);
     ui->textEdit->setText(m_mgr.getContent().c_str());
 
-    m_trayIcon = new QSystemTrayIcon(this);
-    m_trayIcon->setIcon(QIcon(":/images/tray.png"));
-    m_trayIcon->show();
+    _initTrayIcon();
 
     _hideHelpMark();
+}
+
+void QkNotes::_initTrayIcon()
+{
+    m_trayIcon = new QSystemTrayIcon(this);
+    m_trayIcon->setIcon(QIcon(":/images/tray.png"));
+
+    QAction* quitAction = new QAction(tr("&Quit"), this);
+    connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+
+    QMenu* trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(quitAction);
+    m_trayIcon->setContextMenu(trayIconMenu);
+
+    connect(m_trayIcon, &QSystemTrayIcon::activated, this, &QkNotes::iconActivated);
+
+    m_trayIcon->show();
 }
 
 QkNotes::~QkNotes()
@@ -59,3 +76,28 @@ void QkNotes::_hideHelpMark()
 
     setWindowIcon(icon);
 }
+
+void QkNotes::closeEvent(QCloseEvent *event)
+{
+#ifdef Q_OS_OSX
+    if (!event->spontaneous() || !isVisible()) {
+        return;
+    }
+#endif
+    hide();
+    event->ignore();
+}
+
+void QkNotes::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+    case QSystemTrayIcon::DoubleClick:
+        show();
+        activateWindow();
+        break;
+    default:
+        ;
+    }
+}
+
