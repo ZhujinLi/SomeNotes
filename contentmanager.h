@@ -6,7 +6,8 @@
 class ContentManager
 {
 public:
-    ContentManager(const std::string& filename = ":/data/content.txt");
+    //todo: Put it in data/
+    ContentManager(const std::string& filename = "_content.txt");
     ~ContentManager();
 
     const std::string& getContent() { return m_content; }
