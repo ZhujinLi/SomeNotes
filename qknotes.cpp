@@ -12,6 +12,10 @@ QkNotes::QkNotes(QWidget *parent) :
 
     ui->setupUi(this);
     ui->textEdit->setText(m_mgr.getContent().c_str());
+
+    m_trayIcon = new QSystemTrayIcon(this);
+    m_trayIcon->setIcon(QIcon(":/images/tray.png"));
+    m_trayIcon->show();
 }
 
 QkNotes::~QkNotes()

@@ -2,6 +2,7 @@
 #define QKNOTES_H
 
 #include <QWidget>
+#include <QSystemTrayIcon>
 #include "contentmanager.h"
 
 namespace Ui {
@@ -23,6 +24,7 @@ private:
     Ui::QkNotes *ui;
     ContentManager m_mgr;
     int m_changeCount;
+    QSystemTrayIcon* m_trayIcon;
 
     void _saveContent();
 
