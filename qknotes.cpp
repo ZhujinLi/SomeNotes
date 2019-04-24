@@ -73,7 +73,11 @@ void QkNotes::_setPosition()
     bool isTrayAtTop = trayGeometry.y() == 0;
     if (isTrayAtTop) {
         setGeometry(trayGeometry.center().x() - w / 2,
-                    trayGeometry.bottom() + trayGeometry.height() / 2,
+                    trayGeometry.bottom() + trayGeometry.height() / 4,
+                    w, h);
+    } else {
+        setGeometry(trayGeometry.center().x() - w / 2,
+                    trayGeometry.top() - trayGeometry.height() / 4 - h,
                     w, h);
     }
 }
