@@ -32,6 +32,7 @@ private:
 
     void _initTrayIcon();
     void _saveContent();
+    void _setPosition();
 
 
     // QWidget interface
