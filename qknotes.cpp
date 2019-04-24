@@ -13,11 +13,11 @@ QkNotes::QkNotes(QWidget *parent) :
     m_changeCount = 0;
 
     ui->setupUi(this);
-    ui->textEdit->setText(m_mgr.getContent().c_str());
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
 
     _initTrayIcon();
 
-    _hideHelpMark();
+    ui->textEdit->setText(m_mgr.getContent().c_str());
 }
 
 void QkNotes::_initTrayIcon()
@@ -58,22 +58,6 @@ void QkNotes::_saveContent()
 
     m_mgr.saveIfNeeded();
     qInfo() << "Content saved.";
-}
-
-void QkNotes::_hideHelpMark()
-{
-    QIcon icon = windowIcon();
-
-    Qt::WindowFlags flags = windowFlags();
-
-    Qt::WindowFlags helpFlag =
-    Qt::WindowContextHelpButtonHint;
-
-    flags = flags & (~helpFlag);
-
-    setWindowFlags(flags);
-
-    setWindowIcon(icon);
 }
 
 void QkNotes::keyReleaseEvent(QKeyEvent *event)
