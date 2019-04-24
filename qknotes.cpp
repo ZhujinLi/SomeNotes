@@ -46,8 +46,7 @@ QkNotes::~QkNotes()
 void QkNotes::on_textEdit_textChanged()
 {
     m_changeCount++;
-    if (m_changeCount >= 50)
-    {
+    if (m_changeCount >= 50) {
         _saveContent();
         m_changeCount = 0;
     }
@@ -75,6 +74,12 @@ void QkNotes::_hideHelpMark()
     setWindowFlags(flags);
 
     setWindowIcon(icon);
+}
+
+void QkNotes::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape)
+        hide();
 }
 
 void QkNotes::closeEvent(QCloseEvent *event)

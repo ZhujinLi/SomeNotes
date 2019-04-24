@@ -34,6 +34,10 @@ private:
     void _saveContent();
     void _hideHelpMark();
 
+
+    // QWidget interface
+protected:
+    void keyReleaseEvent(QKeyEvent *event) override;
 };
 
 #endif // QKNOTES_H
