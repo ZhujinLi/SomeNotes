@@ -14,7 +14,7 @@ QkNotes::QkNotes(QWidget *parent) :
     m_changeCount = 0;
 
     ui->setupUi(this);
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
 
     _initTrayIcon();
 
@@ -101,11 +101,8 @@ void QkNotes::closeEvent(QCloseEvent *event)
 void QkNotes::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason) {
-    case QSystemTrayIcon::Trigger:
     case QSystemTrayIcon::DoubleClick:
         show();
-        raise();
-        activateWindow();
         break;
     default:
         ;
