@@ -26,14 +26,12 @@ void QkNotes::_initTrayIcon()
     m_trayIcon = new QSystemTrayIcon(this);
     m_trayIcon->setIcon(QIcon(":/images/tray.png"));
 
-#ifndef Q_OS_OSX
     QAction* quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 
     QMenu* trayIconMenu = new QMenu(this);
     trayIconMenu->addAction(quitAction);
     m_trayIcon->setContextMenu(trayIconMenu);
-#endif
 
     connect(m_trayIcon, &QSystemTrayIcon::activated, this, &QkNotes::iconActivated);
 
@@ -89,11 +87,6 @@ void QkNotes::keyReleaseEvent(QKeyEvent *event)
 
 void QkNotes::closeEvent(QCloseEvent *event)
 {
-#ifdef Q_OS_OSX
-    if (!event->spontaneous() || !isVisible()) {
-        return;
-    }
-#endif
     hide();
     event->ignore();
 }
