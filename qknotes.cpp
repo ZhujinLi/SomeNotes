@@ -8,7 +8,7 @@
 #include <fstream>
 
 QkNotes::QkNotes(QWidget *parent) :
-    QWidget(parent, Qt::Dialog),
+    QWidget(parent),
     ui(new Ui::QkNotes)
 {
     m_changeCount = 0;
@@ -64,8 +64,8 @@ void QkNotes::_saveContent()
 void QkNotes::_setPosition()
 {
     QRect trayGeometry = m_trayIcon->geometry();
-    int w = geometry().width();
-    int h = geometry().height();
+    int w = trayGeometry.width() * 10;
+    int h = int(w * 1.5);
 
     bool isTrayAtTop = trayGeometry.y() == 0;
     if (isTrayAtTop) {
