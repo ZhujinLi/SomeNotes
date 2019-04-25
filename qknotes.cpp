@@ -17,8 +17,6 @@ QkNotes::QkNotes(QWidget *parent) :
 
     _initTrayIcon();
 
-    _setPosition();
-
     ui->textEdit->setText(m_mgr.getContent().c_str());
 }
 
@@ -113,3 +111,9 @@ void QkNotes::iconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
+bool QkNotes::event(QEvent *event)
+{
+    if (event->type() == QEvent::Type::Paint)
+        _setPosition();
+    return QWidget::event(event);
+}

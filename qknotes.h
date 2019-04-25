@@ -38,6 +38,10 @@ private:
     // QWidget interface
 protected:
     void keyReleaseEvent(QKeyEvent *event) override;
+
+    // QObject interface
+public:
+    bool event(QEvent *event) override;
 };
 
 #endif // QKNOTES_H
