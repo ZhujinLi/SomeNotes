@@ -29,10 +29,12 @@ private:
     ContentManager m_mgr;
     int m_changeCount;
     QSystemTrayIcon* m_trayIcon;
+    QSize m_size;
+    bool m_needsRecalcGeometry;
 
     void _initTrayIcon();
     void _saveContent();
-    void _setPosition();
+    void _recalcGeometryIfNeeded();
 
 
     // QWidget interface

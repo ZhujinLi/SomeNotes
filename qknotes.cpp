@@ -18,7 +18,12 @@ QkNotes::QkNotes(QWidget *parent) :
 
     _initTrayIcon();
 
+    m_size.setWidth(m_trayIcon->geometry().width() * 10);
+    m_size.setHeight(int(m_size.width() * 1.5f));
+
     ui->textEdit->setText(m_mgr.getContent().c_str());
+
+    m_needsRecalcGeometry = true;
 }
 
 void QkNotes::_initTrayIcon()
@@ -61,11 +66,15 @@ void QkNotes::_saveContent()
     qInfo() << "Content saved.";
 }
 
-void QkNotes::_setPosition()
+void QkNotes::_recalcGeometryIfNeeded()
 {
+    if (!m_needsRecalcGeometry)
+        return;
+    m_needsRecalcGeometry = false;
+
     QRect trayGeometry = m_trayIcon->geometry();
-    int w = trayGeometry.width() * 10;
-    int h = int(w * 1.5);
+    int w = m_size.width();
+    int h = m_size.height();
 
     bool isTrayAtTop = trayGeometry.y() == 0;
     if (isTrayAtTop) {
@@ -81,8 +90,35 @@ void QkNotes::_setPosition()
 
 void QkNotes::keyReleaseEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Escape)
+    switch (event->key()) {
+    case Qt::Key_Escape:
         hide();
+        break;
+    case Qt::Key_Minus:
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            m_size.setWidth(m_size.width() - 10);
+            m_needsRecalcGeometry = true;
+        }
+        break;
+    case Qt::Key_Equal:
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            m_size.setWidth(m_size.width() + 10);
+            m_needsRecalcGeometry = true;
+        }
+        break;
+    case Qt::Key_Underscore:
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            m_size.setHeight(m_size.height() - 10);
+            m_needsRecalcGeometry = true;
+        }
+        break;
+    case Qt::Key_Plus:
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            m_size.setHeight(m_size.height() + 10);
+            m_needsRecalcGeometry = true;
+        }
+        break;
+    }
 }
 
 void QkNotes::closeEvent(QCloseEvent *event)
@@ -104,9 +140,8 @@ void QkNotes::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 bool QkNotes::event(QEvent *event)
 {
-    if (event->type() == QEvent::Type::Paint)
-        _setPosition();
-    else if (event->type() == QEvent::Wheel)
+    _recalcGeometryIfNeeded();
+    if (event->type() == QEvent::Wheel)
         if (QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
             const int STEP = 50;
             QWheelEvent* wheelEvent = dynamic_cast<QWheelEvent*>(event);
