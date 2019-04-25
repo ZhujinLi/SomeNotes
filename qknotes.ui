@@ -27,7 +27,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QTextEdit" name="textEdit">
+    <widget class="QPlainTextEdit" name="noteEdit">
      <property name="palette">
       <palette>
        <active>
@@ -132,9 +132,6 @@
      </property>
      <property name="horizontalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>
-     </property>
-     <property name="lineWrapMode">
-      <enum>QTextEdit::NoWrap</enum>
      </property>
     </widget>
    </item>

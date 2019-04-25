@@ -21,7 +21,7 @@ QkNotes::QkNotes(QWidget *parent) :
     m_size.setWidth(m_trayIcon->geometry().width() * 10);
     m_size.setHeight(int(m_size.width() * 1.5f));
 
-    ui->textEdit->setText(m_mgr.getContent().c_str());
+    ui->noteEdit->setPlainText(m_mgr.getContent().c_str());
 
     m_needsRecalcGeometry = true;
 }
@@ -60,7 +60,7 @@ void QkNotes::on_textEdit_textChanged()
 
 void QkNotes::_saveContent()
 {
-    m_mgr.setContent(ui->textEdit->toPlainText().toStdString());
+    m_mgr.setContent(ui->noteEdit->toPlainText().toStdString());
 
     m_mgr.saveIfNeeded();
     qInfo() << "Content saved.";
@@ -145,7 +145,7 @@ bool QkNotes::event(QEvent *event)
         if (QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
             const int STEP = 50;
             QWheelEvent* wheelEvent = dynamic_cast<QWheelEvent*>(event);
-            auto hScrollBar = ui->textEdit->horizontalScrollBar();
+            auto hScrollBar = ui->noteEdit->horizontalScrollBar();
             int value = hScrollBar->value()
                     + (wheelEvent->delta() < 0 ? STEP : -STEP);
             hScrollBar->setValue(value);
