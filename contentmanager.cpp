@@ -1,12 +1,8 @@
+#include "pch.h"
 #include "contentmanager.h"
-#include <QStandardPaths>
-#include <QFile>
-#include <QTextStream>
-
 
 ContentManager::ContentManager() : ContentManager(
-    QStandardPaths::standardLocations(QStandardPaths::StandardLocation::DataLocation)[0]
-    + "/content.txt")
+    g_dataDir + "/content.txt")
 {
 }
 

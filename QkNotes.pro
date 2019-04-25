@@ -26,10 +26,15 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
+    pch.cpp \
         qknotes.cpp \
     contentmanager.cpp
 
+CONFIG += precompile_header
+PRECOMPILED_HEADER = pch.h
+
 HEADERS += \
+    pch.h \
         qknotes.h \
     contentmanager.h
 

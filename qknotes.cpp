@@ -1,11 +1,9 @@
+#include "pch.h"
 #include "qknotes.h"
 #include "ui_qknotes.h"
 #include <QCloseEvent>
-#include <QDebug>
-#include <QDir>
 #include <QMenu>
 #include <QScrollBar>
-#include <fstream>
 
 QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent),

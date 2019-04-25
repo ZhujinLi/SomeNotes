@@ -7,4 +7,5 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES +=  tst_contentmanager.cpp \
-    ../contentmanager.cpp
+    ../contentmanager.cpp \
+    ../pch.cpp
