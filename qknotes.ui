@@ -34,9 +34,9 @@
         <colorrole role="Text">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>96</red>
-           <green>96</green>
-           <blue>96</blue>
+           <red>35</red>
+           <green>35</green>
+           <blue>35</blue>
           </color>
          </brush>
         </colorrole>
@@ -63,9 +63,9 @@
         <colorrole role="Text">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>96</red>
-           <green>96</green>
-           <blue>96</blue>
+           <red>35</red>
+           <green>35</green>
+           <blue>35</blue>
           </color>
          </brush>
         </colorrole>
@@ -121,6 +121,7 @@
      </property>
      <property name="font">
       <font>
+       <family>Segoe UI</family>
        <pointsize>11</pointsize>
       </font>
      </property>
