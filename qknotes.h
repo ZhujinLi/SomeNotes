@@ -23,6 +23,7 @@ protected:
 private slots:
     void on_noteEdit_textChanged();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void backup();
 
 private:
     Ui::QkNotes *ui;

@@ -16,6 +16,8 @@ public:
 
     void saveIfNeeded();
 
+    void backup();
+
 private:
     QString m_content;
     bool m_changed;

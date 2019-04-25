@@ -29,11 +29,16 @@ void QkNotes::_initTrayIcon()
     m_trayIcon = new QSystemTrayIcon(this);
     m_trayIcon->setIcon(QIcon(":/images/tray.png"));
 
+    QMenu* trayIconMenu = new QMenu(this);
+
+    QAction* backupAction = new QAction(tr("&Backup"), this);
+    connect(backupAction, &QAction::triggered, this, &QkNotes::backup);
+    trayIconMenu->addAction(backupAction);
+
     QAction* quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
-
-    QMenu* trayIconMenu = new QMenu(this);
     trayIconMenu->addAction(quitAction);
+
     m_trayIcon->setContextMenu(trayIconMenu);
 
     connect(m_trayIcon, &QSystemTrayIcon::activated, this, &QkNotes::iconActivated);
@@ -134,6 +139,12 @@ void QkNotes::iconActivated(QSystemTrayIcon::ActivationReason reason)
     default:
         ;
     }
+}
+
+void QkNotes::backup()
+{
+    _saveContent();
+    m_mgr.backup();
 }
 
 bool QkNotes::event(QEvent *event)

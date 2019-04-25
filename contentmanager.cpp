@@ -42,3 +42,11 @@ void ContentManager::saveIfNeeded()
         m_changed = false;
     }
 }
+
+void ContentManager::backup()
+{
+    saveIfNeeded();
+    QString bakFileName = m_filename + ".bak";
+    QFile::remove(bakFileName);
+    QFile::copy(m_filename, bakFileName);
+}
