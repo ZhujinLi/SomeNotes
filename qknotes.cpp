@@ -5,6 +5,9 @@
 #include <QMenu>
 #include <QScrollBar>
 
+#define SETTING_WIDTH "width"
+#define SETTING_HEIGHT "height"
+
 QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QkNotes)
@@ -16,8 +19,12 @@ QkNotes::QkNotes(QWidget *parent) :
 
     _initTrayIcon();
 
-    m_size.setWidth(m_trayIcon->geometry().width() * 10);
-    m_size.setHeight(int(m_size.width() * 1.5f));
+    if (!g_settings.contains(SETTING_WIDTH) || !g_settings.contains(SETTING_HEIGHT)) {
+        int w = m_trayIcon->geometry().width() * 10;
+        setGeometry(0, 0, w, int(w * 1.5f));
+    } else {
+        setGeometry(0, 0, g_settings.value(SETTING_WIDTH).toInt(), g_settings.value(SETTING_HEIGHT).toInt());
+    }
 
     ui->noteEdit->setPlainText(m_mgr.getContent());
 
@@ -76,8 +83,8 @@ void QkNotes::_recalcGeometryIfNeeded()
     m_needsRecalcGeometry = false;
 
     QRect trayGeometry = m_trayIcon->geometry();
-    int w = m_size.width();
-    int h = m_size.height();
+    int w = width();
+    int h = height();
 
     bool isTrayAtTop = trayGeometry.y() == 0;
     if (isTrayAtTop) {
@@ -89,6 +96,9 @@ void QkNotes::_recalcGeometryIfNeeded()
                     trayGeometry.top() - trayGeometry.height() / 4 - h,
                     w, h);
     }
+
+    g_settings.setValue(SETTING_WIDTH, width());
+    g_settings.setValue(SETTING_HEIGHT, height());
 }
 
 void QkNotes::keyReleaseEvent(QKeyEvent *event)
@@ -99,25 +109,25 @@ void QkNotes::keyReleaseEvent(QKeyEvent *event)
         break;
     case Qt::Key_Minus:
         if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
-            m_size.setWidth(m_size.width() - 10);
+            this->setGeometry(geometry().x(), geometry().y(), width() - 10, height());
             m_needsRecalcGeometry = true;
         }
         break;
     case Qt::Key_Equal:
         if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
-            m_size.setWidth(m_size.width() + 10);
+            this->setGeometry(geometry().x(), geometry().y(), width() + 10, height());
             m_needsRecalcGeometry = true;
         }
         break;
     case Qt::Key_Underscore:
         if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
-            m_size.setHeight(m_size.height() - 10);
+            this->setGeometry(geometry().x(), geometry().y(), width(), height() - 10);
             m_needsRecalcGeometry = true;
         }
         break;
     case Qt::Key_Plus:
         if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
-            m_size.setHeight(m_size.height() + 10);
+            this->setGeometry(geometry().x(), geometry().y(), width(), height() + 10);
             m_needsRecalcGeometry = true;
         }
         break;
