@@ -21,7 +21,7 @@ QkNotes::QkNotes(QWidget *parent) :
     m_size.setWidth(m_trayIcon->geometry().width() * 10);
     m_size.setHeight(int(m_size.width() * 1.5f));
 
-    ui->noteEdit->setPlainText(m_mgr.getContent().c_str());
+    ui->noteEdit->setPlainText(m_mgr.getContent());
 
     m_needsRecalcGeometry = true;
 }
@@ -49,7 +49,7 @@ QkNotes::~QkNotes()
     delete ui;
 }
 
-void QkNotes::on_textEdit_textChanged()
+void QkNotes::on_noteEdit_textChanged()
 {
     m_changeCount++;
     if (m_changeCount >= 50) {
@@ -60,7 +60,7 @@ void QkNotes::on_textEdit_textChanged()
 
 void QkNotes::_saveContent()
 {
-    m_mgr.setContent(ui->noteEdit->toPlainText().toStdString());
+    m_mgr.setContent(ui->noteEdit->toPlainText());
 
     m_mgr.saveIfNeeded();
     qInfo() << "Content saved.";

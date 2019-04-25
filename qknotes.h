@@ -21,7 +21,7 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private slots:
-    void on_textEdit_textChanged();
+    void on_noteEdit_textChanged();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:

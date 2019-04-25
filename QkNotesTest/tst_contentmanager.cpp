@@ -45,35 +45,37 @@ void TstContentManager::cleanup()
 
 void TstContentManager::test_case_read()
 {
-    const std::string content = "hello,world\nthis is the content";
+    const QString content = "hello,world\nthis is the content";
 
     // Make file
-    std::ofstream file(FILENAME);
-    file << content;
+    QFile file(FILENAME);
+    file.open(QIODevice::WriteOnly);
+    QTextStream ts(&file);
+    ts << content;
     file.close();
 
     ContentManager mgr(FILENAME);
-    QCOMPARE(content.c_str(), mgr.getContent().c_str());
+    QCOMPARE(content, mgr.getContent());
 }
 
 void TstContentManager::test_case_no_file()
 {
     ContentManager mgr("non_existent.txt");
-    QCOMPARE("", mgr.getContent().c_str());
+    QCOMPARE("", mgr.getContent());
 }
 
 void TstContentManager::test_case_write()
 {
     ContentManager* mgr = new ContentManager(FILENAME);
-    QCOMPARE("", mgr->getContent().c_str());
+    QCOMPARE("", mgr->getContent());
 
-    const std::string content = "hello, world\nsecond line\n";
+    const QString content = "hello, world\nsecond line\n";
     mgr->setContent(content);
     mgr->saveIfNeeded();
     delete mgr;
 
     mgr = new ContentManager(FILENAME);
-    QCOMPARE(content.c_str(), mgr->getContent().c_str());
+    QCOMPARE(content, mgr->getContent());
 }
 
 QTEST_APPLESS_MAIN(TstContentManager)

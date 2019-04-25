@@ -1,14 +1,23 @@
 #include "contentmanager.h"
-#include <fstream>
-#include <sstream>
+#include <QStandardPaths>
+#include <QFile>
+#include <QTextStream>
 
 
-ContentManager::ContentManager(const std::string& filename) : m_filename(filename)
+ContentManager::ContentManager() : ContentManager(
+    QStandardPaths::standardLocations(QStandardPaths::StandardLocation::DataLocation)[0]
+    + "/content.txt")
 {
-    std::ifstream inputFile(filename);
-    std::stringstream ss;
-    ss << inputFile.rdbuf();
-    m_content = ss.str();
+}
+
+ContentManager::ContentManager(const QString& filename) : m_filename(filename)
+{
+    QFile f(filename);
+    f.open(QIODevice::ReadOnly);
+
+    QTextStream ts(&f);
+    m_content = ts.readAll();
+    f.close();
 
     m_changed = false;
 }
@@ -18,7 +27,7 @@ ContentManager::~ContentManager()
     saveIfNeeded();
 }
 
-void ContentManager::setContent(const std::string &content)
+void ContentManager::setContent(const QString &content)
 {
     m_content = content;
     m_changed = true;
@@ -28,8 +37,11 @@ void ContentManager::saveIfNeeded()
 {
     if (m_changed)
     {
-        std::ofstream outputFile(m_filename);
-        outputFile << m_content;
+        QFile f(m_filename);
+        f.open(QIODevice::WriteOnly);
+        QTextStream ts(&f);
+        ts << m_content;
+        f.close();
 
         m_changed = false;
     }

@@ -1,25 +1,25 @@
 #ifndef CONTENTMANAGER_H
 #define CONTENTMANAGER_H
-#include <string>
+#include <QString>
 
 
 class ContentManager
 {
 public:
-    //todo: Put it in data/
-    ContentManager(const std::string& filename = "_content.txt");
+    ContentManager();
+    ContentManager(const QString& filename);
     ~ContentManager();
 
-    const std::string& getContent() { return m_content; }
+    const QString& getContent() { return m_content; }
 
-    void setContent(const std::string& content);
+    void setContent(const QString& content);
 
     void saveIfNeeded();
 
 private:
-    std::string m_content;
+    QString m_content;
     bool m_changed;
-    std::string m_filename;
+    QString m_filename;
 };
 
 #endif // CONTENTMANAGER_H
