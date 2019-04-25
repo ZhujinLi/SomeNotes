@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QMenu>
+#include <QScrollBar>
 #include <fstream>
 
 QkNotes::QkNotes(QWidget *parent) :
@@ -115,5 +116,14 @@ bool QkNotes::event(QEvent *event)
 {
     if (event->type() == QEvent::Type::Paint)
         _setPosition();
+    else if (event->type() == QEvent::Wheel)
+        if (QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+            const int STEP = 50;
+            QWheelEvent* wheelEvent = dynamic_cast<QWheelEvent*>(event);
+            auto hScrollBar = ui->textEdit->horizontalScrollBar();
+            int value = hScrollBar->value()
+                    + (wheelEvent->delta() < 0 ? STEP : -STEP);
+            hScrollBar->setValue(value);
+        }
     return QWidget::event(event);
 }
