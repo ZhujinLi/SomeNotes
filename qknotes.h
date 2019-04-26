@@ -4,10 +4,7 @@
 #include <QWidget>
 #include <QSystemTrayIcon>
 #include "contentmanager.h"
-
-namespace Ui {
-class QkNotes;
-}
+#include "noteblock.h"
 
 class QkNotes : public QWidget
 {
@@ -21,16 +18,16 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private slots:
-    void on_noteEdit_textChanged();
+    void onNoteBlockTextChanged();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void backup();
 
 private:
-    Ui::QkNotes *ui;
     ContentManager m_mgr;
     int m_changeCount;
     QSystemTrayIcon* m_trayIcon;
     bool m_needsRecalcGeometry;
+    NoteBlock* m_noteBlock;
 
     void _initTrayIcon();
     void _saveContent();

@@ -26,6 +26,7 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
+    noteblock.cpp \
     pch.cpp \
         qknotes.cpp \
     contentmanager.cpp
@@ -34,12 +35,13 @@ CONFIG += precompile_header
 PRECOMPILED_HEADER = pch.h
 
 HEADERS += \
+    noteblock.h \
     pch.h \
         qknotes.h \
     contentmanager.h
 
 FORMS += \
-        qknotes.ui
+        noteblock.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

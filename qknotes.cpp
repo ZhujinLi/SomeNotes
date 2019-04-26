@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "qknotes.h"
-#include "ui_qknotes.h"
+#include <QApplication>
 #include <QCloseEvent>
+#include <QCoreApplication>
 #include <QMenu>
 #include <QScrollBar>
 
@@ -9,12 +10,10 @@
 #define SETTING_HEIGHT "height"
 
 QkNotes::QkNotes(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::QkNotes)
+    QWidget(parent)
 {
     m_changeCount = 0;
 
-    ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 
     _initTrayIcon();
@@ -26,7 +25,9 @@ QkNotes::QkNotes(QWidget *parent) :
         setGeometry(0, 0, g_settings.value(SETTING_WIDTH).toInt(), g_settings.value(SETTING_HEIGHT).toInt());
     }
 
-    ui->noteEdit->setPlainText(m_mgr.getContent());
+    m_noteBlock = new NoteBlock(this);
+    m_noteBlock->setPlainText(m_mgr.getContent());
+    connect(m_noteBlock, NoteBlock::textChanged, this, onNoteBlockTextChanged);
 
     m_needsRecalcGeometry = true;
 }
@@ -56,10 +57,9 @@ void QkNotes::_initTrayIcon()
 QkNotes::~QkNotes()
 {
     _saveContent();
-    delete ui;
 }
 
-void QkNotes::on_noteEdit_textChanged()
+void QkNotes::onNoteBlockTextChanged()
 {
     m_changeCount++;
     if (m_changeCount >= 50) {
@@ -70,7 +70,7 @@ void QkNotes::on_noteEdit_textChanged()
 
 void QkNotes::_saveContent()
 {
-    m_mgr.setContent(ui->noteEdit->toPlainText());
+    m_mgr.setContent(m_noteBlock->toPlainText());
 
     m_mgr.saveIfNeeded();
     qInfo() << "Content saved.";
@@ -165,7 +165,7 @@ bool QkNotes::event(QEvent *event)
         if (QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
             const int STEP = 50;
             QWheelEvent* wheelEvent = dynamic_cast<QWheelEvent*>(event);
-            auto hScrollBar = ui->noteEdit->horizontalScrollBar();
+            auto hScrollBar = m_noteBlock->horizontalScrollBar();
             int value = hScrollBar->value()
                     + (wheelEvent->delta() < 0 ? STEP : -STEP);
             hScrollBar->setValue(value);
