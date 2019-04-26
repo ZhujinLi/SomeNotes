@@ -13,6 +13,7 @@ QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent)
 {
     m_changeCount = 0;
+    m_needsRecalcGeometry = false;
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 
@@ -131,6 +132,9 @@ void QkNotes::keyReleaseEvent(QKeyEvent *event)
             m_needsRecalcGeometry = true;
         }
         break;
+    case Qt::Key_Alt:
+        QApplication::restoreOverrideCursor();
+        break;
     }
 }
 
@@ -171,4 +175,16 @@ bool QkNotes::event(QEvent *event)
             hScrollBar->setValue(value);
         }
     return QWidget::event(event);
+}
+
+
+void QkNotes::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key()) {
+    case Qt::Key_Alt:
+        QApplication::setOverrideCursor(Qt::OpenHandCursor);
+        break;
+    default:
+        ;
+    }
 }

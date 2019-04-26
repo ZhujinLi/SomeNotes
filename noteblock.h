@@ -15,6 +15,15 @@ public:
 
 private:
     Ui::NoteBlock *ui;
+    QPoint m_dragStartPos;
+
+    // QWidget interface
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+
+    // QWidget interface
+protected:
+    void mouseMoveEvent(QMouseEvent *event) override;
 };
 
 #endif // NOTEBLOCK_H

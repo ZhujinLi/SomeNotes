@@ -41,6 +41,10 @@ protected:
     // QObject interface
 public:
     bool event(QEvent *event) override;
+
+    // QWidget interface
+protected:
+    void keyPressEvent(QKeyEvent *event) override;
 };
 
 #endif // QKNOTES_H
