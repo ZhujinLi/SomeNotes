@@ -15,7 +15,7 @@ QkNotes::QkNotes(QWidget *parent) :
     m_changeCount = 0;
 
     ui->setupUi(this);
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 
     _initTrayIcon();
 
@@ -145,6 +145,7 @@ void QkNotes::iconActivated(QSystemTrayIcon::ActivationReason reason)
     switch (reason) {
     case QSystemTrayIcon::DoubleClick:
         show();
+        activateWindow();
         break;
     default:
         ;
