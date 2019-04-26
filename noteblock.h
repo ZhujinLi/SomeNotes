@@ -18,6 +18,14 @@ private:
     QPoint m_dragStartMousePos;
     QPoint m_dragStartGeoPos;
 
+    enum DragDir
+    {
+        unknown,
+        vertical,
+        horizontal,
+    };
+    DragDir m_dragDir;
+
     // QWidget interface
 protected:
     void mousePressEvent(QMouseEvent *event) override;
