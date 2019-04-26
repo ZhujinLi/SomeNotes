@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QCoreApplication>
+#include <QLayout>
 #include <QMenu>
 #include <QScrollBar>
 
@@ -28,6 +29,7 @@ QkNotes::QkNotes(QWidget *parent) :
 
     m_noteBlock = new NoteBlock(this);
     m_noteBlock->setPlainText(m_mgr.getContent());
+    m_noteBlock->setGeometry(0, 0, width(), 300);
     connect(m_noteBlock, NoteBlock::textChanged, this, onNoteBlockTextChanged);
 
     m_needsRecalcGeometry = true;

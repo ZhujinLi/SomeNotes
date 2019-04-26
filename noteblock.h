@@ -15,7 +15,8 @@ public:
 
 private:
     Ui::NoteBlock *ui;
-    QPoint m_dragStartPos;
+    QPoint m_dragStartMousePos;
+    QPoint m_dragStartGeoPos;
 
     // QWidget interface
 protected:
