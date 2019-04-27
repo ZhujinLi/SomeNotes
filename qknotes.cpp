@@ -24,16 +24,20 @@ QkNotes::QkNotes(QWidget *parent) :
         setGeometry(0, 0, g_settings.value(SETTING_WIDTH).toInt(), g_settings.value(SETTING_HEIGHT).toInt());
     }
 
-    NoteBlockContent* content0 = m_mgr.getContentCount() ? m_mgr.getContent(0) : m_mgr.newContent();
-    m_noteBlock = new NoteBlock(content0, this);
-
-    NoteBlockPlaceholder* placeholder = new NoteBlockPlaceholder(this);
-
     QLayout* layout = new QVBoxLayout(this);
     layout->setMargin(0);
     layout->setSpacing(0);
-    layout->addWidget(m_noteBlock);
-    layout->addWidget(placeholder);
+
+    for (size_t i = 0; i < m_mgr.getContentCount(); i++) {
+        NoteBlockContent* content = m_mgr.getContent(i);
+        NoteBlock* noteBlock = new NoteBlock(content, this);
+        m_noteBlocks.push_back(noteBlock);
+        layout->addWidget(noteBlock);
+    }
+
+    m_placeholder = new NoteBlockPlaceholder(this);
+    layout->addWidget(m_placeholder);
+    connect(m_placeholder, &QPlainTextEdit::textChanged, this, &QkNotes::placeholderTextChanged);
 
     m_needsRecalcGeometry = true;
 }
@@ -62,7 +66,10 @@ void QkNotes::_initTrayIcon()
 
 QkNotes::~QkNotes()
 {
-    delete m_noteBlock; // since mgr is shared
+    // since mgr is shared
+    for (NoteBlock* note : m_noteBlocks)
+        delete note;
+    delete layout();
 }
 
 void QkNotes::_recalcGeometryIfNeeded()
@@ -146,8 +153,31 @@ void QkNotes::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void QkNotes::backup()
 {
-    m_noteBlock->saveContent();
+    for (NoteBlock* noteBlock : m_noteBlocks)
+        noteBlock->saveContent();
     m_mgr.backup();
+}
+
+void QkNotes::placeholderTextChanged()
+{
+    const QString& text = m_placeholder->toPlainText();
+    if (!text.isEmpty()) {
+        NoteBlockContent* content = m_mgr.newContent();
+        content->setText(text);
+        NoteBlock* noteBlock = new NoteBlock(content, this);
+        m_noteBlocks.push_back(noteBlock);
+
+        layout()->removeWidget(m_placeholder);
+        layout()->addWidget(noteBlock);
+        layout()->addWidget(m_placeholder);
+
+        m_placeholder->setPlainText("");
+
+        noteBlock->setFocus();
+        QTextCursor cursor = noteBlock->textCursor();
+        cursor.movePosition(QTextCursor::End);
+        noteBlock->setTextCursor(cursor);
+    }
 }
 
 bool QkNotes::event(QEvent *event)

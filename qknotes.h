@@ -20,12 +20,14 @@ protected:
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void backup();
+    void placeholderTextChanged();
 
 private:
     ContentManager m_mgr;
     QSystemTrayIcon* m_trayIcon;
     bool m_needsRecalcGeometry;
-    NoteBlock* m_noteBlock;
+    std::vector<NoteBlock*> m_noteBlocks;
+    NoteBlockPlaceholder* m_placeholder;
 
     void _initTrayIcon();
     void _recalcGeometryIfNeeded();
