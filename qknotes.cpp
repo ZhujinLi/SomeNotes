@@ -26,7 +26,14 @@ QkNotes::QkNotes(QWidget *parent) :
 
     NoteBlockContent* content0 = m_mgr.getContentCount() ? m_mgr.getContent(0) : m_mgr.newContent();
     m_noteBlock = new NoteBlock(content0, this);
-    m_noteBlock->setGeometry(0, 0, width(), 300);
+
+    NoteBlockPlaceholder* placeholder = new NoteBlockPlaceholder(this);
+
+    QLayout* layout = new QVBoxLayout(this);
+    layout->setMargin(0);
+    layout->setSpacing(0);
+    layout->addWidget(m_noteBlock);
+    layout->addWidget(placeholder);
 
     m_needsRecalcGeometry = true;
 }

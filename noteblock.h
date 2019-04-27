@@ -57,4 +57,15 @@ protected:
     void wheelEvent(QWheelEvent *event) override;
 };
 
+class NoteBlockPlaceholder : public QPlainTextEdit
+{
+    Q_OBJECT
+public:
+    explicit NoteBlockPlaceholder(QWidget *parent);
+    ~NoteBlockPlaceholder() override;
+
+private:
+    Ui::NoteBlock *ui;
+};
+
 #endif // NOTEBLOCK_H

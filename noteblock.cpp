@@ -107,3 +107,13 @@ void NoteBlock::keyReleaseEvent(QKeyEvent *event)
     QPlainTextEdit::keyReleaseEvent(event);
 }
 
+
+NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : QPlainTextEdit (parent), ui(new Ui::NoteBlock)
+{
+    ui->setupUi(this);
+}
+
+NoteBlockPlaceholder::~NoteBlockPlaceholder()
+{
+    delete ui;
+}
