@@ -6,7 +6,7 @@
 #include <QJsonDocument>
 
 ContentManager::ContentManager() : ContentManager(
-    g_dataDir + "/contents.txt")
+    g_dataDir + "/content.txt")
 {
 }
 
