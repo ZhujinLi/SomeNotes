@@ -24,7 +24,8 @@ QkNotes::QkNotes(QWidget *parent) :
         setGeometry(0, 0, g_settings.value(SETTING_WIDTH).toInt(), g_settings.value(SETTING_HEIGHT).toInt());
     }
 
-    m_noteBlock = new NoteBlock(m_mgr.getContent(), this);
+    NoteBlockContent* content0 = m_mgr.getContentCount() ? m_mgr.getContent(0) : m_mgr.newContent();
+    m_noteBlock = new NoteBlock(content0, this);
     m_noteBlock->setGeometry(0, 0, width(), 300);
 
     m_needsRecalcGeometry = true;
