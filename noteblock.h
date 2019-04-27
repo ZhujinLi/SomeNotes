@@ -16,7 +16,12 @@ public:
     explicit NoteBlock(NoteBlockContent* content, QWidget *parent = nullptr);
     ~NoteBlock() override;
 
+    NoteBlockContent* getContent() { return m_content; }
+
     void saveContent();
+
+signals:
+    void noteDeleted(NoteBlock* o);
 
 private:
     Ui::NoteBlock *ui;
@@ -32,6 +37,15 @@ private:
         horizontal,
     };
     DragDir m_dragDir;
+
+    enum DragState
+    {
+        none,
+        dragging
+    };
+    DragState m_dragState;
+
+    void _endDragging();
 
     // QWidget interface
 protected:
@@ -55,6 +69,10 @@ private slots:
     // QWidget interface
 protected:
     void wheelEvent(QWheelEvent *event) override;
+
+    // QWidget interface
+protected:
+    void mouseReleaseEvent(QMouseEvent *event) override;
 };
 
 class NoteBlockPlaceholder : public QPlainTextEdit

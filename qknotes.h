@@ -21,7 +21,7 @@ private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void backup();
     void placeholderTextChanged();
-
+    void onNoteBlockNoteDeleted(NoteBlock* noteBlock);
 private:
     ContentManager m_mgr;
     QSystemTrayIcon* m_trayIcon;
@@ -32,6 +32,7 @@ private:
     void _initTrayIcon();
     void _recalcGeometryIfNeeded();
     void _focusToNoteBlock(QPlainTextEdit* noteBlock);
+    NoteBlock* _addNoteBlock(NoteBlockContent* content);
 
     // QWidget interface
 protected:

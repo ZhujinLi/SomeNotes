@@ -30,9 +30,7 @@ QkNotes::QkNotes(QWidget *parent) :
 
     for (size_t i = 0; i < m_mgr.getContentCount(); i++) {
         NoteBlockContent* content = m_mgr.getContent(i);
-        NoteBlock* noteBlock = new NoteBlock(content, this);
-        m_noteBlocks.push_back(noteBlock);
-        layout->addWidget(noteBlock);
+        _addNoteBlock(content);
     }
 
     m_placeholder = new NoteBlockPlaceholder(this);
@@ -112,6 +110,15 @@ void QkNotes::_focusToNoteBlock(QPlainTextEdit* noteBlock)
     noteBlock->setTextCursor(cursor);
 }
 
+NoteBlock *QkNotes::_addNoteBlock(NoteBlockContent *content)
+{
+    NoteBlock* noteBlock = new NoteBlock(content, this);
+    connect(noteBlock, &NoteBlock::noteDeleted, this, &QkNotes::onNoteBlockNoteDeleted);
+    m_noteBlocks.push_back(noteBlock);
+    layout()->addWidget(noteBlock);
+    return noteBlock;
+}
+
 void QkNotes::keyReleaseEvent(QKeyEvent *event)
 {
     switch (event->key()) {
@@ -177,19 +184,32 @@ void QkNotes::placeholderTextChanged()
 {
     const QString& text = m_placeholder->toPlainText();
     if (!text.isEmpty()) {
+        layout()->removeWidget(m_placeholder);
+
         NoteBlockContent* content = m_mgr.newContent();
         content->setText(text);
-        NoteBlock* noteBlock = new NoteBlock(content, this);
-        m_noteBlocks.push_back(noteBlock);
 
-        layout()->removeWidget(m_placeholder);
-        layout()->addWidget(noteBlock);
+        NoteBlock* noteBlock = _addNoteBlock(content);
+
         layout()->addWidget(m_placeholder);
 
         m_placeholder->setPlainText("");
 
         _focusToNoteBlock(noteBlock);
     }
+}
+
+void QkNotes::onNoteBlockNoteDeleted(NoteBlock *noteBlock)
+{
+    for (size_t i = 0; i < m_noteBlocks.size(); i++)
+        if (m_noteBlocks[i] == noteBlock) {
+            layout()->removeWidget(noteBlock);
+            m_noteBlocks.erase(m_noteBlocks.begin() + static_cast<long long>(i));
+            NoteBlockContent* content = noteBlock->getContent();
+            delete noteBlock;
+            m_mgr.deleteContent(content);
+            return;
+        }
 }
 
 bool QkNotes::event(QEvent *event)

@@ -5,7 +5,8 @@
 NoteBlock::NoteBlock(NoteBlockContent* content, QWidget *parent) :
     QPlainTextEdit (parent),
     ui(new Ui::NoteBlock),
-    m_content(content)
+    m_content(content),
+    m_dragState(none)
 {
     ui->setupUi(this);
 
@@ -27,6 +28,23 @@ void NoteBlock::saveContent()
     m_content->saveIfNeeded();
 }
 
+void NoteBlock::_endDragging()
+{
+    if (m_dragState != dragging)
+        return;
+    m_dragState = none;
+
+    if (m_dragDir == DragDir::horizontal) {
+        int dx = geometry().x() - m_dragStartGeoPos.x();
+        if (dx < -geometry().width() / 2) { // delete
+            emit noteDeleted(this);
+            return;
+        }
+    }
+
+    setGeometry(m_dragStartGeoPos.x(), m_dragStartGeoPos.y(), geometry().width(), geometry().height());
+}
+
 void NoteBlock::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton
@@ -44,18 +62,25 @@ void NoteBlock::mousePressEvent(QMouseEvent *event)
 void NoteBlock::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint deltaPos = QCursor::pos() - m_dragStartMousePos;
-    if ((event->buttons() & Qt::LeftButton)
-        && IS_AUX_KEY_DOWN(DRAG_MOD_KEY)
-        && deltaPos.manhattanLength() > QApplication::startDragDistance()) {
-            if (m_dragDir == DragDir::unknown)
-                m_dragDir = abs(deltaPos.x()) > abs(deltaPos.y()) ? DragDir::horizontal : DragDir::vertical;
 
-            if (m_dragDir == DragDir::vertical)
-                deltaPos.setX(0);
-            else
-                deltaPos.setY(0);
+    bool drag = (event->buttons() & Qt::LeftButton)
+        && IS_AUX_KEY_DOWN(DRAG_MOD_KEY);
+
+    drag &= (m_dragState == dragging)
+            || deltaPos.manhattanLength() > QApplication::startDragDistance();
+
+    if (drag) {
+        if (m_dragDir == DragDir::unknown)
+            m_dragDir = abs(deltaPos.x()) > abs(deltaPos.y()) ? DragDir::horizontal : DragDir::vertical;
+
+        if (m_dragDir == DragDir::vertical)
+            deltaPos.setX(0);
+        else
+            deltaPos.setY(0);
         setGeometry(m_dragStartGeoPos.x() + deltaPos.x(), m_dragStartGeoPos.y() + deltaPos.y(),
                     geometry().width(), geometry().height());
+
+        m_dragState = dragging;
     } else {
         QPlainTextEdit::mouseMoveEvent(event);
     }
@@ -102,6 +127,7 @@ void NoteBlock::keyReleaseEvent(QKeyEvent *event)
     switch (event->key()) {
     case DRAG_KEY:
         QApplication::restoreOverrideCursor();
+        _endDragging();
         break;
     }
     QPlainTextEdit::keyReleaseEvent(event);
@@ -116,4 +142,10 @@ NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : QPlainTextEdit (pa
 NoteBlockPlaceholder::~NoteBlockPlaceholder()
 {
     delete ui;
+}
+
+
+void NoteBlock::mouseReleaseEvent(QMouseEvent *)
+{
+    _endDragging();
 }
