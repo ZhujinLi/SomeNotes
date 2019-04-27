@@ -149,10 +149,13 @@ void QkNotes::keyReleaseEvent(QKeyEvent *event)
             m_needsRecalcGeometry = true;
         }
         break;
+    case DRAG_KEY:
+        QApplication::restoreOverrideCursor();
+        break;
     default:
-        QWidget::keyReleaseEvent(event);
         break;
     }
+    QWidget::keyReleaseEvent(event);
 }
 
 void QkNotes::closeEvent(QCloseEvent *event)
@@ -218,3 +221,16 @@ bool QkNotes::event(QEvent *event)
     return QWidget::event(event);
 }
 
+
+
+void QkNotes::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key()) {
+    case DRAG_KEY:
+        QApplication::setOverrideCursor(Qt::OpenHandCursor);
+        break;
+    default:
+        ;
+    }
+    QWidget::keyPressEvent(event);
+}

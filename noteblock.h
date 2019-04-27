@@ -57,10 +57,6 @@ protected:
 
     // QWidget interface
 protected:
-    void keyPressEvent(QKeyEvent *event) override;
-
-    // QWidget interface
-protected:
     void keyReleaseEvent(QKeyEvent *event) override;
 
 private slots:

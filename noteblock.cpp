@@ -110,18 +110,6 @@ void NoteBlock::wheelEvent(QWheelEvent *event)
 }
 
 
-void NoteBlock::keyPressEvent(QKeyEvent *event)
-{
-    switch (event->key()) {
-    case DRAG_KEY:
-        QApplication::setOverrideCursor(Qt::OpenHandCursor);
-        break;
-    default:
-        ;
-    }
-    QPlainTextEdit::keyPressEvent(event);
-}
-
 void NoteBlock::keyReleaseEvent(QKeyEvent *event)
 {
     switch (event->key()) {
@@ -145,7 +133,8 @@ NoteBlockPlaceholder::~NoteBlockPlaceholder()
 }
 
 
-void NoteBlock::mouseReleaseEvent(QMouseEvent *)
+void NoteBlock::mouseReleaseEvent(QMouseEvent *event)
 {
     _endDragging();
+    QPlainTextEdit::mouseReleaseEvent(event);
 }
