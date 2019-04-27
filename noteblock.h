@@ -2,7 +2,7 @@
 #ifndef NOTEBLOCK_H
 #define NOTEBLOCK_H
 
-#include "contentmanager.h"
+#include "noteblockcontent.h"
 #include <QPlainTextEdit>
 
 namespace Ui {
@@ -13,7 +13,7 @@ class NoteBlock : public QPlainTextEdit
 {
     Q_OBJECT
 public:
-    explicit NoteBlock(ContentManager* mgr, QWidget *parent = nullptr);
+    explicit NoteBlock(NoteBlockContent* content, QWidget *parent = nullptr);
     ~NoteBlock() override;
 
     void saveContent();
@@ -23,7 +23,7 @@ private:
     QPoint m_dragStartMousePos;
     QPoint m_dragStartGeoPos;
     int m_changeCount = 0;
-    ContentManager* m_mgr;
+    NoteBlockContent* const m_content;
 
     enum DragDir
     {

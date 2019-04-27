@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "contentmanager.h"
+#include "noteblockcontent.h"
 
 ContentManager::ContentManager() : ContentManager(
-    g_dataDir + "/content.txt")
+    g_dataDir + "/contents.txt")
 {
 }
 
@@ -11,42 +12,35 @@ ContentManager::ContentManager(const QString& filename) : m_filename(filename)
     QFile f(filename);
     f.open(QIODevice::ReadOnly);
 
-    QTextStream ts(&f);
-    m_content = ts.readAll();
-    f.close();
+    m_content = new NoteBlockContent(this);
 
-    m_changed = false;
+    QTextStream ts(&f);
+    const QString& text = ts.readAll();
+    m_content->setText(text);
+    f.close();
 }
 
 ContentManager::~ContentManager()
 {
-    saveIfNeeded();
+    delete m_content;
+    save();
 }
 
-void ContentManager::setContent(const QString &content)
+void ContentManager::save()
 {
-    m_content = content;
-    m_changed = true;
-}
+    QFile f(m_filename);
+    f.open(QIODevice::WriteOnly);
+    QTextStream ts(&f);
+    ts << m_content->getText();
+    f.close();
 
-void ContentManager::saveIfNeeded()
-{
-    if (m_changed)
-    {
-        QFile f(m_filename);
-        f.open(QIODevice::WriteOnly);
-        QTextStream ts(&f);
-        ts << m_content;
-        f.close();
-
-        qInfo() << "Content saved.";
-        m_changed = false;
-    }
+    qInfo() << "Content saved.";
 }
 
 void ContentManager::backup()
 {
-    saveIfNeeded();
+    save();
+
     QString bakFileName = m_filename + ".bak";
     QFile::remove(bakFileName);
     QFile::copy(m_filename, bakFileName);

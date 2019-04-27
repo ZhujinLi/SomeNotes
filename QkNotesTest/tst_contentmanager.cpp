@@ -1,6 +1,8 @@
 #include <QtTest>
+#include <QCoreApplication>
 #include <fstream>
 #include "../contentmanager.h"
+#include "../noteblockcontent.h"
 
 static const char* FILENAME = "tst_content.txt";
 static const char* BAKFILENAME = "tst_content.txt.bak";
@@ -18,7 +20,6 @@ private slots:
     void cleanup();
 
     void test_case_read();
-    void test_case_no_file();
     void test_case_write();
     void test_case_backup();
 };
@@ -60,36 +61,30 @@ void TstContentManager::test_case_read()
     file.close();
 
     ContentManager mgr(FILENAME);
-    QCOMPARE(content, mgr.getContent());
-}
-
-void TstContentManager::test_case_no_file()
-{
-    ContentManager mgr("non_existent.txt");
-    QCOMPARE("", mgr.getContent());
+    QCOMPARE(content, mgr.getContent()->getText());
 }
 
 void TstContentManager::test_case_write()
 {
     ContentManager* mgr = new ContentManager(FILENAME);
-    QCOMPARE("", mgr->getContent());
+    QCOMPARE("", mgr->getContent()->getText());
 
     const QString content = "hello, world\nsecond line\n";
-    mgr->setContent(content);
-    mgr->saveIfNeeded();
+    mgr->getContent()->setText(content);
+    mgr->getContent()->saveIfNeeded();
     delete mgr;
 
     mgr = new ContentManager(FILENAME);
-    QCOMPARE(content, mgr->getContent());
+    QCOMPARE(content, mgr->getContent()->getText());
 }
 
 void TstContentManager::test_case_backup()
 {
     ContentManager* mgr = new ContentManager(FILENAME);
-    QCOMPARE("", mgr->getContent());
+    QCOMPARE("", mgr->getContent()->getText());
 
     const QString content = "hello, world\nsecond line\n";
-    mgr->setContent(content);
+    mgr->getContent()->setText(content);
     mgr->backup();
 
     QFile bakFile(BAKFILENAME);
@@ -99,7 +94,7 @@ void TstContentManager::test_case_backup()
     bakFile.close();
 
     const QString content1 = "content has changed";
-    mgr->setContent(content1);
+    mgr->getContent()->setText(content1);
     mgr->backup();
 
     QFile bakFile1(BAKFILENAME);
@@ -111,6 +106,6 @@ void TstContentManager::test_case_backup()
     delete mgr;
 }
 
-QTEST_APPLESS_MAIN(TstContentManager)
+QTEST_MAIN(TstContentManager)
 
 #include "tst_contentmanager.moc"

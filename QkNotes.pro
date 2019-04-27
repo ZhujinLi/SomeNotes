@@ -27,6 +27,7 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
     noteblock.cpp \
+    noteblockcontent.cpp \
     pch.cpp \
         qknotes.cpp \
     contentmanager.cpp
@@ -36,6 +37,7 @@ PRECOMPILED_HEADER = pch.h
 
 HEADERS += \
     noteblock.h \
+    noteblockcontent.h \
     pch.h \
         qknotes.h \
     contentmanager.h

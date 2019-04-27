@@ -2,12 +2,14 @@
 #include "ui_noteblock.h"
 #include <QScrollBar>
 
-NoteBlock::NoteBlock(ContentManager* mgr, QWidget *parent) :
+NoteBlock::NoteBlock(NoteBlockContent* content, QWidget *parent) :
     QPlainTextEdit (parent),
     ui(new Ui::NoteBlock),
-    m_mgr(mgr)
+    m_content(content)
 {
     ui->setupUi(this);
+
+    setPlainText(content->getText());
 
     setMouseTracking(true);
 }
@@ -21,8 +23,8 @@ NoteBlock::~NoteBlock()
 
 void NoteBlock::saveContent()
 {
-    m_mgr->setContent(toPlainText());
-    m_mgr->saveIfNeeded();
+    m_content->setText(toPlainText());
+    m_content->saveIfNeeded();
 }
 
 void NoteBlock::mousePressEvent(QMouseEvent *event)

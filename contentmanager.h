@@ -2,6 +2,7 @@
 #define CONTENTMANAGER_H
 #include <QString>
 
+class NoteBlockContent;
 
 class ContentManager
 {
@@ -10,17 +11,14 @@ public:
     ContentManager(const QString& filename);
     ~ContentManager();
 
-    const QString& getContent() { return m_content; }
+    NoteBlockContent* getContent() { return m_content; }
 
-    void setContent(const QString& content);
-
-    void saveIfNeeded();
+    void save();
 
     void backup();
 
 private:
-    QString m_content;
-    bool m_changed;
+    NoteBlockContent* m_content;
     QString m_filename;
 };
 
