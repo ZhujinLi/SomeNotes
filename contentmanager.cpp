@@ -39,6 +39,7 @@ void ContentManager::saveIfNeeded()
         ts << m_content;
         f.close();
 
+        qInfo() << "Content saved.";
         m_changed = false;
     }
 }

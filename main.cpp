@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
     QDir().mkpath(g_dataDir);
 
     QMainWindow window;
-    QkNotes* qkNotes = new QkNotes(&window);
-    qkNotes->show();
+    QkNotes qkNotes(&window);
+    qkNotes.show();
 
     return a.exec();
 }

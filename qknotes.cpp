@@ -1,11 +1,9 @@
 #include "pch.h"
 #include "qknotes.h"
-#include <QApplication>
 #include <QCloseEvent>
 #include <QCoreApplication>
 #include <QLayout>
 #include <QMenu>
-#include <QScrollBar>
 
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
@@ -13,7 +11,6 @@
 QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent)
 {
-    m_changeCount = 0;
     m_needsRecalcGeometry = false;
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
@@ -27,10 +24,9 @@ QkNotes::QkNotes(QWidget *parent) :
         setGeometry(0, 0, g_settings.value(SETTING_WIDTH).toInt(), g_settings.value(SETTING_HEIGHT).toInt());
     }
 
-    m_noteBlock = new NoteBlock(this);
+    m_noteBlock = new NoteBlock(&m_mgr, this);
     m_noteBlock->setPlainText(m_mgr.getContent());
     m_noteBlock->setGeometry(0, 0, width(), 300);
-    connect(m_noteBlock, NoteBlock::textChanged, this, onNoteBlockTextChanged);
 
     m_needsRecalcGeometry = true;
 }
@@ -59,24 +55,7 @@ void QkNotes::_initTrayIcon()
 
 QkNotes::~QkNotes()
 {
-    _saveContent();
-}
-
-void QkNotes::onNoteBlockTextChanged()
-{
-    m_changeCount++;
-    if (m_changeCount >= 50) {
-        _saveContent();
-        m_changeCount = 0;
-    }
-}
-
-void QkNotes::_saveContent()
-{
-    m_mgr.setContent(m_noteBlock->toPlainText());
-
-    m_mgr.saveIfNeeded();
-    qInfo() << "Content saved.";
+    delete m_noteBlock; // since mgr is shared
 }
 
 void QkNotes::_recalcGeometryIfNeeded()
@@ -111,31 +90,31 @@ void QkNotes::keyReleaseEvent(QKeyEvent *event)
         hide();
         break;
     case Qt::Key_Minus:
-        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
             this->setGeometry(geometry().x(), geometry().y(), width() - 10, height());
             m_needsRecalcGeometry = true;
         }
         break;
     case Qt::Key_Equal:
-        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
             this->setGeometry(geometry().x(), geometry().y(), width() + 10, height());
             m_needsRecalcGeometry = true;
         }
         break;
     case Qt::Key_Underscore:
-        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
             this->setGeometry(geometry().x(), geometry().y(), width(), height() - 10);
             m_needsRecalcGeometry = true;
         }
         break;
     case Qt::Key_Plus:
-        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
             this->setGeometry(geometry().x(), geometry().y(), width(), height() + 10);
             m_needsRecalcGeometry = true;
         }
         break;
-    case Qt::Key_Alt:
-        QApplication::restoreOverrideCursor();
+    default:
+        QWidget::keyReleaseEvent(event);
         break;
     }
 }
@@ -160,33 +139,13 @@ void QkNotes::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void QkNotes::backup()
 {
-    _saveContent();
+    m_noteBlock->saveContent();
     m_mgr.backup();
 }
 
 bool QkNotes::event(QEvent *event)
 {
     _recalcGeometryIfNeeded();
-    if (event->type() == QEvent::Wheel)
-        if (QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
-            const int STEP = 50;
-            QWheelEvent* wheelEvent = dynamic_cast<QWheelEvent*>(event);
-            auto hScrollBar = m_noteBlock->horizontalScrollBar();
-            int value = hScrollBar->value()
-                    + (wheelEvent->delta() < 0 ? STEP : -STEP);
-            hScrollBar->setValue(value);
-        }
     return QWidget::event(event);
 }
 
-
-void QkNotes::keyPressEvent(QKeyEvent *event)
-{
-    switch (event->key()) {
-    case Qt::Key_Alt:
-        QApplication::setOverrideCursor(Qt::OpenHandCursor);
-        break;
-    default:
-        ;
-    }
-}

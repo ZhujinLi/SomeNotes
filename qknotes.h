@@ -18,19 +18,16 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private slots:
-    void onNoteBlockTextChanged();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void backup();
 
 private:
     ContentManager m_mgr;
-    int m_changeCount;
     QSystemTrayIcon* m_trayIcon;
     bool m_needsRecalcGeometry;
     NoteBlock* m_noteBlock;
 
     void _initTrayIcon();
-    void _saveContent();
     void _recalcGeometryIfNeeded();
 
 
@@ -41,10 +38,6 @@ protected:
     // QObject interface
 public:
     bool event(QEvent *event) override;
-
-    // QWidget interface
-protected:
-    void keyPressEvent(QKeyEvent *event) override;
 };
 
 #endif // QKNOTES_H
