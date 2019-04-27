@@ -31,7 +31,7 @@ private:
 
     void _initTrayIcon();
     void _recalcGeometryIfNeeded();
-
+    void _focusToNoteBlock(QPlainTextEdit* noteBlock);
 
     // QWidget interface
 protected:

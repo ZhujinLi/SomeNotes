@@ -39,6 +39,13 @@ QkNotes::QkNotes(QWidget *parent) :
     layout->addWidget(m_placeholder);
     connect(m_placeholder, &QPlainTextEdit::textChanged, this, &QkNotes::placeholderTextChanged);
 
+    show();
+    activateWindow();
+    if (m_noteBlocks.size())
+        _focusToNoteBlock(m_noteBlocks[0]);
+    else
+        _focusToNoteBlock(m_placeholder);
+
     m_needsRecalcGeometry = true;
 }
 
@@ -95,6 +102,14 @@ void QkNotes::_recalcGeometryIfNeeded()
 
     g_settings.setValue(SETTING_WIDTH, width());
     g_settings.setValue(SETTING_HEIGHT, height());
+}
+
+void QkNotes::_focusToNoteBlock(QPlainTextEdit* noteBlock)
+{
+    noteBlock->setFocus();
+    QTextCursor cursor = noteBlock->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    noteBlock->setTextCursor(cursor);
 }
 
 void QkNotes::keyReleaseEvent(QKeyEvent *event)
@@ -173,10 +188,7 @@ void QkNotes::placeholderTextChanged()
 
         m_placeholder->setPlainText("");
 
-        noteBlock->setFocus();
-        QTextCursor cursor = noteBlock->textCursor();
-        cursor.movePosition(QTextCursor::End);
-        noteBlock->setTextCursor(cursor);
+        _focusToNoteBlock(noteBlock);
     }
 }
 
