@@ -71,8 +71,10 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
             || deltaPos.manhattanLength() > QApplication::startDragDistance();
 
     if (drag) {
-        if (m_dragDir == DragDir::DragDir_unknown)
+        if (m_dragDir == DragDir::DragDir_unknown) {
             m_dragDir = abs(deltaPos.x()) > abs(deltaPos.y()) ? DragDir::DragDir_horizontal : DragDir::DragDir_vertical;
+            raise();
+        }
 
         if (m_dragDir == DragDir::DragDir_vertical)
             deltaPos.setX(0);
