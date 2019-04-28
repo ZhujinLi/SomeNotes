@@ -23,6 +23,7 @@ private slots:
     void placeholderTextChanged();
     void onNoteBlockNoteDeleted(NoteBlock* noteBlock);
     void onNoteBlockTrySwap(NoteBlock* noteBlock);
+    void onNoteBlockDragProgress(bool isVertical, float progress);
 
 private:
     ContentManager m_mgr;
@@ -35,6 +36,7 @@ private:
     void _recalcGeometryIfNeeded();
     void _focusToNoteBlock(QPlainTextEdit* noteBlock);
     NoteBlock* _addNoteBlock(NoteBlockContent* content);
+    void _setBgColor(QColor color);
 
     // QWidget interface
 protected:

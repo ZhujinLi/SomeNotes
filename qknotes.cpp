@@ -8,12 +8,17 @@
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
 
+static const QColor QKNOTES_BG_COLOR = QColor::fromRgb(0xf0, 0xf0, 0xf0);
+static const QColor QKNOTES_DEL_COLOR = QColor::fromRgb(0xff, 0x30, 0x30);
+
 QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent)
 {
     m_needsRecalcGeometry = false;
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+
+    _setBgColor(QKNOTES_BG_COLOR);
 
     _initTrayIcon();
 
@@ -115,9 +120,17 @@ NoteBlock *QkNotes::_addNoteBlock(NoteBlockContent *content)
     NoteBlock* noteBlock = new NoteBlock(content, this);
     connect(noteBlock, &NoteBlock::noteDeleted, this, &QkNotes::onNoteBlockNoteDeleted);
     connect(noteBlock, &NoteBlock::trySwap, this, &QkNotes::onNoteBlockTrySwap);
+    connect(noteBlock, &NoteBlock::dragProgress, this, &QkNotes::onNoteBlockDragProgress);
     m_noteBlocks.push_back(noteBlock);
     layout()->addWidget(noteBlock);
     return noteBlock;
+}
+
+void QkNotes::_setBgColor(QColor color)
+{
+    auto palette = this->palette();
+    palette.setColor(QPalette::ColorRole::Background, color);
+    setPalette(palette);
 }
 
 void QkNotes::keyReleaseEvent(QKeyEvent *event)
@@ -240,6 +253,29 @@ void QkNotes::onNoteBlockTrySwap(NoteBlock *noteBlock)
             m_mgr.swap(noteBlock->getContent(), tested->getContent());
             break;
         }
+    }
+}
+
+static qreal _qreal_lerp(qreal a, qreal b, qreal ratio)
+{
+    return a * (1 - ratio) + b * ratio;
+}
+
+void QkNotes::onNoteBlockDragProgress(bool isVertical, float progress)
+{
+    if (!isVertical && progress < -0.5f)
+        _setBgColor(QKNOTES_DEL_COLOR);
+    else if (!isVertical && progress < 0) {
+        qreal ratio = static_cast<qreal>(-progress);
+        QColor from = QKNOTES_BG_COLOR;
+        QColor to = QKNOTES_DEL_COLOR;
+        QColor res = QColor::fromRgbF(_qreal_lerp(from.redF(), to.redF(), ratio),
+                                      _qreal_lerp(from.greenF(), to.greenF(), ratio),
+                                      _qreal_lerp(from.blueF(), to.blueF(), ratio));
+        _setBgColor(res);
+    }
+    else {
+        _setBgColor(QKNOTES_BG_COLOR);
     }
 }
 

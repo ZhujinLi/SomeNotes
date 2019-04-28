@@ -66,6 +66,9 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint deltaPos = QCursor::pos() - m_dragStartMousePos;
 
+    // currently only left dragging is supported
+    deltaPos.setX(qMin(deltaPos.x(), 0));
+
     bool drag = (event->buttons() & Qt::LeftButton)
         && IS_AUX_KEY_DOWN(DRAG_MOD_KEY);
 
@@ -84,6 +87,12 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
             deltaPos.setY(0);
         setGeometry(m_dragStartGeoPos.x() + deltaPos.x(), m_dragStartGeoPos.y() + deltaPos.y(),
                     geometry().width(), geometry().height());
+
+        if (m_dragDir == DragDir_horizontal)
+            emit dragProgress(false, deltaPos.x() / static_cast<float>(geometry().width()));
+        else {
+            emit dragProgress(true, deltaPos.y() / static_cast<float>(geometry().height()));
+        }
 
         m_dragState = DragState_dragging;
     } else {
