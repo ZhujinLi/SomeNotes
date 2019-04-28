@@ -23,7 +23,7 @@ public:
 signals:
     void noteDeleted(NoteBlock* o);
     void trySwap(NoteBlock* o);
-    void dragProgress(bool isVertical, float progress);
+    void dragProgress(bool isVertical, float progress, NoteBlock* o);
 
 private:
     Ui::NoteBlock *ui;

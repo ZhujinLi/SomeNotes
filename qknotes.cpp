@@ -10,6 +10,7 @@
 
 static const QColor QKNOTES_BG_COLOR = QColor::fromRgb(0xf0, 0xf0, 0xf0);
 static const QColor QKNOTES_DEL_COLOR = QColor::fromRgb(0xff, 0x30, 0x30);
+static const QColor QKNOTES_SWAP_COLOR = QColor::fromRgb(205, 232, 255);
 
 QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent)
@@ -133,6 +134,18 @@ void QkNotes::_setBgColor(QColor color)
     setPalette(palette);
 }
 
+NoteBlock *QkNotes::_findOverlappingNoteBlock(NoteBlock *query)
+{
+    QRect geo = query->geometry();
+    QPoint center = geo.center();
+
+    for (NoteBlock* tested : m_noteBlocks)
+        if (tested != query && tested->geometry().contains(center))
+            return tested;
+
+    return nullptr;
+}
+
 void QkNotes::keyReleaseEvent(QKeyEvent *event)
 {
     switch (event->key()) {
@@ -231,28 +244,23 @@ void QkNotes::onNoteBlockNoteDeleted(NoteBlock *noteBlock)
 
 void QkNotes::onNoteBlockTrySwap(NoteBlock *noteBlock)
 {
-    QRect geo = noteBlock->geometry();
-    QPoint center = geo.center();
-
-    for (NoteBlock* tested : m_noteBlocks) {
-        if (tested != noteBlock && tested->geometry().contains(center)) {
-            QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(this->layout());
-            QWidget* widgetA = noteBlock;
-            QWidget* widgetB = tested;
-            int indexA = layout->indexOf(widgetA);
-            int indexB = layout->indexOf(widgetB);
-            if (indexA > indexB) {
-                qSwap(indexA, indexB);
-                qSwap(widgetA, widgetB);
-            }
-            layout->removeWidget(widgetA);
-            layout->removeWidget(widgetB);
-            layout->insertWidget(indexA, widgetB);
-            layout->insertWidget(indexB, widgetA);
-
-            m_mgr.swap(noteBlock->getContent(), tested->getContent());
-            break;
+    NoteBlock* tested = _findOverlappingNoteBlock(noteBlock);
+    if (tested != nullptr) {
+        QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(this->layout());
+        QWidget* widgetA = noteBlock;
+        QWidget* widgetB = tested;
+        int indexA = layout->indexOf(widgetA);
+        int indexB = layout->indexOf(widgetB);
+        if (indexA > indexB) {
+            qSwap(indexA, indexB);
+            qSwap(widgetA, widgetB);
         }
+        layout->removeWidget(widgetA);
+        layout->removeWidget(widgetB);
+        layout->insertWidget(indexA, widgetB);
+        layout->insertWidget(indexB, widgetA);
+
+        m_mgr.swap(noteBlock->getContent(), tested->getContent());
     }
 }
 
@@ -261,7 +269,7 @@ static qreal _qreal_lerp(qreal a, qreal b, qreal ratio)
     return a * (1 - ratio) + b * ratio;
 }
 
-void QkNotes::onNoteBlockDragProgress(bool isVertical, float progress)
+void QkNotes::onNoteBlockDragProgress(bool isVertical, float progress, NoteBlock* noteBlock)
 {
     if (!isVertical && progress < -0.5f)
         _setBgColor(QKNOTES_DEL_COLOR);
@@ -274,7 +282,9 @@ void QkNotes::onNoteBlockDragProgress(bool isVertical, float progress)
                                       _qreal_lerp(from.blueF(), to.blueF(), ratio));
         _setBgColor(res);
     }
-    else {
+    else if (isVertical && _findOverlappingNoteBlock(noteBlock) != nullptr) {
+        _setBgColor(QKNOTES_SWAP_COLOR);
+    } else {
         _setBgColor(QKNOTES_BG_COLOR);
     }
 }

@@ -89,9 +89,9 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
                     geometry().width(), geometry().height());
 
         if (m_dragDir == DragDir_horizontal)
-            emit dragProgress(false, deltaPos.x() / static_cast<float>(geometry().width()));
+            emit dragProgress(false, deltaPos.x() / static_cast<float>(geometry().width()), this);
         else {
-            emit dragProgress(true, deltaPos.y() / static_cast<float>(geometry().height()));
+            emit dragProgress(true, deltaPos.y() / static_cast<float>(geometry().height()), this);
         }
 
         m_dragState = DragState_dragging;
