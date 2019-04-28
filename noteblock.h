@@ -32,20 +32,27 @@ private:
 
     enum DragDir
     {
-        unknown,
-        vertical,
-        horizontal,
+        DragDir_unknown,
+        DragDir_vertical,
+        DragDir_horizontal,
     };
     DragDir m_dragDir;
 
     enum DragState
     {
-        none,
-        dragging
+        DragState_none,
+        DragState_dragging
     };
     DragState m_dragState;
 
-    void _endDragging();
+    enum DragResult
+    {
+        DragResult_none,
+        DragResult_restored,
+        DragResult_deleted
+    };
+
+    DragResult _endDragging();
 
     // QWidget interface
 protected:
