@@ -114,6 +114,7 @@ NoteBlock *QkNotes::_addNoteBlock(NoteBlockContent *content)
 {
     NoteBlock* noteBlock = new NoteBlock(content, this);
     connect(noteBlock, &NoteBlock::noteDeleted, this, &QkNotes::onNoteBlockNoteDeleted);
+    connect(noteBlock, &NoteBlock::trySwap, this, &QkNotes::onNoteBlockTrySwap);
     m_noteBlocks.push_back(noteBlock);
     layout()->addWidget(noteBlock);
     return noteBlock;
@@ -213,6 +214,33 @@ void QkNotes::onNoteBlockNoteDeleted(NoteBlock *noteBlock)
             m_mgr.deleteContent(content);
             return;
         }
+}
+
+void QkNotes::onNoteBlockTrySwap(NoteBlock *noteBlock)
+{
+    QRect geo = noteBlock->geometry();
+    QPoint center = geo.center();
+
+    for (NoteBlock* tested : m_noteBlocks) {
+        if (tested != noteBlock && tested->geometry().contains(center)) {
+            QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(this->layout());
+            QWidget* widgetA = noteBlock;
+            QWidget* widgetB = tested;
+            int indexA = layout->indexOf(widgetA);
+            int indexB = layout->indexOf(widgetB);
+            if (indexA > indexB) {
+                qSwap(indexA, indexB);
+                qSwap(widgetA, widgetB);
+            }
+            layout->removeWidget(widgetA);
+            layout->removeWidget(widgetB);
+            layout->insertWidget(indexA, widgetB);
+            layout->insertWidget(indexB, widgetA);
+
+            m_mgr.swap(noteBlock->getContent(), tested->getContent());
+            break;
+        }
+    }
 }
 
 bool QkNotes::event(QEvent *event)

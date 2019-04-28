@@ -22,6 +22,8 @@ private slots:
     void backup();
     void placeholderTextChanged();
     void onNoteBlockNoteDeleted(NoteBlock* noteBlock);
+    void onNoteBlockTrySwap(NoteBlock* noteBlock);
+
 private:
     ContentManager m_mgr;
     QSystemTrayIcon* m_trayIcon;

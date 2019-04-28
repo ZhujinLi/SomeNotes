@@ -62,13 +62,24 @@ NoteBlockContent *ContentManager::newContent()
 
 bool ContentManager::deleteContent(NoteBlockContent *content)
 {
-    for (size_t i = 0; i < m_contents.size(); i++)
-        if (m_contents[i] == content) {
-            m_contents.erase((m_contents.begin() + static_cast<long long>(i)));
-            delete content;
-            return true;
-        }
+    size_t index = _findIndex(content);
+    if (index != SIZE_MAX) {
+        m_contents.erase(m_contents.begin() + static_cast<long long>(index));
+        delete content;
+        return true;
+    }
     return false;
+}
+
+void ContentManager::swap(NoteBlockContent *contentA, NoteBlockContent *contentB)
+{
+    size_t indexA = _findIndex(contentA);
+    size_t indexB = _findIndex(contentB);
+
+    if (indexA != SIZE_MAX && indexB != SIZE_MAX) {
+        m_contents[indexA] = contentB;
+        m_contents[indexB] = contentA;
+    }
 }
 
 
@@ -98,4 +109,13 @@ void ContentManager::backup()
     QString bakFileName = m_filename + ".bak";
     QFile::remove(bakFileName);
     QFile::copy(m_filename, bakFileName);
+}
+
+size_t ContentManager::_findIndex(NoteBlockContent *content)
+{
+    for (size_t i = 0; i < m_contents.size(); i++)
+        if (m_contents[i] == content) {
+            return i;
+        }
+    return SIZE_MAX;
 }

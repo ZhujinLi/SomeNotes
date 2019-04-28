@@ -40,10 +40,12 @@ NoteBlock::DragResult NoteBlock::_endDragging()
             emit noteDeleted(this);
             return DragResult_deleted;
         }
+    } else {
+        emit trySwap(this);
     }
 
     updateGeometry();
-    return DragResult_restored;
+    return DragResult_unknown;
 }
 
 void NoteBlock::mousePressEvent(QMouseEvent *event)

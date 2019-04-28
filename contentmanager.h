@@ -17,6 +17,8 @@ public:
     NoteBlockContent* newContent();
     bool deleteContent(NoteBlockContent* content);
 
+    void swap(NoteBlockContent* contentA, NoteBlockContent* contentB);
+
     void save();
 
     void backup();
@@ -24,6 +26,8 @@ public:
 private:
     std::vector<NoteBlockContent*> m_contents;
     QString m_filename;
+
+    size_t _findIndex(NoteBlockContent* content);
 };
 
 #endif // CONTENTMANAGER_H

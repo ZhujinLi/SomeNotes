@@ -22,6 +22,7 @@ public:
 
 signals:
     void noteDeleted(NoteBlock* o);
+    void trySwap(NoteBlock* o);
 
 private:
     Ui::NoteBlock *ui;
@@ -48,7 +49,7 @@ private:
     enum DragResult
     {
         DragResult_none,
-        DragResult_restored,
+        DragResult_unknown,
         DragResult_deleted
     };
 
