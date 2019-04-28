@@ -42,7 +42,7 @@ NoteBlock::DragResult NoteBlock::_endDragging()
         }
     }
 
-    setGeometry(m_dragStartGeoPos.x(), m_dragStartGeoPos.y(), geometry().width(), geometry().height());
+    updateGeometry();
     return DragResult_restored;
 }
 
