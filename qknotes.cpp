@@ -28,8 +28,6 @@ QkNotes::QkNotes(QWidget *parent) :
     layout()->addWidget(m_placeholder);
     connect(m_placeholder, &QPlainTextEdit::textChanged, this, &QkNotes::placeholderTextChanged);
 
-    show();
-    activateWindow();
     if (m_noteBlocks.size())
         _focusToNoteBlock(m_noteBlocks[0]);
     else
@@ -148,14 +146,14 @@ static qreal _qreal_lerp(qreal a, qreal b, qreal ratio)
     return a * (1 - ratio) + b * ratio;
 }
 
-void QkNotes::onNoteBlockDragProgress(bool isVertical, float progress, NoteBlock* noteBlock)
+void QkNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock* noteBlock)
 {
-    if (!isVertical && progress < -0.5f)
+    if (!isVertical && progress < -DRAG_THRESHOLD)
         _setBgColor(QKNOTES_DEL_COLOR);
     else if (!isVertical && progress < 0) {
-        qreal ratio = static_cast<qreal>(-progress);
         QColor from = QKNOTES_BG_COLOR;
         QColor to = QKNOTES_DEL_COLOR;
+        qreal ratio = -progress / DRAG_THRESHOLD * 0.5;
         QColor res = QColor::fromRgbF(_qreal_lerp(from.redF(), to.redF(), ratio),
                                       _qreal_lerp(from.greenF(), to.greenF(), ratio),
                                       _qreal_lerp(from.blueF(), to.blueF(), ratio));

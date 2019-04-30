@@ -15,6 +15,8 @@ static const Qt::KeyboardModifier SCROOL_MOD_KEY = Qt::ShiftModifier;
 static const Qt::KeyboardModifier DRAG_MOD_KEY = Qt::AltModifier;
 static const Qt::Key DRAG_KEY = Qt::Key_Alt;
 
+static const qreal DRAG_THRESHOLD = 0.75;
+
 inline bool IS_AUX_KEY_DOWN(Qt::KeyboardModifier key) {
     return QApplication::keyboardModifiers().testFlag(key);
 }

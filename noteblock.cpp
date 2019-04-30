@@ -37,7 +37,7 @@ NoteBlock::DragResult NoteBlock::_endDragging()
 
     if (m_dragDir == DragDir::DragDir_horizontal) {
         int dx = geometry().x() - m_dragStartGeoPos.x();
-        if (dx < -geometry().width() / 2) { // delete
+        if (dx < -geometry().width() * DRAG_THRESHOLD) { // delete
             emit noteDeleted(this);
             return DragResult_deleted;
         }
@@ -97,9 +97,9 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
                     geometry().width(), geometry().height());
 
         if (m_dragDir == DragDir_horizontal)
-            emit dragProgress(false, deltaPos.x() / static_cast<float>(geometry().width()), this);
+            emit dragProgress(false, deltaPos.x() / static_cast<qreal>(geometry().width()), this);
         else {
-            emit dragProgress(true, deltaPos.y() / static_cast<float>(geometry().height()), this);
+            emit dragProgress(true, deltaPos.y() / static_cast<qreal>(geometry().height()), this);
         }
 
         m_dragState = DragState_dragging;
