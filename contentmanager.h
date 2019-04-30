@@ -2,6 +2,7 @@
 #define CONTENTMANAGER_H
 #include <QString>
 
+class NoteBlockContent;
 
 class ContentManager
 {
@@ -10,18 +11,23 @@ public:
     ContentManager(const QString& filename);
     ~ContentManager();
 
-    const QString& getContent() { return m_content; }
+    size_t getContentCount() { return m_contents.size(); }
+    NoteBlockContent* getContent(size_t index) { return m_contents[index]; }
 
-    void setContent(const QString& content);
+    NoteBlockContent* newContent();
+    bool deleteContent(NoteBlockContent* content);
 
-    void saveIfNeeded();
+    void swap(NoteBlockContent* contentA, NoteBlockContent* contentB);
+
+    void save();
 
     void backup();
 
 private:
-    QString m_content;
-    bool m_changed;
+    std::vector<NoteBlockContent*> m_contents;
     QString m_filename;
+
+    size_t _findIndex(NoteBlockContent* content);
 };
 
 #endif // CONTENTMANAGER_H

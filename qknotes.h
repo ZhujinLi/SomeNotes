@@ -2,12 +2,8 @@
 #define QKNOTES_H
 
 #include <QWidget>
-#include <QSystemTrayIcon>
 #include "contentmanager.h"
-
-namespace Ui {
-class QkNotes;
-}
+#include "noteblock.h"
 
 class QkNotes : public QWidget
 {
@@ -17,33 +13,28 @@ public:
     explicit QkNotes(QWidget *parent = nullptr);
     ~QkNotes() override;
 
-protected:
-    void closeEvent(QCloseEvent *event) override;
-
-private slots:
-    void on_noteEdit_textChanged();
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
+public slots:
     void backup();
 
+private slots:
+    void placeholderTextChanged();
+    void onNoteBlockNoteDeleted(NoteBlock* noteBlock);
+    void onNoteBlockTrySwap(NoteBlock* noteBlock);
+    void onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock* noteBlock);
+
 private:
-    Ui::QkNotes *ui;
     ContentManager m_mgr;
-    int m_changeCount;
-    QSystemTrayIcon* m_trayIcon;
-    bool m_needsRecalcGeometry;
+    std::vector<NoteBlock*> m_noteBlocks;
+    NoteBlockPlaceholder* m_placeholder;
 
-    void _initTrayIcon();
-    void _saveContent();
-    void _recalcGeometryIfNeeded();
-
+    void _focusToNoteBlock(QPlainTextEdit* noteBlock);
+    NoteBlock* _addNoteBlock(NoteBlockContent* content);
+    void _setBgColor(QColor color);
+    NoteBlock* _findOverlappingNoteBlock(NoteBlock* query);
 
     // QWidget interface
 protected:
-    void keyReleaseEvent(QKeyEvent *event) override;
-
-    // QObject interface
-public:
-    bool event(QEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 };
 
 #endif // QKNOTES_H

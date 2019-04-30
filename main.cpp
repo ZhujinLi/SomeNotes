@@ -1,3 +1,4 @@
+#include "mainwin.h"
 #include "pch.h"
 #include "qknotes.h"
 #include <QApplication>
@@ -12,9 +13,8 @@ int main(int argc, char *argv[])
     g_dataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::DataLocation)[0];
     QDir().mkpath(g_dataDir);
 
-    QMainWindow window;
-    QkNotes* qkNotes = new QkNotes(&window);
-    qkNotes->show();
+    MainWin w;
+    w.show();
 
     return a.exec();
 }
