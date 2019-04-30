@@ -7,10 +7,9 @@
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
 
-MainWin::MainWin(QWidget *parent) : QWidget(parent)
+MainWin::MainWin(QWidget *parent) : QWidget(parent),
+    m_trayIcon(nullptr)
 {
-    m_needsRecalcGeometry = false;
-
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
     setLayout(new QVBoxLayout(this));
@@ -24,8 +23,6 @@ MainWin::MainWin(QWidget *parent) : QWidget(parent)
     m_qkNotes = new QkNotes(scrollArea);
     scrollArea->setWidget(m_qkNotes);
 
-    _initTrayIcon();
-
     if (!g_settings.contains(SETTING_WIDTH) || !g_settings.contains(SETTING_HEIGHT)) {
         int w = m_trayIcon->geometry().width() * 10;
         setGeometry(0, 0, w, int(w * 1.5f));
@@ -33,13 +30,14 @@ MainWin::MainWin(QWidget *parent) : QWidget(parent)
         setGeometry(0, 0, g_settings.value(SETTING_WIDTH).toInt(), g_settings.value(SETTING_HEIGHT).toInt());
     }
 
+    _initTrayIcon();
     m_needsRecalcGeometry = true;
 }
 
 void MainWin::_initTrayIcon()
 {
-    m_trayIcon = new QSystemTrayIcon(this);
-    m_trayIcon->setIcon(QIcon(":/images/tray.png"));
+    QSystemTrayIcon* trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setIcon(QIcon(":/images/tray.png"));
 
     QMenu* trayIconMenu = new QMenu(this);
 
@@ -51,16 +49,20 @@ void MainWin::_initTrayIcon()
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
     trayIconMenu->addAction(quitAction);
 
-    m_trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setContextMenu(trayIconMenu);
 
-    connect(m_trayIcon, &QSystemTrayIcon::activated, this, &MainWin::iconActivated);
+    connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWin::iconActivated);
 
-    m_trayIcon->show();
+    m_trayGeo = trayIcon->geometry();
+
+    trayIcon->show();
+
+    m_trayIcon = trayIcon;
 }
 
 void MainWin::_recalcGeometryIfNeeded()
 {
-    if (!m_needsRecalcGeometry)
+    if (!m_needsRecalcGeometry || m_trayIcon == nullptr)
         return;
     m_needsRecalcGeometry = false;
 
@@ -142,6 +144,10 @@ void MainWin::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 bool MainWin::event(QEvent *event)
 {
+    if (m_trayIcon && m_trayIcon->geometry() != m_trayGeo) {
+        m_trayGeo = m_trayIcon->geometry();
+        m_needsRecalcGeometry = true;
+    }
     _recalcGeometryIfNeeded();
     return QWidget::event(event);
 }

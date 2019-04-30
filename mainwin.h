@@ -21,6 +21,7 @@ private:
     QSystemTrayIcon* m_trayIcon;
     bool m_needsRecalcGeometry;
     QkNotes* m_qkNotes;
+    QRect m_trayGeo;
 
     void _initTrayIcon();
     void _recalcGeometryIfNeeded();
