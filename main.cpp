@@ -12,8 +12,7 @@ int main(int argc, char *argv[])
     g_dataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::DataLocation)[0];
     QDir().mkpath(g_dataDir);
 
-    QMainWindow window;
-    QkNotes qkNotes(&window);
+    QkNotes qkNotes;
     qkNotes.show();
 
     return a.exec();
