@@ -9,6 +9,7 @@ NoteBlock::NoteBlock(NoteBlockContent* content, QWidget *parent) :
     m_dragState(DragState_none)
 {
     ui->setupUi(this);
+    setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
 
     setPlainText(content->getText());
 
@@ -46,6 +47,13 @@ NoteBlock::DragResult NoteBlock::_endDragging()
 
     updateGeometry();
     return DragResult_unknown;
+}
+
+qreal NoteBlock::_heightOfRows(qreal rows) const
+{
+    return rows * fontMetrics().height() +
+            (document()->documentMargin() + frameWidth()) * 2 +
+            contentsMargins().top() + contentsMargins().bottom();
 }
 
 void NoteBlock::mousePressEvent(QMouseEvent *event)
@@ -107,20 +115,7 @@ void NoteBlock::on_NoteBlock_textChanged()
         saveContent();
         m_changeCount = 0;
     }
-}
-
-
-void NoteBlock::wheelEvent(QWheelEvent *event)
-{
-    if (IS_AUX_KEY_DOWN(SCROOL_MOD_KEY)) {
-        const int STEP = 50;
-        QWheelEvent* wheelEvent = dynamic_cast<QWheelEvent*>(event);
-        auto hScrollBar = horizontalScrollBar();
-        int value = hScrollBar->value()
-                + (wheelEvent->delta() < 0 ? STEP : -STEP);
-        hScrollBar->setValue(value);
-    }
-    return QPlainTextEdit::wheelEvent(event);
+    updateGeometry();
 }
 
 
@@ -139,6 +134,7 @@ void NoteBlock::keyReleaseEvent(QKeyEvent *event)
 NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : QPlainTextEdit (parent), ui(new Ui::NoteBlock)
 {
     ui->setupUi(this);
+    setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 }
 
 NoteBlockPlaceholder::~NoteBlockPlaceholder()
@@ -152,4 +148,16 @@ void NoteBlock::mouseReleaseEvent(QMouseEvent *event)
     if (_endDragging() == DragResult_deleted)
         return;
     QPlainTextEdit::mouseReleaseEvent(event);
+}
+
+
+QSize NoteBlock::sizeHint() const
+{
+    int h = static_cast<int>(_heightOfRows(document()->size().height()));
+    return {width(), h};
+}
+
+QSize NoteBlock::minimumSizeHint() const
+{
+    return sizeHint();
 }

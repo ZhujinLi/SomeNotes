@@ -2,7 +2,6 @@
 #define QKNOTES_H
 
 #include <QWidget>
-#include <QSystemTrayIcon>
 #include "contentmanager.h"
 #include "noteblock.h"
 
@@ -14,12 +13,10 @@ public:
     explicit QkNotes(QWidget *parent = nullptr);
     ~QkNotes() override;
 
-protected:
-    void closeEvent(QCloseEvent *event) override;
+public slots:
+    void backup();
 
 private slots:
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
-    void backup();
     void placeholderTextChanged();
     void onNoteBlockNoteDeleted(NoteBlock* noteBlock);
     void onNoteBlockTrySwap(NoteBlock* noteBlock);
@@ -27,25 +24,13 @@ private slots:
 
 private:
     ContentManager m_mgr;
-    QSystemTrayIcon* m_trayIcon;
-    bool m_needsRecalcGeometry;
     std::vector<NoteBlock*> m_noteBlocks;
     NoteBlockPlaceholder* m_placeholder;
 
-    void _initTrayIcon();
-    void _recalcGeometryIfNeeded();
     void _focusToNoteBlock(QPlainTextEdit* noteBlock);
     NoteBlock* _addNoteBlock(NoteBlockContent* content);
     void _setBgColor(QColor color);
     NoteBlock* _findOverlappingNoteBlock(NoteBlock* query);
-
-    // QWidget interface
-protected:
-    void keyReleaseEvent(QKeyEvent *event) override;
-
-    // QObject interface
-public:
-    bool event(QEvent *event) override;
 
     // QWidget interface
 protected:

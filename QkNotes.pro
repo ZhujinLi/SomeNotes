@@ -26,6 +26,7 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
+    mainwin.cpp \
     noteblock.cpp \
     noteblockcontent.cpp \
     pch.cpp \
@@ -36,6 +37,7 @@ CONFIG += precompile_header
 PRECOMPILED_HEADER = pch.h
 
 HEADERS += \
+    mainwin.h \
     noteblock.h \
     noteblockcontent.h \
     pch.h \

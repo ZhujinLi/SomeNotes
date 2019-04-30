@@ -56,6 +56,8 @@ private:
 
     DragResult _endDragging();
 
+    qreal _heightOfRows(qreal rows) const;
+
     // QWidget interface
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -73,11 +75,15 @@ private slots:
 
     // QWidget interface
 protected:
-    void wheelEvent(QWheelEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
     // QWidget interface
-protected:
-    void mouseReleaseEvent(QMouseEvent *event) override;
+public:
+    QSize sizeHint() const override;
+
+    // QWidget interface
+public:
+    QSize minimumSizeHint() const override;
 };
 
 class NoteBlockPlaceholder : public QPlainTextEdit

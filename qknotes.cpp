@@ -3,10 +3,6 @@
 #include <QCloseEvent>
 #include <QCoreApplication>
 #include <QLayout>
-#include <QMenu>
-
-#define SETTING_WIDTH "width"
-#define SETTING_HEIGHT "height"
 
 static const QColor QKNOTES_BG_COLOR = QColor::fromRgb(0xf0, 0xf0, 0xf0);
 static const QColor QKNOTES_DEL_COLOR = QColor::fromRgb(0xff, 0x30, 0x30);
@@ -15,24 +11,13 @@ static const QColor QKNOTES_SWAP_COLOR = QColor::fromRgb(205, 232, 255);
 QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent)
 {
-    m_needsRecalcGeometry = false;
-
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+    setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
     _setBgColor(QKNOTES_BG_COLOR);
 
-    _initTrayIcon();
-
-    if (!g_settings.contains(SETTING_WIDTH) || !g_settings.contains(SETTING_HEIGHT)) {
-        int w = m_trayIcon->geometry().width() * 10;
-        setGeometry(0, 0, w, int(w * 1.5f));
-    } else {
-        setGeometry(0, 0, g_settings.value(SETTING_WIDTH).toInt(), g_settings.value(SETTING_HEIGHT).toInt());
-    }
-
-    QLayout* layout = new QVBoxLayout(this);
-    layout->setMargin(0);
-    layout->setSpacing(0);
+    setLayout(new QVBoxLayout(this));
+    layout()->setMargin(0);
+    layout()->setSpacing(0);
 
     for (size_t i = 0; i < m_mgr.getContentCount(); i++) {
         NoteBlockContent* content = m_mgr.getContent(i);
@@ -40,7 +25,7 @@ QkNotes::QkNotes(QWidget *parent) :
     }
 
     m_placeholder = new NoteBlockPlaceholder(this);
-    layout->addWidget(m_placeholder);
+    layout()->addWidget(m_placeholder);
     connect(m_placeholder, &QPlainTextEdit::textChanged, this, &QkNotes::placeholderTextChanged);
 
     show();
@@ -49,30 +34,6 @@ QkNotes::QkNotes(QWidget *parent) :
         _focusToNoteBlock(m_noteBlocks[0]);
     else
         _focusToNoteBlock(m_placeholder);
-
-    m_needsRecalcGeometry = true;
-}
-
-void QkNotes::_initTrayIcon()
-{
-    m_trayIcon = new QSystemTrayIcon(this);
-    m_trayIcon->setIcon(QIcon(":/images/tray.png"));
-
-    QMenu* trayIconMenu = new QMenu(this);
-
-    QAction* backupAction = new QAction(tr("&Backup"), this);
-    connect(backupAction, &QAction::triggered, this, &QkNotes::backup);
-    trayIconMenu->addAction(backupAction);
-
-    QAction* quitAction = new QAction(tr("&Quit"), this);
-    connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
-    trayIconMenu->addAction(quitAction);
-
-    m_trayIcon->setContextMenu(trayIconMenu);
-
-    connect(m_trayIcon, &QSystemTrayIcon::activated, this, &QkNotes::iconActivated);
-
-    m_trayIcon->show();
 }
 
 QkNotes::~QkNotes()
@@ -81,31 +42,6 @@ QkNotes::~QkNotes()
     for (NoteBlock* note : m_noteBlocks)
         delete note;
     delete layout();
-}
-
-void QkNotes::_recalcGeometryIfNeeded()
-{
-    if (!m_needsRecalcGeometry)
-        return;
-    m_needsRecalcGeometry = false;
-
-    QRect trayGeometry = m_trayIcon->geometry();
-    int w = width();
-    int h = height();
-
-    bool isTrayAtTop = trayGeometry.y() == 0;
-    if (isTrayAtTop) {
-        setGeometry(trayGeometry.center().x() - w / 2,
-                    trayGeometry.bottom() + trayGeometry.height() / 4,
-                    w, h);
-    } else {
-        setGeometry(trayGeometry.center().x() - w / 2,
-                    trayGeometry.top() - trayGeometry.height() / 4 - h,
-                    w, h);
-    }
-
-    g_settings.setValue(SETTING_WIDTH, width());
-    g_settings.setValue(SETTING_HEIGHT, height());
 }
 
 void QkNotes::_focusToNoteBlock(QPlainTextEdit* noteBlock)
@@ -144,63 +80,6 @@ NoteBlock *QkNotes::_findOverlappingNoteBlock(NoteBlock *query)
             return tested;
 
     return nullptr;
-}
-
-void QkNotes::keyReleaseEvent(QKeyEvent *event)
-{
-    switch (event->key()) {
-    case Qt::Key_Escape:
-        hide();
-        break;
-    case Qt::Key_Minus:
-        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
-            this->setGeometry(geometry().x(), geometry().y(), width() - 10, height());
-            m_needsRecalcGeometry = true;
-        }
-        break;
-    case Qt::Key_Equal:
-        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
-            this->setGeometry(geometry().x(), geometry().y(), width() + 10, height());
-            m_needsRecalcGeometry = true;
-        }
-        break;
-    case Qt::Key_Underscore:
-        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
-            this->setGeometry(geometry().x(), geometry().y(), width(), height() - 10);
-            m_needsRecalcGeometry = true;
-        }
-        break;
-    case Qt::Key_Plus:
-        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
-            this->setGeometry(geometry().x(), geometry().y(), width(), height() + 10);
-            m_needsRecalcGeometry = true;
-        }
-        break;
-    case DRAG_KEY:
-        QApplication::restoreOverrideCursor();
-        break;
-    default:
-        break;
-    }
-    QWidget::keyReleaseEvent(event);
-}
-
-void QkNotes::closeEvent(QCloseEvent *event)
-{
-    hide();
-    event->ignore();
-}
-
-void QkNotes::iconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-    switch (reason) {
-    case QSystemTrayIcon::DoubleClick:
-        show();
-        activateWindow();
-        break;
-    default:
-        ;
-    }
 }
 
 void QkNotes::backup()
@@ -288,13 +167,6 @@ void QkNotes::onNoteBlockDragProgress(bool isVertical, float progress, NoteBlock
         _setBgColor(QKNOTES_BG_COLOR);
     }
 }
-
-bool QkNotes::event(QEvent *event)
-{
-    _recalcGeometryIfNeeded();
-    return QWidget::event(event);
-}
-
 
 
 void QkNotes::keyPressEvent(QKeyEvent *event)
