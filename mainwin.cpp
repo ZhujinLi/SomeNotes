@@ -4,6 +4,7 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QMenu>
+#include <QProcess>
 
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
@@ -50,6 +51,10 @@ void MainWin::_initTrayIcon()
     QAction* backupAction = new QAction(tr("&Backup"), this);
     connect(backupAction, &QAction::triggered, m_qkNotes, &QkNotes::backup);
     trayIconMenu->addAction(backupAction);
+
+    QAction* restartAction = new QAction(tr("&Restart"), this);
+    connect(restartAction, &QAction::triggered, this, &MainWin::_restart);
+    trayIconMenu->addAction(restartAction);
 
     QAction* quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
@@ -134,6 +139,12 @@ void MainWin::closeEvent(QCloseEvent *event)
 {
     hide();
     event->ignore();
+}
+
+void MainWin::_restart()
+{
+    qApp->quit();
+    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
 }
 
 void MainWin::_appear()
