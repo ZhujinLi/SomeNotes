@@ -23,6 +23,8 @@ MainWin::MainWin(QWidget *parent) : QWidget(parent),
     m_qkNotes = new QkNotes(scrollArea);
     scrollArea->setWidget(m_qkNotes);
 
+    _initTrayIcon();
+
     if (!g_settings.contains(SETTING_WIDTH) || !g_settings.contains(SETTING_HEIGHT)) {
         int w = m_trayIcon->geometry().width() * 10;
         setGeometry(0, 0, w, int(w * 1.5f));
@@ -30,7 +32,6 @@ MainWin::MainWin(QWidget *parent) : QWidget(parent),
         setGeometry(0, 0, g_settings.value(SETTING_WIDTH).toInt(), g_settings.value(SETTING_HEIGHT).toInt());
     }
 
-    _initTrayIcon();
     m_needsRecalcGeometry = true;
 }
 
@@ -40,6 +41,10 @@ void MainWin::_initTrayIcon()
     trayIcon->setIcon(QIcon(":/images/tray.png"));
 
     QMenu* trayIconMenu = new QMenu(this);
+
+    QAction* showAction = new QAction(tr("&Show"), this);
+    connect(showAction, &QAction::triggered, this, &MainWin::_appear);
+    trayIconMenu->addAction(showAction);
 
     QAction* backupAction = new QAction(tr("&Backup"), this);
     connect(backupAction, &QAction::triggered, m_qkNotes, &QkNotes::backup);
@@ -130,12 +135,18 @@ void MainWin::closeEvent(QCloseEvent *event)
     event->ignore();
 }
 
+void MainWin::_appear()
+{
+    show();
+    raise();
+    activateWindow();
+}
+
 void MainWin::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason) {
     case QSystemTrayIcon::DoubleClick:
-        show();
-        activateWindow();
+        _appear();
         break;
     default:
         ;
