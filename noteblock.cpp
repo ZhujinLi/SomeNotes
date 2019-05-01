@@ -12,8 +12,6 @@ NoteBlock::NoteBlock(NoteBlockContent* content, QWidget *parent) :
     setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
 
     setPlainText(content->getText());
-
-    setMouseTracking(true);
 }
 
 NoteBlock::~NoteBlock()

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "mainwin.h"
 
 #include <QScrollArea>
@@ -10,7 +11,7 @@
 MainWin::MainWin(QWidget *parent) : QWidget(parent),
     m_trayIcon(nullptr)
 {
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+    setWindowFlags(Qt::FramelessWindowHint);
     setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
     setLayout(new QVBoxLayout(this));
     layout()->setMargin(0);
@@ -96,25 +97,25 @@ void MainWin::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_Escape:
         hide();
         break;
-    case Qt::Key_Minus:
+    case Qt::Key_Right:
         if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
             this->setGeometry(geometry().x(), geometry().y(), width() - 10, height());
             m_needsRecalcGeometry = true;
         }
         break;
-    case Qt::Key_Equal:
+    case Qt::Key_Left:
         if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
             this->setGeometry(geometry().x(), geometry().y(), width() + 10, height());
             m_needsRecalcGeometry = true;
         }
         break;
-    case Qt::Key_Underscore:
+    case Qt::Key_Down:
         if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
             this->setGeometry(geometry().x(), geometry().y(), width(), height() - 10);
             m_needsRecalcGeometry = true;
         }
         break;
-    case Qt::Key_Plus:
+    case Qt::Key_Up:
         if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
             this->setGeometry(geometry().x(), geometry().y(), width(), height() + 10);
             m_needsRecalcGeometry = true;
