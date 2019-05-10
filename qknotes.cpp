@@ -82,8 +82,6 @@ NoteBlock *QkNotes::_findOverlappingNoteBlock(NoteBlock *query)
 
 void QkNotes::backup()
 {
-    for (NoteBlock* noteBlock : m_noteBlocks)
-        noteBlock->saveContent();
     m_mgr.backup();
 }
 
@@ -111,7 +109,7 @@ void QkNotes::onNoteBlockNoteDeleted(NoteBlock *noteBlock)
     for (size_t i = 0; i < m_noteBlocks.size(); i++)
         if (m_noteBlocks[i] == noteBlock) {
             layout()->removeWidget(noteBlock);
-            m_noteBlocks.erase(m_noteBlocks.begin() + static_cast<long long>(i));
+            m_noteBlocks.erase(m_noteBlocks.begin() + static_cast<int>(i));
             NoteBlockContent* content = noteBlock->getContent();
             delete noteBlock;
             m_mgr.deleteContent(content);

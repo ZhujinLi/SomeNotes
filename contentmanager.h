@@ -23,9 +23,12 @@ public:
 
     void backup();
 
+    void notifyContentChange();
+
 private:
     std::vector<NoteBlockContent*> m_contents;
     QString m_filename;
+    int m_changeCount;
 
     size_t _findIndex(NoteBlockContent* content);
 };

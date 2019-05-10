@@ -8,6 +8,7 @@
 ContentManager::ContentManager() : ContentManager(
     g_dataDir + "/content.txt")
 {
+    m_changeCount = 0;
 }
 
 ContentManager::ContentManager(const QString& filename) : m_filename(filename)
@@ -64,7 +65,7 @@ bool ContentManager::deleteContent(NoteBlockContent *content)
 {
     size_t index = _findIndex(content);
     if (index != SIZE_MAX) {
-        m_contents.erase(m_contents.begin() + static_cast<long long>(index));
+        m_contents.erase(m_contents.begin() + static_cast<int>(index));
         delete content;
         return true;
     }
@@ -109,6 +110,15 @@ void ContentManager::backup()
     QString bakFileName = m_filename + ".bak";
     QFile::remove(bakFileName);
     QFile::copy(m_filename, bakFileName);
+}
+
+void ContentManager::notifyContentChange()
+{
+    m_changeCount++;
+    if (m_changeCount >= 20) {
+        save();
+        m_changeCount = 0;
+    }
 }
 
 size_t ContentManager::_findIndex(NoteBlockContent *content)

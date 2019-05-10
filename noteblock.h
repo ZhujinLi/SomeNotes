@@ -18,8 +18,6 @@ public:
 
     NoteBlockContent* getContent() { return m_content; }
 
-    void saveContent();
-
 signals:
     void noteDeleted(NoteBlock* o);
     void trySwap(NoteBlock* o);
@@ -29,7 +27,6 @@ private:
     Ui::NoteBlock *ui;
     QPoint m_dragStartMousePos;
     QPoint m_dragStartGeoPos;
-    int m_changeCount = 0;
     NoteBlockContent* const m_content;
 
     enum DragDir
