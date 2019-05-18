@@ -8,10 +8,10 @@
 ContentManager::ContentManager() : ContentManager(
     g_dataDir + "/content.txt")
 {
-    m_changeCount = 0;
 }
 
-ContentManager::ContentManager(const QString& filename) : m_filename(filename)
+ContentManager::ContentManager(const QString& filename) : m_filename(filename),
+    m_changeCount(0)
 {
     QFile f(filename);
     f.open(QIODevice::ReadOnly);
@@ -35,7 +35,7 @@ ContentManager::ContentManager(const QString& filename) : m_filename(filename)
                 parseSucc = false;
                 break;
             } else {
-                newContent()->setText(item.toString());
+                newContent(item.toString());
             }
         }
     }
@@ -57,6 +57,13 @@ ContentManager::~ContentManager()
 NoteBlockContent *ContentManager::newContent()
 {
     NoteBlockContent* content = new NoteBlockContent(this);
+    m_contents.push_back(content);
+    return content;
+}
+
+NoteBlockContent *ContentManager::newContent(const QString& text)
+{
+    NoteBlockContent* content = new NoteBlockContent(this, text);
     m_contents.push_back(content);
     return content;
 }
