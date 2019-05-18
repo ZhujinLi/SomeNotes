@@ -74,6 +74,7 @@ bool ContentManager::deleteContent(NoteBlockContent *content)
     if (index != SIZE_MAX) {
         m_contents.erase(m_contents.begin() + static_cast<int>(index));
         delete content;
+        save();
         return true;
     }
     return false;
@@ -87,10 +88,9 @@ void ContentManager::swap(NoteBlockContent *contentA, NoteBlockContent *contentB
     if (indexA != SIZE_MAX && indexB != SIZE_MAX) {
         m_contents[indexA] = contentB;
         m_contents[indexB] = contentA;
+        save();
     }
 }
-
-
 
 void ContentManager::save()
 {
@@ -107,6 +107,7 @@ void ContentManager::save()
     ts << doc.toJson();
     f.close();
 
+    m_changeCount = 0;
     qInfo() << "Content saved.";
 }
 
@@ -124,7 +125,6 @@ void ContentManager::notifyContentChange()
     m_changeCount++;
     if (m_changeCount >= 20) {
         save();
-        m_changeCount = 0;
     }
 }
 
