@@ -10,7 +10,8 @@ ContentManager::ContentManager() : ContentManager(
 {
 }
 
-ContentManager::ContentManager(const QString& filename) : m_filename(filename)
+ContentManager::ContentManager(const QString& filename) : m_filename(filename),
+    m_changeCount(0)
 {
     QFile f(filename);
     f.open(QIODevice::ReadOnly);
@@ -34,7 +35,7 @@ ContentManager::ContentManager(const QString& filename) : m_filename(filename)
                 parseSucc = false;
                 break;
             } else {
-                newContent()->setText(item.toString());
+                newContent(item.toString());
             }
         }
     }
@@ -60,12 +61,20 @@ NoteBlockContent *ContentManager::newContent()
     return content;
 }
 
+NoteBlockContent *ContentManager::newContent(const QString& text)
+{
+    NoteBlockContent* content = new NoteBlockContent(this, text);
+    m_contents.push_back(content);
+    return content;
+}
+
 bool ContentManager::deleteContent(NoteBlockContent *content)
 {
     size_t index = _findIndex(content);
     if (index != SIZE_MAX) {
-        m_contents.erase(m_contents.begin() + static_cast<long long>(index));
+        m_contents.erase(m_contents.begin() + static_cast<int>(index));
         delete content;
+        save();
         return true;
     }
     return false;
@@ -79,10 +88,9 @@ void ContentManager::swap(NoteBlockContent *contentA, NoteBlockContent *contentB
     if (indexA != SIZE_MAX && indexB != SIZE_MAX) {
         m_contents[indexA] = contentB;
         m_contents[indexB] = contentA;
+        save();
     }
 }
-
-
 
 void ContentManager::save()
 {
@@ -99,6 +107,7 @@ void ContentManager::save()
     ts << doc.toJson();
     f.close();
 
+    m_changeCount = 0;
     qInfo() << "Content saved.";
 }
 
@@ -109,6 +118,14 @@ void ContentManager::backup()
     QString bakFileName = m_filename + ".bak";
     QFile::remove(bakFileName);
     QFile::copy(m_filename, bakFileName);
+}
+
+void ContentManager::notifyContentChange()
+{
+    m_changeCount++;
+    if (m_changeCount >= 20) {
+        save();
+    }
 }
 
 size_t ContentManager::_findIndex(NoteBlockContent *content)

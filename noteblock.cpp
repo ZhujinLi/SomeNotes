@@ -16,15 +16,7 @@ NoteBlock::NoteBlock(NoteBlockContent* content, QWidget *parent) :
 
 NoteBlock::~NoteBlock()
 {
-    saveContent();
     delete ui;
-}
-
-
-void NoteBlock::saveContent()
-{
-    m_content->setText(toPlainText());
-    m_content->saveIfNeeded();
 }
 
 NoteBlock::DragResult NoteBlock::_endDragging()
@@ -108,11 +100,7 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
 
 void NoteBlock::on_NoteBlock_textChanged()
 {
-    m_changeCount++;
-    if (m_changeCount >= 50) {
-        saveContent();
-        m_changeCount = 0;
-    }
+    m_content->setText(toPlainText());
     updateGeometry();
 }
 

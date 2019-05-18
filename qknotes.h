@@ -17,6 +17,7 @@ public slots:
     void backup();
 
 private slots:
+    void onCommitDataRequest() { m_mgr.save(); }
     void placeholderTextChanged();
     void onNoteBlockNoteDeleted(NoteBlock* noteBlock);
     void onNoteBlockTrySwap(NoteBlock* noteBlock);
