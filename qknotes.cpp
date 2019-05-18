@@ -32,6 +32,8 @@ QkNotes::QkNotes(QWidget *parent) :
         _focusToNoteBlock(m_noteBlocks[0]);
     else
         _focusToNoteBlock(m_placeholder);
+
+    connect(qApp, &QApplication::commitDataRequest, this, &QkNotes::onCommitDataRequest);
 }
 
 QkNotes::~QkNotes()
