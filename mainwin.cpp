@@ -12,7 +12,7 @@
 MainWin::MainWin(QWidget *parent) : QWidget(parent),
     m_trayIcon(nullptr)
 {
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
     setLayout(new QVBoxLayout(this));
     layout()->setMargin(0);
