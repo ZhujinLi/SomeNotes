@@ -12,6 +12,7 @@ NoteBlock::NoteBlock(NoteBlockContent* content, QWidget *parent) :
     setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
 
     setPlainText(content->getText());
+    document()->setDocumentMargin(fontMetrics().height() / 3);
 }
 
 NoteBlock::~NoteBlock()
