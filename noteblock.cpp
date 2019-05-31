@@ -20,20 +20,30 @@ NoteBlock::~NoteBlock()
     delete ui;
 }
 
-void NoteBlock::_enableTranslucent(bool enable)
+void NoteBlock::enableTranslucent(bool enable)
 {
+    int alpha = enable ? 0x40 : 0xff;
+
     QPalette palette = this->palette();
+
     QBrush base = palette.base();
-    QColor color = base.color();
-    color.setAlpha(enable ? 0x80 : 0xff);
-    base.setColor(color);
+    QColor baseColor = base.color();
+    baseColor.setAlpha(alpha);
+    base.setColor(baseColor);
     palette.setBrush(QPalette::ColorRole::Base, base);
+
+    QBrush fg = palette.text();
+    QColor fgColor = fg.color();
+    fgColor.setAlpha(alpha);
+    fg.setColor(fgColor);
+    palette.setBrush(QPalette::ColorRole::Text, fg);
+
     setPalette(palette);
 }
 
 NoteBlock::DragResult NoteBlock::_endDragging()
 {
-    _enableTranslucent(false);
+    emit dragReset();
 
     if (m_dragState != DragState_dragging)
         return DragResult_none;
@@ -93,14 +103,15 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
             raise();
         }
 
-        if (m_dragDir == DragDir::DragDir_vertical)
+        if (m_dragDir == DragDir::DragDir_vertical) {
             deltaPos.setX(0);
+            enableTranslucent(true);
+        }
         else
             deltaPos.setY(0);
         setGeometry(m_dragStartGeoPos.x() + deltaPos.x(), m_dragStartGeoPos.y() + deltaPos.y(),
                     geometry().width(), geometry().height());
 
-        _enableTranslucent(true);
 
         if (m_dragDir == DragDir_horizontal)
             emit dragProgress(false, deltaPos.x() / static_cast<qreal>(geometry().width()), this);

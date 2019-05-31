@@ -22,6 +22,7 @@ private slots:
     void onNoteBlockNoteDeleted(NoteBlock* noteBlock);
     void onNoteBlockTrySwap(NoteBlock* noteBlock);
     void onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock* noteBlock);
+    void onNoteBlockDragReset();
 
 private:
     ContentManager m_mgr;

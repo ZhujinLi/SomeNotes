@@ -18,18 +18,19 @@ public:
 
     NoteBlockContent* getContent() { return m_content; }
 
+    void enableTranslucent(bool enable);
+
 signals:
     void noteDeleted(NoteBlock* o);
     void trySwap(NoteBlock* o);
     void dragProgress(bool isVertical, qreal progress, NoteBlock* o);
+    void dragReset();
 
 private:
     Ui::NoteBlock *ui;
     QPoint m_dragStartMousePos;
     QPoint m_dragStartGeoPos;
     NoteBlockContent* const m_content;
-
-    void _enableTranslucent(bool enable);
 
     enum DragDir
     {

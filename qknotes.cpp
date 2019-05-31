@@ -55,6 +55,7 @@ NoteBlock *QkNotes::_addNoteBlock(NoteBlockContent *content)
     connect(noteBlock, &NoteBlock::noteDeleted, this, &QkNotes::onNoteBlockNoteDeleted);
     connect(noteBlock, &NoteBlock::trySwap, this, &QkNotes::onNoteBlockTrySwap);
     connect(noteBlock, &NoteBlock::dragProgress, this, &QkNotes::onNoteBlockDragProgress);
+    connect(noteBlock, &NoteBlock::dragReset, this, &QkNotes::onNoteBlockDragReset);
     m_noteBlocks.push_back(noteBlock);
     layout()->addWidget(noteBlock);
     return noteBlock;
@@ -144,8 +145,10 @@ static qreal _qreal_lerp(qreal a, qreal b, qreal ratio)
 
 void QkNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock* noteBlock)
 {
-    if (!isVertical && progress < -DRAG_THRESHOLD)
+    if (!isVertical && progress < -DRAG_THRESHOLD) {
         _setBgColor(QKNOTES_DEL_COLOR);
+        noteBlock->enableTranslucent(true);
+    }
     else if (!isVertical && progress < 0) {
         QColor from = QKNOTES_BG_COLOR;
         QColor to = QKNOTES_DEL_COLOR;
@@ -154,12 +157,30 @@ void QkNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock
                                       _qreal_lerp(from.greenF(), to.greenF(), ratio),
                                       _qreal_lerp(from.blueF(), to.blueF(), ratio));
         _setBgColor(res);
+        noteBlock->enableTranslucent(false);
     }
-    else if (isVertical && _findOverlappingNoteBlock(noteBlock) != nullptr) {
-        _setBgColor(QKNOTES_SWAP_COLOR);
+    else if (isVertical) {
+        NoteBlock* highlightNote = _findOverlappingNoteBlock(noteBlock);
+        for (NoteBlock* note : m_noteBlocks)
+            if (note == highlightNote)
+                note->enableTranslucent(true);
+            else if (note != noteBlock)
+                note->enableTranslucent(false);
+
+        if (highlightNote)
+            _setBgColor(QKNOTES_SWAP_COLOR);
+        else
+            _setBgColor(QKNOTES_BG_COLOR);
     } else {
         _setBgColor(QKNOTES_BG_COLOR);
     }
+}
+
+void QkNotes::onNoteBlockDragReset()
+{
+    _setBgColor(QKNOTES_BG_COLOR);
+    for (NoteBlock* note : m_noteBlocks)
+        note->enableTranslucent(false);
 }
 
 
