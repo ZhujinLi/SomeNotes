@@ -67,13 +67,13 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
     // currently only left dragging is supported
     deltaPos.setX(qMin(deltaPos.x(), 0));
 
-    bool drag = (event->buttons() & Qt::LeftButton)
+    bool dragPrecond = (event->buttons() & Qt::LeftButton)
         && IS_AUX_KEY_DOWN(DRAG_MOD_KEY);
 
-    drag &= (m_dragState == DragState_dragging)
+    bool dragValid = (m_dragState == DragState_dragging)
             || deltaPos.manhattanLength() > QApplication::startDragDistance();
 
-    if (drag) {
+    if (dragPrecond && dragValid) {
         if (m_dragDir == DragDir::DragDir_unknown) {
             m_dragDir = abs(deltaPos.x()) > abs(deltaPos.y()) ? DragDir::DragDir_horizontal : DragDir::DragDir_vertical;
             raise();
@@ -93,7 +93,7 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
         }
 
         m_dragState = DragState_dragging;
-    } else {
+    } else if (!dragPrecond) {
         QPlainTextEdit::mouseMoveEvent(event);
     }
 }
