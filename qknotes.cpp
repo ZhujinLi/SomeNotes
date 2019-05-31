@@ -69,11 +69,10 @@ void QkNotes::_setBgColor(QColor color)
 
 NoteBlock *QkNotes::_findOverlappingNoteBlock(NoteBlock *query)
 {
-    QRect geo = query->geometry();
-    QPoint center = geo.center();
+    QPoint cursorPos = mapFromGlobal(QCursor::pos());
 
     for (NoteBlock* tested : m_noteBlocks)
-        if (tested != query && tested->geometry().contains(center))
+        if (tested != query && tested->geometry().contains(cursorPos))
             return tested;
 
     return nullptr;

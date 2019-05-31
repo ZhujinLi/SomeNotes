@@ -20,8 +20,21 @@ NoteBlock::~NoteBlock()
     delete ui;
 }
 
+void NoteBlock::_enableTranslucent(bool enable)
+{
+    QPalette palette = this->palette();
+    QBrush base = palette.base();
+    QColor color = base.color();
+    color.setAlpha(enable ? 0x80 : 0xff);
+    base.setColor(color);
+    palette.setBrush(QPalette::ColorRole::Base, base);
+    setPalette(palette);
+}
+
 NoteBlock::DragResult NoteBlock::_endDragging()
 {
+    _enableTranslucent(false);
+
     if (m_dragState != DragState_dragging)
         return DragResult_none;
     m_dragState = DragState_none;
@@ -86,6 +99,8 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
             deltaPos.setY(0);
         setGeometry(m_dragStartGeoPos.x() + deltaPos.x(), m_dragStartGeoPos.y() + deltaPos.y(),
                     geometry().width(), geometry().height());
+
+        _enableTranslucent(true);
 
         if (m_dragDir == DragDir_horizontal)
             emit dragProgress(false, deltaPos.x() / static_cast<qreal>(geometry().width()), this);

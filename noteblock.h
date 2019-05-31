@@ -29,6 +29,8 @@ private:
     QPoint m_dragStartGeoPos;
     NoteBlockContent* const m_content;
 
+    void _enableTranslucent(bool enable);
+
     enum DragDir
     {
         DragDir_unknown,
