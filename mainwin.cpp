@@ -11,6 +11,7 @@
 #include <QDesktopWidget>
 #include <QWindow>
 #include <QScreen>
+#include <QDir>
 
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
@@ -62,6 +63,13 @@ void MainWin::_initTrayIcon()
     connect(openAction, &QAction::triggered, this, &MainWin::_openDataDir);
     trayIconMenu->addAction(openAction);
 
+#ifdef Q_OS_WIN
+    m_autoStartAction = new QAction(tr("&Run at startup"), this);
+    _updateAutoStartIcon();
+    connect(m_autoStartAction, &QAction::triggered, this, &MainWin::_autoStartChanged);
+    trayIconMenu->addAction(m_autoStartAction);
+#endif
+
     QAction* restartAction = new QAction(tr("&Restart"), this);
     connect(restartAction, &QAction::triggered, this, &MainWin::_restart);
     trayIconMenu->addAction(restartAction);
@@ -109,6 +117,43 @@ void MainWin::_recalcGeometryIfNeeded()
     g_settings.setValue(SETTING_WIDTH, width());
     g_settings.setValue(SETTING_HEIGHT, height());
 }
+
+#ifdef Q_OS_WIN
+static const QString s_appNameInRun = "QkNotes";
+static const QString s_runInReg = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+
+static QString _nativeAppPath()
+{
+    QString path = QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
+    return "\"" + path + "\""; // In case there are spaces in the path
+}
+
+bool MainWin::_isAutoStart()
+{
+    QSettings runSettings(s_runInReg, QSettings::NativeFormat);
+    bool contains = runSettings.contains(s_appNameInRun);
+    if (contains && runSettings.value(s_appNameInRun).toString().compare(_nativeAppPath())) {
+        qWarning() << "Another auto start instance, update it...";
+        runSettings.setValue(s_appNameInRun, _nativeAppPath());
+    }
+    return contains;
+}
+
+void MainWin::_autoStartChanged()
+{
+    QSettings runSettings(s_runInReg, QSettings::NativeFormat);
+    if (_isAutoStart())
+        runSettings.remove(s_appNameInRun);
+    else
+        runSettings.setValue(s_appNameInRun, _nativeAppPath());
+    _updateAutoStartIcon();
+}
+
+void MainWin::_updateAutoStartIcon()
+{
+    m_autoStartAction->setIcon(_isAutoStart() ? QIcon(":/images/checked.png") : QIcon(":/images/unchecked.png"));
+}
+#endif
 
 void MainWin::keyReleaseEvent(QKeyEvent *event)
 {

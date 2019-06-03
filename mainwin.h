@@ -34,6 +34,14 @@ private:
     void _initTrayIcon();
     void _recalcGeometryIfNeeded();
 
+#ifdef Q_OS_WIN
+    QAction* m_autoStartAction;
+
+    void _autoStartChanged();
+    bool _isAutoStart();
+    void _updateAutoStartIcon();
+#endif
+
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
