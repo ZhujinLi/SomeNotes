@@ -24,8 +24,6 @@ QkNotes::QkNotes(QWidget *parent) :
     layout()->addWidget(m_placeholder);
     connect(m_placeholder, &QPlainTextEdit::textChanged, this, &QkNotes::placeholderTextChanged);
 
-    _focusToNoteBlock(m_placeholder);
-
     connect(qApp, &QApplication::commitDataRequest, this, &QkNotes::onCommitDataRequest);
 }
 

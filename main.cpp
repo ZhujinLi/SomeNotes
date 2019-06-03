@@ -16,7 +16,6 @@ int main(int argc, char *argv[])
     QDir().mkpath(g_dataDir);
 
     MainWin w;
-    w.show();
 
     return a.exec();
 }
