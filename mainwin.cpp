@@ -165,6 +165,7 @@ void MainWin::_about()
     QDialog* dialog = new QDialog(this);
     Ui::About aboutUi;
     aboutUi.setupUi(dialog);
+    dialog->setFixedSize(dialog->size());
     dialog->show();
 
     QScreen* screen = dialog->window()->windowHandle()->screen();
