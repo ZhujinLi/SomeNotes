@@ -6,6 +6,11 @@
 #include <QMenu>
 #include <QProcess>
 #include <QDesktopServices>
+#include <ui_about.h>
+#include <QStyle>
+#include <QDesktopWidget>
+#include <QWindow>
+#include <QScreen>
 
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
@@ -60,6 +65,10 @@ void MainWin::_initTrayIcon()
     QAction* restartAction = new QAction(tr("&Restart"), this);
     connect(restartAction, &QAction::triggered, this, &MainWin::_restart);
     trayIconMenu->addAction(restartAction);
+
+    QAction* aboutAction = new QAction(tr("&About..."), this);
+    connect(aboutAction, &QAction::triggered, this, &MainWin::_about);
+    trayIconMenu->addAction(aboutAction);
 
     QAction* quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
@@ -149,6 +158,24 @@ void MainWin::closeEvent(QCloseEvent *event)
 void MainWin::_openDataDir()
 {
     QDesktopServices::openUrl(QUrl::fromLocalFile(g_dataDir));
+}
+
+void MainWin::_about()
+{
+    QDialog* dialog = new QDialog(this);
+    Ui::About aboutUi;
+    aboutUi.setupUi(dialog);
+    dialog->show();
+
+    QScreen* screen = dialog->window()->windowHandle()->screen();
+    dialog->setGeometry(
+        QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            dialog->size(),
+            screen->geometry()
+        )
+    );
 }
 
 void MainWin::_restart()

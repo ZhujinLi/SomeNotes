@@ -45,6 +45,7 @@ HEADERS += \
     contentmanager.h
 
 FORMS += \
+        about.ui \
         noteblock.ui
 
 # Default rules for deployment.

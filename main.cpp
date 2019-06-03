@@ -10,6 +10,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    a.setQuitOnLastWindowClosed(false);
+
     g_dataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::DataLocation)[0];
     QDir().mkpath(g_dataDir);
 

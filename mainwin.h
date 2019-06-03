@@ -6,6 +6,10 @@
 #include <QWidget>
 #include <QSystemTrayIcon>
 
+namespace Ui {
+class About;
+}
+
 class MainWin : public QWidget
 {
     Q_OBJECT
@@ -24,6 +28,7 @@ private:
     QRect m_trayGeo;
 
     void _openDataDir();
+    void _about();
     void _restart();
     void _appear();
     void _initTrayIcon();
