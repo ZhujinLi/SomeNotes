@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "noteblock.h"
 #include "ui_noteblock.h"
 #include <QScrollBar>
@@ -9,6 +10,8 @@ NoteBlock::NoteBlock(NoteBlockContent* content, QWidget *parent) :
     m_dragState(DragState_none)
 {
     ui->setupUi(this);
+    enableHighlight(false);
+    enableTranslucent(false);
     setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
 
     setPlainText(content->getText());
@@ -38,6 +41,15 @@ void NoteBlock::enableTranslucent(bool enable)
     fg.setColor(fgColor);
     palette.setBrush(QPalette::ColorRole::Text, fg);
 
+    setPalette(palette);
+}
+
+void NoteBlock::enableHighlight(bool enable)
+{
+    QPalette palette = this->palette();
+    QBrush base = palette.base();
+    base.setColor(enable ? QKNOTES_HIGHLIGHT_COLOR : QKNOTES_BASE_COLOR);
+    palette.setBrush(QPalette::ColorRole::Base, base);
     setPalette(palette);
 }
 
@@ -105,7 +117,6 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event)
 
         if (m_dragDir == DragDir::DragDir_vertical) {
             deltaPos.setX(0);
-            enableTranslucent(true);
         }
         else
             deltaPos.setY(0);

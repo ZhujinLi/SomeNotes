@@ -75,7 +75,7 @@ void ContentManager::_saveDeletedText(const QString &text)
     QFile f(delFileName);
     f.open(QIODevice::Append);
     QTextStream ts(&f);
-    ts << "-------- Deleted on " << QDateTime::currentDateTime().toString() << " --------\n";
+    ts << "-------- Deleted at " << QDateTime::currentDateTime().toString() << " --------\n";
     ts << text << "\n";
     f.close();
 

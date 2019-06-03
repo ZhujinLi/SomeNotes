@@ -4,10 +4,6 @@
 #include <QCoreApplication>
 #include <QLayout>
 
-static const QColor QKNOTES_BG_COLOR = QColor::fromRgb(0xf0, 0xf0, 0xf0);
-static const QColor QKNOTES_DEL_COLOR = QColor::fromRgb(0xff, 0x30, 0x30);
-static const QColor QKNOTES_SWAP_COLOR = QColor::fromRgb(205, 232, 255);
-
 QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent)
 {
@@ -147,7 +143,7 @@ void QkNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock
 {
     if (!isVertical && progress < -DRAG_THRESHOLD) {
         _setBgColor(QKNOTES_DEL_COLOR);
-        noteBlock->enableTranslucent(true);
+        noteBlock->enableHighlight(true);
     }
     else if (!isVertical && progress < 0) {
         QColor from = QKNOTES_BG_COLOR;
@@ -157,20 +153,22 @@ void QkNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock
                                       _qreal_lerp(from.greenF(), to.greenF(), ratio),
                                       _qreal_lerp(from.blueF(), to.blueF(), ratio));
         _setBgColor(res);
-        noteBlock->enableTranslucent(false);
+        noteBlock->enableHighlight(false);
     }
     else if (isVertical) {
         NoteBlock* highlightNote = _findOverlappingNoteBlock(noteBlock);
         for (NoteBlock* note : m_noteBlocks)
             if (note == highlightNote)
-                note->enableTranslucent(true);
+                note->enableHighlight(true);
             else if (note != noteBlock)
-                note->enableTranslucent(false);
+                note->enableHighlight(false);
+            else
+                note->enableTranslucent(true);
 
         if (highlightNote)
-            _setBgColor(QKNOTES_SWAP_COLOR);
-        else
             _setBgColor(QKNOTES_BG_COLOR);
+        else
+            _setBgColor(QKNOTES_HIGHLIGHT_COLOR);
     } else {
         _setBgColor(QKNOTES_BG_COLOR);
     }
@@ -179,8 +177,10 @@ void QkNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock
 void QkNotes::onNoteBlockDragReset()
 {
     _setBgColor(QKNOTES_BG_COLOR);
-    for (NoteBlock* note : m_noteBlocks)
+    for (NoteBlock* note : m_noteBlocks) {
         note->enableTranslucent(false);
+        note->enableHighlight(false);
+    }
 }
 
 

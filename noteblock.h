@@ -19,6 +19,7 @@ public:
     NoteBlockContent* getContent() { return m_content; }
 
     void enableTranslucent(bool enable);
+    void enableHighlight(bool enable);
 
 signals:
     void noteDeleted(NoteBlock* o);
