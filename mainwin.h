@@ -23,6 +23,7 @@ private:
     QkNotes* m_qkNotes;
     QRect m_trayGeo;
 
+    void _openDataDir();
     void _restart();
     void _appear();
     void _initTrayIcon();

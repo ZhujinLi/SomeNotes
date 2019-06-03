@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QProcess>
+#include <QDesktopServices>
 
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
@@ -51,6 +52,10 @@ void MainWin::_initTrayIcon()
     QAction* backupAction = new QAction(tr("&Backup"), this);
     connect(backupAction, &QAction::triggered, m_qkNotes, &QkNotes::backup);
     trayIconMenu->addAction(backupAction);
+
+    QAction* openAction = new QAction(tr("&Open data directory..."), this);
+    connect(openAction, &QAction::triggered, this, &MainWin::_openDataDir);
+    trayIconMenu->addAction(openAction);
 
     QAction* restartAction = new QAction(tr("&Restart"), this);
     connect(restartAction, &QAction::triggered, this, &MainWin::_restart);
@@ -139,6 +144,11 @@ void MainWin::closeEvent(QCloseEvent *event)
 {
     hide();
     event->ignore();
+}
+
+void MainWin::_openDataDir()
+{
+    QDesktopServices::openUrl(QUrl::fromLocalFile(g_dataDir));
 }
 
 void MainWin::_restart()
