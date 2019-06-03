@@ -3,6 +3,11 @@
 #include "ui_noteblock.h"
 #include <QScrollBar>
 
+static void _setDocMargin(QPlainTextEdit* o)
+{
+    o->document()->setDocumentMargin(o->fontMetrics().height() / 3);
+}
+
 NoteBlock::NoteBlock(NoteBlockContent* content, QWidget *parent) :
     QPlainTextEdit (parent),
     ui(new Ui::NoteBlock),
@@ -15,7 +20,7 @@ NoteBlock::NoteBlock(NoteBlockContent* content, QWidget *parent) :
     setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
 
     setPlainText(content->getText());
-    document()->setDocumentMargin(fontMetrics().height() / 3);
+    _setDocMargin(this);
 }
 
 NoteBlock::~NoteBlock()
@@ -158,6 +163,7 @@ void NoteBlock::keyReleaseEvent(QKeyEvent *event)
 NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : QPlainTextEdit (parent), ui(new Ui::NoteBlock)
 {
     ui->setupUi(this);
+    _setDocMargin(this);
     setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 }
 
