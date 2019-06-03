@@ -31,7 +31,8 @@ private:
     int m_changeCount;
 
     size_t _findIndex(NoteBlockContent* content);
-    NoteBlockContent* newContent(const QString& text);
+    NoteBlockContent* _newContent(const QString& text);
+    void _saveDeletedText(const QString& text);
 };
 
 #endif // CONTENTMANAGER_H

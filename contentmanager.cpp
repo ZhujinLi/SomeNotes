@@ -2,6 +2,7 @@
 #include "contentmanager.h"
 #include "noteblockcontent.h"
 
+#include <QDateTime>
 #include <QJsonArray>
 #include <QJsonDocument>
 
@@ -35,7 +36,7 @@ ContentManager::ContentManager(const QString& filename) : m_filename(filename),
                 parseSucc = false;
                 break;
             } else {
-                newContent(item.toString());
+                _newContent(item.toString());
             }
         }
     }
@@ -61,17 +62,32 @@ NoteBlockContent *ContentManager::newContent()
     return content;
 }
 
-NoteBlockContent *ContentManager::newContent(const QString& text)
+NoteBlockContent *ContentManager::_newContent(const QString& text)
 {
     NoteBlockContent* content = new NoteBlockContent(this, text);
     m_contents.push_back(content);
     return content;
 }
 
+void ContentManager::_saveDeletedText(const QString &text)
+{
+    QString delFileName = m_filename + ".del";
+    QFile f(delFileName);
+    f.open(QIODevice::Append);
+    QTextStream ts(&f);
+    ts << "-------- Deleted on " << QDateTime::currentDateTime().toString() << " --------\n";
+    ts << text << "\n";
+    f.close();
+
+    m_changeCount = 0;
+    qInfo() << "Content saved.";
+}
+
 bool ContentManager::deleteContent(NoteBlockContent *content)
 {
     size_t index = _findIndex(content);
     if (index != SIZE_MAX) {
+        _saveDeletedText(content->getText());
         m_contents.erase(m_contents.begin() + static_cast<int>(index));
         delete content;
         save();

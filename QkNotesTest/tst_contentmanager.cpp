@@ -6,6 +6,7 @@
 
 static const char* FILENAME = "tst_content.txt";
 static const char* BAKFILENAME = "tst_content.txt.bak";
+static const char* DELFILENAME = "tst_content.txt.del";
 
 class TstContentManager : public QObject
 {
@@ -19,12 +20,16 @@ private slots:
 
         remove(BAKFILENAME);
         assert(!std::ifstream(BAKFILENAME).good());
+
+        remove(DELFILENAME);
+        assert(!std::ifstream(DELFILENAME).good());
     }
 
     void cleanup()
     {
         remove(FILENAME);
         remove(BAKFILENAME);
+        remove(DELFILENAME);
     }
 
     void test_case_read()
@@ -127,6 +132,32 @@ private slots:
         ContentManager mgr(FILENAME);
         QCOMPARE(mgr.getContentCount(), 1u);
         QVERIFY(mgr.getContent(0)->getText().startsWith("File is broken"));
+    }
+
+    void test_case_delete()
+    {
+        ContentManager* mgr = new ContentManager(FILENAME);
+
+        NoteBlockContent* content = mgr->newContent();
+        content->setText("first note");
+        mgr->deleteContent(content);
+
+        content = mgr->newContent();
+        content->setText("second note");
+        mgr->deleteContent(content);
+
+        QFile delFile(DELFILENAME);
+        delFile.open(QIODevice::ReadOnly);
+        QTextStream ts(&delFile);
+        const QString& s = ts.readAll();
+        qInfo() << "File content: \n" << s;
+        QVERIFY(s.contains("----"));
+        QVERIFY(s.contains("Deleted"));
+        QVERIFY(s.contains("first note"));
+        QVERIFY(s.contains("second note"));
+        delFile.close();
+
+        delete mgr;
     }
 };
 
