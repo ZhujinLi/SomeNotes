@@ -210,8 +210,13 @@ void MainWin::_about()
     QDialog* dialog = new QDialog(this);
     Ui::About aboutUi;
     aboutUi.setupUi(dialog);
-    dialog->setFixedSize(dialog->size());
     dialog->show();
+
+    QSize size = dialog->size();
+    qreal h = (aboutUi.textBrowser->document()->size().height() + dialog->layout()->margin() * 2) * 1.2;
+    size.setWidth(static_cast<int>(h * size.width() / size.height()));
+    size.setHeight(static_cast<int>(h));
+    dialog->setFixedSize(size);
 
     QScreen* screen = dialog->window()->windowHandle()->screen();
     dialog->setGeometry(
