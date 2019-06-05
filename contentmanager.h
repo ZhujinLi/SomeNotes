@@ -17,7 +17,7 @@ public:
     NoteBlockContent* newContent();
     bool deleteContent(NoteBlockContent* content);
 
-    void swap(NoteBlockContent* contentA, NoteBlockContent* contentB);
+    void move(NoteBlockContent* content, int index);
 
     void save();
 

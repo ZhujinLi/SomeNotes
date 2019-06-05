@@ -113,9 +113,13 @@ private slots:
         QCOMPARE(mgr->getContent(0)->getText(), "aaaa");
         QCOMPARE(mgr->getContent(1)->getText(), "cccc");
 
-        mgr->swap(mgr->getContent(0), mgr->getContent(1));
+        mgr->move(mgr->getContent(0), 1);
         QCOMPARE(mgr->getContent(0)->getText(), "cccc");
         QCOMPARE(mgr->getContent(1)->getText(), "aaaa");
+
+        mgr->move(mgr->getContent(1), 0);
+        QCOMPARE(mgr->getContent(0)->getText(), "aaaa");
+        QCOMPARE(mgr->getContent(1)->getText(), "cccc");
 
         delete mgr;
     }

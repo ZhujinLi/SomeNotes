@@ -96,16 +96,12 @@ bool ContentManager::deleteContent(NoteBlockContent *content)
     return false;
 }
 
-void ContentManager::swap(NoteBlockContent *contentA, NoteBlockContent *contentB)
+void ContentManager::move(NoteBlockContent *content, int index)
 {
-    size_t indexA = _findIndex(contentA);
-    size_t indexB = _findIndex(contentB);
+    size_t oldIndex = _findIndex(content);
 
-    if (indexA != SIZE_MAX && indexB != SIZE_MAX) {
-        m_contents[indexA] = contentB;
-        m_contents[indexB] = contentA;
-        save();
-    }
+    m_contents.erase(m_contents.begin() + static_cast<int>(oldIndex));
+    m_contents.insert(m_contents.begin() + index, content);
 }
 
 void ContentManager::save()

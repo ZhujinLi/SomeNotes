@@ -47,7 +47,7 @@ NoteBlock *QkNotes::_addNoteBlock(NoteBlockContent *content)
 {
     NoteBlock* noteBlock = new NoteBlock(content, this);
     connect(noteBlock, &NoteBlock::noteDeleted, this, &QkNotes::onNoteBlockNoteDeleted);
-    connect(noteBlock, &NoteBlock::trySwap, this, &QkNotes::onNoteBlockTrySwap);
+    connect(noteBlock, &NoteBlock::trySwap, this, &QkNotes::onNoteBlockTryMove);
     connect(noteBlock, &NoteBlock::dragProgress, this, &QkNotes::onNoteBlockDragProgress);
     connect(noteBlock, &NoteBlock::dragReset, this, &QkNotes::onNoteBlockDragReset);
     m_noteBlocks.push_back(noteBlock);
@@ -110,25 +110,16 @@ void QkNotes::onNoteBlockNoteDeleted(NoteBlock *noteBlock)
         }
 }
 
-void QkNotes::onNoteBlockTrySwap(NoteBlock *noteBlock)
+void QkNotes::onNoteBlockTryMove(NoteBlock *noteBlock)
 {
     NoteBlock* tested = _findOverlappingNoteBlock(noteBlock);
     if (tested != nullptr) {
         QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(this->layout());
-        QWidget* widgetA = noteBlock;
-        QWidget* widgetB = tested;
-        int indexA = layout->indexOf(widgetA);
-        int indexB = layout->indexOf(widgetB);
-        if (indexA > indexB) {
-            qSwap(indexA, indexB);
-            qSwap(widgetA, widgetB);
-        }
-        layout->removeWidget(widgetA);
-        layout->removeWidget(widgetB);
-        layout->insertWidget(indexA, widgetB);
-        layout->insertWidget(indexB, widgetA);
+        int testedIndex = layout->indexOf(tested);
+        layout->removeWidget(noteBlock);
+        layout->insertWidget(testedIndex, noteBlock);
 
-        m_mgr.swap(noteBlock->getContent(), tested->getContent());
+        m_mgr.move(noteBlock->getContent(), testedIndex);
     }
 }
 

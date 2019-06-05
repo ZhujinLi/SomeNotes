@@ -20,7 +20,7 @@ private slots:
     void onCommitDataRequest() { m_mgr.save(); }
     void placeholderTextChanged();
     void onNoteBlockNoteDeleted(NoteBlock* noteBlock);
-    void onNoteBlockTrySwap(NoteBlock* noteBlock);
+    void onNoteBlockTryMove(NoteBlock* noteBlock);
     void onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock* noteBlock);
     void onNoteBlockDragReset();
 
