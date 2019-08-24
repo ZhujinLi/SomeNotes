@@ -47,7 +47,7 @@ MainWin::MainWin(QWidget *parent) : QWidget(parent),
 void MainWin::_initTrayIcon()
 {
     QSystemTrayIcon* trayIcon = new QSystemTrayIcon(this);
-    trayIcon->setIcon(QIcon(":/images/tray.png"));
+    trayIcon->setIcon(QIcon(":/images/app.png"));
 
     QMenu* trayIconMenu = new QMenu(this);
 

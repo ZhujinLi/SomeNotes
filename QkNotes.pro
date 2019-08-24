@@ -56,4 +56,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     res.qrc
 
+# For Windows
 RC_ICONS = images/app.ico
+
+# For Mac
+ICON = images/app.icns
