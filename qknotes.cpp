@@ -3,6 +3,7 @@
 #include <QCloseEvent>
 #include <QCoreApplication>
 #include <QLayout>
+#include <QTimer>
 
 QkNotes::QkNotes(QWidget *parent) :
     QWidget(parent)
@@ -25,6 +26,10 @@ QkNotes::QkNotes(QWidget *parent) :
     connect(m_placeholder, &QPlainTextEdit::textChanged, this, &QkNotes::placeholderTextChanged);
 
     connect(qApp, &QApplication::commitDataRequest, this, &QkNotes::onCommitDataRequest);
+
+    QTimer* autoSaveTimer = new QTimer(this);
+    connect(autoSaveTimer, &QTimer::timeout, this, &QkNotes::onAutoSaveTimeout);
+    autoSaveTimer->start(60 * 1000);
 }
 
 QkNotes::~QkNotes()

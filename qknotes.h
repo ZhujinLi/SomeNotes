@@ -23,6 +23,7 @@ private slots:
     void onNoteBlockTryMove(NoteBlock* noteBlock);
     void onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock* noteBlock);
     void onNoteBlockDragReset();
+    void onAutoSaveTimeout() { m_mgr.save(); }
 
 private:
     ContentManager m_mgr;
