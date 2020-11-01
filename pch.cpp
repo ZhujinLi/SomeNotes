@@ -2,4 +2,4 @@
 
 QString g_dataDir;
 
-QSettings g_settings("ZjLi", "QkNotes");
+QSettings g_settings("ZjLi", "SomeNotes");

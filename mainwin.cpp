@@ -29,8 +29,8 @@ MainWin::MainWin(QWidget *parent) : QWidget(parent),
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
     layout()->addWidget(scrollArea);
 
-    m_qkNotes = new QkNotes(scrollArea);
-    scrollArea->setWidget(m_qkNotes);
+    m_someNotes = new SomeNotes(scrollArea);
+    scrollArea->setWidget(m_someNotes);
 
     _initTrayIcon();
 
@@ -56,7 +56,7 @@ void MainWin::_initTrayIcon()
     trayIconMenu->addAction(showAction);
 
     QAction* backupAction = new QAction(tr("&Backup"), this);
-    connect(backupAction, &QAction::triggered, m_qkNotes, &QkNotes::backup);
+    connect(backupAction, &QAction::triggered, m_someNotes, &SomeNotes::backup);
     trayIconMenu->addAction(backupAction);
 
     QAction* openAction = new QAction(tr("&Open data directory..."), this);
@@ -119,7 +119,7 @@ void MainWin::_recalcGeometryIfNeeded()
 }
 
 #ifdef Q_OS_WIN
-static const QString s_appNameInRun = "QkNotes";
+static const QString s_appNameInRun = "SomeNotes";
 static const QString s_runInReg = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
 static QString _nativeAppPath()

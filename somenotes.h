@@ -1,17 +1,17 @@
-#ifndef QKNOTES_H
-#define QKNOTES_H
+#ifndef SOMENOTES_H
+#define SOMENOTES_H
 
 #include <QWidget>
 #include "contentmanager.h"
 #include "noteblock.h"
 
-class QkNotes : public QWidget
+class SomeNotes : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit QkNotes(QWidget *parent = nullptr);
-    ~QkNotes() override;
+    explicit SomeNotes(QWidget *parent = nullptr);
+    ~SomeNotes() override;
 
 public slots:
     void backup();
@@ -40,4 +40,4 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 };
 
-#endif // QKNOTES_H
+#endif // SOMENOTES_H

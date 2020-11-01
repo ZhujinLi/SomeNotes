@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QkNotes
+TARGET = SomeNotes
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -30,7 +30,7 @@ SOURCES += \
     noteblock.cpp \
     noteblockcontent.cpp \
     pch.cpp \
-        qknotes.cpp \
+        somenotes.cpp \
     contentmanager.cpp
 
 CONFIG += precompile_header
@@ -41,7 +41,7 @@ HEADERS += \
     noteblock.h \
     noteblockcontent.h \
     pch.h \
-        qknotes.h \
+        somenotes.h \
     contentmanager.h
 
 FORMS += \

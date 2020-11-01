@@ -1,10 +1,10 @@
 
-#include "qknotes.h"
 #ifndef MAINWIN_H
 #define MAINWIN_H
 
-#include <QWidget>
+#include "somenotes.h"
 #include <QSystemTrayIcon>
+#include <QWidget>
 
 namespace Ui {
 class About;
@@ -24,7 +24,7 @@ protected:
 private:
     QSystemTrayIcon* m_trayIcon;
     bool m_needsRecalcGeometry;
-    QkNotes* m_qkNotes;
+    SomeNotes *m_someNotes;
     QRect m_trayGeo;
 
     void _openDataDir();

@@ -53,7 +53,7 @@ void NoteBlock::enableHighlight(bool enable)
 {
     QPalette palette = this->palette();
     QBrush base = palette.base();
-    base.setColor(enable ? QKNOTES_HIGHLIGHT_COLOR : QKNOTES_BASE_COLOR);
+    base.setColor(enable ? SOMENOTES_HIGHLIGHT_COLOR : SOMENOTES_BASE_COLOR);
     palette.setBrush(QPalette::ColorRole::Base, base);
     setPalette(palette);
 }
