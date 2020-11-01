@@ -1,0 +1,29 @@
+name: Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: SomeNotesTest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.13.2'
+
+    - name: Prepare makefile
+      run: qmake SomeNotesTest.pro
+
+    - name: Build test
+      run: make
+
+    - name: Run test without GUI
+      run: export QT_QPA_PLATFORM=offscreen && ./SomeNotesTest
+
