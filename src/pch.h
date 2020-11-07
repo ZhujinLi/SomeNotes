@@ -1,12 +1,12 @@
 #ifndef PCH_H
 #define PCH_H
-#include <QString>
-#include <QDebug>
-#include <QFile>
-#include <QTextStream>
-#include <QSettings>
 #include <QApplication>
 #include <QColor>
+#include <QDebug>
+#include <QFile>
+#include <QSettings>
+#include <QString>
+#include <QTextStream>
 
 extern QString g_dataDir;
 extern QSettings g_settings;
@@ -23,8 +23,6 @@ static const QColor SOMENOTES_HIGHLIGHT_COLOR = QColor::fromRgb(205, 232, 255);
 
 static const qreal DRAG_THRESHOLD = 0.75;
 
-inline bool IS_AUX_KEY_DOWN(Qt::KeyboardModifier key) {
-    return QApplication::keyboardModifiers().testFlag(key);
-}
+inline bool IS_AUX_KEY_DOWN(Qt::KeyboardModifier key) { return QApplication::keyboardModifiers().testFlag(key); }
 
 #endif // PCH_H

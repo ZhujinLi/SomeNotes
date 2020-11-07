@@ -1,13 +1,11 @@
-#include "pch.h"
 #include "somenotes.h"
+#include "pch.h"
 #include <QCloseEvent>
 #include <QCoreApplication>
 #include <QLayout>
 #include <QTimer>
 
-SomeNotes::SomeNotes(QWidget *parent) :
-    QWidget(parent)
-{
+SomeNotes::SomeNotes(QWidget *parent) : QWidget(parent) {
     setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
     _setBgColor(SOMENOTES_BG_COLOR);
@@ -17,7 +15,7 @@ SomeNotes::SomeNotes(QWidget *parent) :
     layout()->setSpacing(0);
 
     for (size_t i = 0; i < m_mgr.getContentCount(); i++) {
-        NoteBlockContent* content = m_mgr.getContent(i);
+        NoteBlockContent *content = m_mgr.getContent(i);
         _addNoteBlock(content);
     }
 
@@ -27,30 +25,27 @@ SomeNotes::SomeNotes(QWidget *parent) :
 
     connect(qApp, &QApplication::commitDataRequest, this, &SomeNotes::onCommitDataRequest);
 
-    QTimer* autoSaveTimer = new QTimer(this);
+    QTimer *autoSaveTimer = new QTimer(this);
     connect(autoSaveTimer, &QTimer::timeout, this, &SomeNotes::onAutoSaveTimeout);
     autoSaveTimer->start(60 * 1000);
 }
 
-SomeNotes::~SomeNotes()
-{
+SomeNotes::~SomeNotes() {
     // since mgr is shared
-    for (NoteBlock* note : m_noteBlocks)
+    for (NoteBlock *note : m_noteBlocks)
         delete note;
     delete layout();
 }
 
-void SomeNotes::_focusToNoteBlock(QPlainTextEdit* noteBlock)
-{
+void SomeNotes::_focusToNoteBlock(QPlainTextEdit *noteBlock) {
     noteBlock->setFocus();
     QTextCursor cursor = noteBlock->textCursor();
     cursor.movePosition(QTextCursor::End);
     noteBlock->setTextCursor(cursor);
 }
 
-NoteBlock *SomeNotes::_addNoteBlock(NoteBlockContent *content)
-{
-    NoteBlock* noteBlock = new NoteBlock(content, this);
+NoteBlock *SomeNotes::_addNoteBlock(NoteBlockContent *content) {
+    NoteBlock *noteBlock = new NoteBlock(content, this);
     connect(noteBlock, &NoteBlock::noteDeleted, this, &SomeNotes::onNoteBlockNoteDeleted);
     connect(noteBlock, &NoteBlock::trySwap, this, &SomeNotes::onNoteBlockTryMove);
     connect(noteBlock, &NoteBlock::dragProgress, this, &SomeNotes::onNoteBlockDragProgress);
@@ -60,39 +55,33 @@ NoteBlock *SomeNotes::_addNoteBlock(NoteBlockContent *content)
     return noteBlock;
 }
 
-void SomeNotes::_setBgColor(QColor color)
-{
+void SomeNotes::_setBgColor(QColor color) {
     auto palette = this->palette();
     palette.setColor(QPalette::ColorRole::Background, color);
     setPalette(palette);
 }
 
-NoteBlock *SomeNotes::_findOverlappingNoteBlock(NoteBlock *query)
-{
+NoteBlock *SomeNotes::_findOverlappingNoteBlock(NoteBlock *query) {
     QPoint cursorPos = mapFromGlobal(QCursor::pos());
 
-    for (NoteBlock* tested : m_noteBlocks)
+    for (NoteBlock *tested : m_noteBlocks)
         if (tested != query && tested->geometry().contains(cursorPos))
             return tested;
 
     return nullptr;
 }
 
-void SomeNotes::backup()
-{
-    m_mgr.backup();
-}
+void SomeNotes::backup() { m_mgr.backup(); }
 
-void SomeNotes::placeholderTextChanged()
-{
-    const QString& text = m_placeholder->toPlainText();
+void SomeNotes::placeholderTextChanged() {
+    const QString &text = m_placeholder->toPlainText();
     if (!text.isEmpty()) {
         layout()->removeWidget(m_placeholder);
 
-        NoteBlockContent* content = m_mgr.newContent();
+        NoteBlockContent *content = m_mgr.newContent();
         content->setText(text);
 
-        NoteBlock* noteBlock = _addNoteBlock(content);
+        NoteBlock *noteBlock = _addNoteBlock(content);
 
         layout()->addWidget(m_placeholder);
 
@@ -102,24 +91,22 @@ void SomeNotes::placeholderTextChanged()
     }
 }
 
-void SomeNotes::onNoteBlockNoteDeleted(NoteBlock *noteBlock)
-{
+void SomeNotes::onNoteBlockNoteDeleted(NoteBlock *noteBlock) {
     for (size_t i = 0; i < m_noteBlocks.size(); i++)
         if (m_noteBlocks[i] == noteBlock) {
             layout()->removeWidget(noteBlock);
             m_noteBlocks.erase(m_noteBlocks.begin() + static_cast<int>(i));
-            NoteBlockContent* content = noteBlock->getContent();
+            NoteBlockContent *content = noteBlock->getContent();
             delete noteBlock;
             m_mgr.deleteContent(content);
             return;
         }
 }
 
-void SomeNotes::onNoteBlockTryMove(NoteBlock *noteBlock)
-{
-    NoteBlock* tested = _findOverlappingNoteBlock(noteBlock);
+void SomeNotes::onNoteBlockTryMove(NoteBlock *noteBlock) {
+    NoteBlock *tested = _findOverlappingNoteBlock(noteBlock);
     if (tested != nullptr) {
-        QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(this->layout());
+        QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(this->layout());
         int testedIndex = layout->indexOf(tested);
         layout->removeWidget(noteBlock);
         layout->insertWidget(testedIndex, noteBlock);
@@ -128,30 +115,24 @@ void SomeNotes::onNoteBlockTryMove(NoteBlock *noteBlock)
     }
 }
 
-static qreal _qreal_lerp(qreal a, qreal b, qreal ratio)
-{
-    return a * (1 - ratio) + b * ratio;
-}
+static qreal _qreal_lerp(qreal a, qreal b, qreal ratio) { return a * (1 - ratio) + b * ratio; }
 
-void SomeNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock* noteBlock)
-{
+void SomeNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock *noteBlock) {
     if (!isVertical && progress < -DRAG_THRESHOLD) {
         _setBgColor(SOMENOTES_DEL_COLOR);
         noteBlock->enableHighlight(true);
-    }
-    else if (!isVertical && progress < 0) {
+    } else if (!isVertical && progress < 0) {
         QColor from = SOMENOTES_BG_COLOR;
         QColor to = SOMENOTES_DEL_COLOR;
         qreal ratio = -progress / DRAG_THRESHOLD * 0.5;
-        QColor res = QColor::fromRgbF(_qreal_lerp(from.redF(), to.redF(), ratio),
-                                      _qreal_lerp(from.greenF(), to.greenF(), ratio),
-                                      _qreal_lerp(from.blueF(), to.blueF(), ratio));
+        QColor res =
+            QColor::fromRgbF(_qreal_lerp(from.redF(), to.redF(), ratio), _qreal_lerp(from.greenF(), to.greenF(), ratio),
+                             _qreal_lerp(from.blueF(), to.blueF(), ratio));
         _setBgColor(res);
         noteBlock->enableHighlight(false);
-    }
-    else if (isVertical) {
-        NoteBlock* highlightNote = _findOverlappingNoteBlock(noteBlock);
-        for (NoteBlock* note : m_noteBlocks)
+    } else if (isVertical) {
+        NoteBlock *highlightNote = _findOverlappingNoteBlock(noteBlock);
+        for (NoteBlock *note : m_noteBlocks)
             if (note == highlightNote)
                 note->enableHighlight(true);
             else if (note != noteBlock)
@@ -168,24 +149,20 @@ void SomeNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlo
     }
 }
 
-void SomeNotes::onNoteBlockDragReset()
-{
+void SomeNotes::onNoteBlockDragReset() {
     _setBgColor(SOMENOTES_BG_COLOR);
-    for (NoteBlock* note : m_noteBlocks) {
+    for (NoteBlock *note : m_noteBlocks) {
         note->enableTranslucent(false);
         note->enableHighlight(false);
     }
 }
 
-
-void SomeNotes::keyPressEvent(QKeyEvent *event)
-{
+void SomeNotes::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case DRAG_KEY:
         QApplication::setOverrideCursor(Qt::OpenHandCursor);
         break;
-    default:
-        ;
+    default:;
     }
     QWidget::keyPressEvent(event);
 }

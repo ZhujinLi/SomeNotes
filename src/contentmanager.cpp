@@ -1,19 +1,14 @@
-#include "pch.h"
 #include "contentmanager.h"
 #include "noteblockcontent.h"
+#include "pch.h"
 
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonDocument>
 
-ContentManager::ContentManager() : ContentManager(
-    g_dataDir + "/content.txt")
-{
-}
+ContentManager::ContentManager() : ContentManager(g_dataDir + "/content.txt") {}
 
-ContentManager::ContentManager(const QString& filename) : m_filename(filename),
-    m_changeCount(0)
-{
+ContentManager::ContentManager(const QString &filename) : m_filename(filename), m_changeCount(0) {
     QFile f(filename);
     f.open(QIODevice::ReadOnly);
 
@@ -42,35 +37,30 @@ ContentManager::ContentManager(const QString& filename) : m_filename(filename),
     }
 
     if (!parseSucc) {
-        newContent()->setText(
-            "File is broken (may be disk damage or incompatible old format), raw content:\n" + text);
+        newContent()->setText("File is broken (may be disk damage or incompatible old format), raw content:\n" + text);
     }
 }
 
-ContentManager::~ContentManager()
-{
+ContentManager::~ContentManager() {
     save();
 
-    for (NoteBlockContent* content : m_contents)
+    for (NoteBlockContent *content : m_contents)
         delete content;
 }
 
-NoteBlockContent *ContentManager::newContent()
-{
-    NoteBlockContent* content = new NoteBlockContent(this);
+NoteBlockContent *ContentManager::newContent() {
+    NoteBlockContent *content = new NoteBlockContent(this);
     m_contents.push_back(content);
     return content;
 }
 
-NoteBlockContent *ContentManager::_newContent(const QString& text)
-{
-    NoteBlockContent* content = new NoteBlockContent(this, text);
+NoteBlockContent *ContentManager::_newContent(const QString &text) {
+    NoteBlockContent *content = new NoteBlockContent(this, text);
     m_contents.push_back(content);
     return content;
 }
 
-void ContentManager::_saveDeletedText(const QString &text)
-{
+void ContentManager::_saveDeletedText(const QString &text) {
     QString delFileName = m_filename + ".del";
     QFile f(delFileName);
     f.open(QIODevice::Append);
@@ -83,8 +73,7 @@ void ContentManager::_saveDeletedText(const QString &text)
     qInfo() << "Content saved.";
 }
 
-bool ContentManager::deleteContent(NoteBlockContent *content)
-{
+bool ContentManager::deleteContent(NoteBlockContent *content) {
     size_t index = _findIndex(content);
     if (index != SIZE_MAX) {
         _saveDeletedText(content->getText());
@@ -96,18 +85,16 @@ bool ContentManager::deleteContent(NoteBlockContent *content)
     return false;
 }
 
-void ContentManager::move(NoteBlockContent *content, int index)
-{
+void ContentManager::move(NoteBlockContent *content, int index) {
     size_t oldIndex = _findIndex(content);
 
     m_contents.erase(m_contents.begin() + static_cast<int>(oldIndex));
     m_contents.insert(m_contents.begin() + index, content);
 }
 
-void ContentManager::save()
-{
+void ContentManager::save() {
     QJsonArray arr;
-    for (NoteBlockContent* content : m_contents) {
+    for (NoteBlockContent *content : m_contents) {
         arr.push_back(QJsonValue(content->getText()));
     }
 
@@ -123,8 +110,7 @@ void ContentManager::save()
     qInfo() << "Content saved.";
 }
 
-void ContentManager::backup()
-{
+void ContentManager::backup() {
     save();
 
     QString bakFileName = m_filename + ".bak";
@@ -132,16 +118,14 @@ void ContentManager::backup()
     QFile::copy(m_filename, bakFileName);
 }
 
-void ContentManager::notifyContentChange()
-{
+void ContentManager::notifyContentChange() {
     m_changeCount++;
     if (m_changeCount >= 20) {
         save();
     }
 }
 
-size_t ContentManager::_findIndex(NoteBlockContent *content)
-{
+size_t ContentManager::_findIndex(NoteBlockContent *content) {
     for (size_t i = 0; i < m_contents.size(); i++)
         if (m_contents[i] == content) {
             return i;

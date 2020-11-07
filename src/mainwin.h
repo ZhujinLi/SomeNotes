@@ -10,8 +10,7 @@ namespace Ui {
 class About;
 }
 
-class MainWin : public QWidget
-{
+class MainWin : public QWidget {
     Q_OBJECT
 public:
     explicit MainWin(QWidget *parent = nullptr);
@@ -22,7 +21,7 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    QSystemTrayIcon* m_trayIcon;
+    QSystemTrayIcon *m_trayIcon;
     bool m_needsRecalcGeometry;
     SomeNotes *m_someNotes;
     QRect m_trayGeo;
@@ -35,7 +34,7 @@ private:
     void _recalcGeometryIfNeeded();
 
 #ifdef Q_OS_WIN
-    QAction* m_autoStartAction;
+    QAction *m_autoStartAction;
 
     void _autoStartChanged();
     bool _isAutoStart();

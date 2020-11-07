@@ -9,51 +9,40 @@ namespace Ui {
 class NoteBlock;
 }
 
-class NoteBlock : public QPlainTextEdit
-{
+class NoteBlock : public QPlainTextEdit {
     Q_OBJECT
 public:
-    explicit NoteBlock(NoteBlockContent* content, QWidget *parent = nullptr);
+    explicit NoteBlock(NoteBlockContent *content, QWidget *parent = nullptr);
     ~NoteBlock() override;
 
-    NoteBlockContent* getContent() { return m_content; }
+    NoteBlockContent *getContent() { return m_content; }
 
     void enableTranslucent(bool enable);
     void enableHighlight(bool enable);
 
 signals:
-    void noteDeleted(NoteBlock* o);
-    void trySwap(NoteBlock* o);
-    void dragProgress(bool isVertical, qreal progress, NoteBlock* o);
+    void noteDeleted(NoteBlock *o);
+    void trySwap(NoteBlock *o);
+    void dragProgress(bool isVertical, qreal progress, NoteBlock *o);
     void dragReset();
 
 private:
     Ui::NoteBlock *ui;
     QPoint m_dragStartMousePos;
     QPoint m_dragStartGeoPos;
-    NoteBlockContent* const m_content;
+    NoteBlockContent *const m_content;
 
-    enum DragDir
-    {
+    enum DragDir {
         DragDir_unknown,
         DragDir_vertical,
         DragDir_horizontal,
     };
     DragDir m_dragDir;
 
-    enum DragState
-    {
-        DragState_none,
-        DragState_dragging
-    };
+    enum DragState { DragState_none, DragState_dragging };
     DragState m_dragState;
 
-    enum DragResult
-    {
-        DragResult_none,
-        DragResult_unknown,
-        DragResult_deleted
-    };
+    enum DragResult { DragResult_none, DragResult_unknown, DragResult_deleted };
 
     DragResult _endDragging();
 
@@ -87,8 +76,7 @@ public:
     QSize minimumSizeHint() const override;
 };
 
-class NoteBlockPlaceholder : public QPlainTextEdit
-{
+class NoteBlockPlaceholder : public QPlainTextEdit {
     Q_OBJECT
 public:
     explicit NoteBlockPlaceholder(QWidget *parent);

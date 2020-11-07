@@ -1,30 +1,28 @@
-#include "pch.h"
 #include "mainwin.h"
+#include "pch.h"
 
-#include <QScrollArea>
-#include <QVBoxLayout>
+#include <QDesktopServices>
+#include <QDesktopWidget>
+#include <QDir>
 #include <QMenu>
 #include <QProcess>
-#include <QDesktopServices>
-#include <ui_about.h>
-#include <QStyle>
-#include <QDesktopWidget>
-#include <QWindow>
 #include <QScreen>
-#include <QDir>
+#include <QScrollArea>
+#include <QStyle>
+#include <QVBoxLayout>
+#include <QWindow>
+#include <ui_about.h>
 
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
 
-MainWin::MainWin(QWidget *parent) : QWidget(parent),
-    m_trayIcon(nullptr)
-{
+MainWin::MainWin(QWidget *parent) : QWidget(parent), m_trayIcon(nullptr) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
     setLayout(new QVBoxLayout(this));
     layout()->setMargin(0);
 
-    QScrollArea* scrollArea = new QScrollArea;
+    QScrollArea *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
     layout()->addWidget(scrollArea);
@@ -44,22 +42,21 @@ MainWin::MainWin(QWidget *parent) : QWidget(parent),
     m_needsRecalcGeometry = true;
 }
 
-void MainWin::_initTrayIcon()
-{
-    QSystemTrayIcon* trayIcon = new QSystemTrayIcon(this);
+void MainWin::_initTrayIcon() {
+    QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
     trayIcon->setIcon(QIcon(":/images/app.png"));
 
-    QMenu* trayIconMenu = new QMenu(this);
+    QMenu *trayIconMenu = new QMenu(this);
 
-    QAction* showAction = new QAction(tr("&Show"), this);
+    QAction *showAction = new QAction(tr("&Show"), this);
     connect(showAction, &QAction::triggered, this, &MainWin::_appear);
     trayIconMenu->addAction(showAction);
 
-    QAction* backupAction = new QAction(tr("&Backup"), this);
+    QAction *backupAction = new QAction(tr("&Backup"), this);
     connect(backupAction, &QAction::triggered, m_someNotes, &SomeNotes::backup);
     trayIconMenu->addAction(backupAction);
 
-    QAction* openAction = new QAction(tr("&Open data directory..."), this);
+    QAction *openAction = new QAction(tr("&Open data directory..."), this);
     connect(openAction, &QAction::triggered, this, &MainWin::_openDataDir);
     trayIconMenu->addAction(openAction);
 
@@ -70,15 +67,15 @@ void MainWin::_initTrayIcon()
     trayIconMenu->addAction(m_autoStartAction);
 #endif
 
-    QAction* restartAction = new QAction(tr("&Restart"), this);
+    QAction *restartAction = new QAction(tr("&Restart"), this);
     connect(restartAction, &QAction::triggered, this, &MainWin::_restart);
     trayIconMenu->addAction(restartAction);
 
-    QAction* aboutAction = new QAction(tr("&About..."), this);
+    QAction *aboutAction = new QAction(tr("&About..."), this);
     connect(aboutAction, &QAction::triggered, this, &MainWin::_about);
     trayIconMenu->addAction(aboutAction);
 
-    QAction* quitAction = new QAction(tr("&Quit"), this);
+    QAction *quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
     trayIconMenu->addAction(quitAction);
 
@@ -93,8 +90,7 @@ void MainWin::_initTrayIcon()
     m_trayIcon = trayIcon;
 }
 
-void MainWin::_recalcGeometryIfNeeded()
-{
+void MainWin::_recalcGeometryIfNeeded() {
     if (!m_needsRecalcGeometry || m_trayIcon == nullptr)
         return;
     m_needsRecalcGeometry = false;
@@ -105,13 +101,9 @@ void MainWin::_recalcGeometryIfNeeded()
 
     bool isTrayAtTop = trayGeometry.y() == 0;
     if (isTrayAtTop) {
-        setGeometry(trayGeometry.center().x() - w / 2,
-                    trayGeometry.bottom() + trayGeometry.height() / 4,
-                    w, h);
+        setGeometry(trayGeometry.center().x() - w / 2, trayGeometry.bottom() + trayGeometry.height() / 4, w, h);
     } else {
-        setGeometry(trayGeometry.center().x() - w / 2,
-                    trayGeometry.top() - trayGeometry.height() / 4 - h,
-                    w, h);
+        setGeometry(trayGeometry.center().x() - w / 2, trayGeometry.top() - trayGeometry.height() / 4 - h, w, h);
     }
 
     g_settings.setValue(SETTING_WIDTH, width());
@@ -122,14 +114,12 @@ void MainWin::_recalcGeometryIfNeeded()
 static const QString s_appNameInRun = "SomeNotes";
 static const QString s_runInReg = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
-static QString _nativeAppPath()
-{
+static QString _nativeAppPath() {
     QString path = QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
     return "\"" + path + "\""; // In case there are spaces in the path
 }
 
-bool MainWin::_isAutoStart()
-{
+bool MainWin::_isAutoStart() {
     QSettings runSettings(s_runInReg, QSettings::NativeFormat);
     bool contains = runSettings.contains(s_appNameInRun);
     if (contains && runSettings.value(s_appNameInRun).toString().compare(_nativeAppPath())) {
@@ -139,8 +129,7 @@ bool MainWin::_isAutoStart()
     return contains;
 }
 
-void MainWin::_autoStartChanged()
-{
+void MainWin::_autoStartChanged() {
     QSettings runSettings(s_runInReg, QSettings::NativeFormat);
     if (_isAutoStart())
         runSettings.remove(s_appNameInRun);
@@ -149,14 +138,12 @@ void MainWin::_autoStartChanged()
     _updateAutoStartIcon();
 }
 
-void MainWin::_updateAutoStartIcon()
-{
+void MainWin::_updateAutoStartIcon() {
     m_autoStartAction->setIcon(_isAutoStart() ? QIcon(":/images/checked.png") : QIcon(":/images/unchecked.png"));
 }
 #endif
 
-void MainWin::keyReleaseEvent(QKeyEvent *event)
-{
+void MainWin::keyReleaseEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Escape:
         hide();
@@ -194,20 +181,15 @@ void MainWin::keyReleaseEvent(QKeyEvent *event)
     QWidget::keyReleaseEvent(event);
 }
 
-void MainWin::closeEvent(QCloseEvent *event)
-{
+void MainWin::closeEvent(QCloseEvent *event) {
     hide();
     event->ignore();
 }
 
-void MainWin::_openDataDir()
-{
-    QDesktopServices::openUrl(QUrl::fromLocalFile(g_dataDir));
-}
+void MainWin::_openDataDir() { QDesktopServices::openUrl(QUrl::fromLocalFile(g_dataDir)); }
 
-void MainWin::_about()
-{
-    QDialog* dialog = new QDialog(this);
+void MainWin::_about() {
+    QDialog *dialog = new QDialog(this);
     Ui::About aboutUi;
     aboutUi.setupUi(dialog);
     dialog->show();
@@ -218,43 +200,31 @@ void MainWin::_about()
     size.setHeight(static_cast<int>(h));
     dialog->setFixedSize(size);
 
-    QScreen* screen = dialog->window()->windowHandle()->screen();
-    dialog->setGeometry(
-        QStyle::alignedRect(
-            Qt::LeftToRight,
-            Qt::AlignCenter,
-            dialog->size(),
-            screen->geometry()
-        )
-    );
+    QScreen *screen = dialog->window()->windowHandle()->screen();
+    dialog->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, dialog->size(), screen->geometry()));
 }
 
-void MainWin::_restart()
-{
+void MainWin::_restart() {
     qApp->quit();
     QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
 }
 
-void MainWin::_appear()
-{
+void MainWin::_appear() {
     show();
     raise();
     activateWindow();
 }
 
-void MainWin::iconActivated(QSystemTrayIcon::ActivationReason reason)
-{
+void MainWin::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     switch (reason) {
     case QSystemTrayIcon::DoubleClick:
         _appear();
         break;
-    default:
-        ;
+    default:;
     }
 }
 
-bool MainWin::event(QEvent *event)
-{
+bool MainWin::event(QEvent *event) {
     if (m_trayIcon && m_trayIcon->geometry() != m_trayGeo) {
         m_trayGeo = m_trayIcon->geometry();
         m_needsRecalcGeometry = true;
@@ -262,4 +232,3 @@ bool MainWin::event(QEvent *event)
     _recalcGeometryIfNeeded();
     return QWidget::event(event);
 }
-

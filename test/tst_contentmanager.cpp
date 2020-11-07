@@ -1,20 +1,18 @@
 #include "../src/contentmanager.h"
 #include "../src/noteblockcontent.h"
-#include <fstream>
 #include <QCoreApplication>
 #include <QtTest>
+#include <fstream>
 
-static const char* FILENAME = "tst_content.txt";
-static const char* BAKFILENAME = "tst_content.txt.bak";
-static const char* DELFILENAME = "tst_content.txt.del";
+static const char *FILENAME = "tst_content.txt";
+static const char *BAKFILENAME = "tst_content.txt.bak";
+static const char *DELFILENAME = "tst_content.txt.del";
 
-class TstContentManager : public QObject
-{
+class TstContentManager : public QObject {
     Q_OBJECT
 
 private slots:
-    void init()
-    {
+    void init() {
         remove(FILENAME);
         assert(!std::ifstream(FILENAME).good());
 
@@ -25,15 +23,13 @@ private slots:
         assert(!std::ifstream(DELFILENAME).good());
     }
 
-    void cleanup()
-    {
+    void cleanup() {
         remove(FILENAME);
         remove(BAKFILENAME);
         remove(DELFILENAME);
     }
 
-    void test_case_read()
-    {
+    void test_case_read() {
         // Make file
         QFile file(FILENAME);
         file.open(QIODevice::WriteOnly);
@@ -47,9 +43,8 @@ private slots:
         QCOMPARE(mgr.getContent(1)->getText(), "the second note");
     }
 
-    void test_case_write()
-    {
-        ContentManager* mgr = new ContentManager(FILENAME);
+    void test_case_write() {
+        ContentManager *mgr = new ContentManager(FILENAME);
         QCOMPARE(mgr->getContentCount(), 0u);
 
         const QString text0 = "hello, world\nsecond line\n";
@@ -70,9 +65,8 @@ private slots:
         delete mgr;
     }
 
-    void test_case_backup()
-    {
-        ContentManager* mgr = new ContentManager(FILENAME);
+    void test_case_backup() {
+        ContentManager *mgr = new ContentManager(FILENAME);
 
         const QString content = "ccc";
         mgr->newContent()->setText(content);
@@ -87,9 +81,8 @@ private slots:
         delete mgr;
     }
 
-    void test_case_crud()
-    {
-        ContentManager* mgr = new ContentManager(FILENAME);
+    void test_case_crud() {
+        ContentManager *mgr = new ContentManager(FILENAME);
         QCOMPARE(mgr->getContentCount(), 0u);
 
         mgr->newContent()->setText("aaaa");
@@ -105,8 +98,8 @@ private slots:
         QCOMPARE(mgr->getContent(1)->getText(), "BBBB");
 
         QCOMPARE(mgr->deleteContent(nullptr), false);
-        QCOMPARE(mgr->deleteContent(reinterpret_cast<NoteBlockContent*>(0x87654321)), false);
-        NoteBlockContent* content1 = mgr->getContent(1);
+        QCOMPARE(mgr->deleteContent(reinterpret_cast<NoteBlockContent *>(0x87654321)), false);
+        NoteBlockContent *content1 = mgr->getContent(1);
         QCOMPARE(mgr->deleteContent(content1), true);
         QCOMPARE(mgr->deleteContent(content1), false);
         QCOMPARE(mgr->getContentCount(), 2u);
@@ -124,8 +117,7 @@ private slots:
         delete mgr;
     }
 
-    void test_case_broken_file()
-    {
+    void test_case_broken_file() {
         // Make file
         QFile file(FILENAME);
         file.open(QIODevice::WriteOnly);
@@ -138,11 +130,10 @@ private slots:
         QVERIFY(mgr.getContent(0)->getText().startsWith("File is broken"));
     }
 
-    void test_case_delete()
-    {
-        ContentManager* mgr = new ContentManager(FILENAME);
+    void test_case_delete() {
+        ContentManager *mgr = new ContentManager(FILENAME);
 
-        NoteBlockContent* content = mgr->newContent();
+        NoteBlockContent *content = mgr->newContent();
         content->setText("first note");
         mgr->deleteContent(content);
 
@@ -153,7 +144,7 @@ private slots:
         QFile delFile(DELFILENAME);
         delFile.open(QIODevice::ReadOnly);
         QTextStream ts(&delFile);
-        const QString& s = ts.readAll();
+        const QString &s = ts.readAll();
         qInfo() << "File content: \n" << s;
         QVERIFY(s.contains("----"));
         QVERIFY(s.contains("Deleted"));

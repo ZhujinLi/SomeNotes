@@ -1,19 +1,20 @@
 #ifndef NOTEBLOCKCONTENT_H
 #define NOTEBLOCKCONTENT_H
 
+#include <QString>
+
 class ContentManager;
 
-class NoteBlockContent
-{
+class NoteBlockContent {
 public:
-    NoteBlockContent(ContentManager* mgr);
-    NoteBlockContent(ContentManager* mgr, const QString& text);
+    NoteBlockContent(ContentManager *mgr);
+    NoteBlockContent(ContentManager *mgr, const QString &text);
 
-    void setText(const QString& text);
-    const QString& getText() { return m_text; }
+    void setText(const QString &text);
+    const QString &getText() { return m_text; }
 
 private:
-    ContentManager* m_mgr;
+    ContentManager *m_mgr;
     QString m_text;
 };
 
