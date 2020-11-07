@@ -25,28 +25,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
-    mainwin.cpp \
-    noteblock.cpp \
-    noteblockcontent.cpp \
-    pch.cpp \
-        somenotes.cpp \
-    contentmanager.cpp
+    src/main.cpp \
+    src/mainwin.cpp \
+    src/noteblock.cpp \
+    src/noteblockcontent.cpp \
+    src/pch.cpp \
+    src/somenotes.cpp \
+    src/contentmanager.cpp
 
 CONFIG += precompile_header
-PRECOMPILED_HEADER = pch.h
+PRECOMPILED_HEADER = src/pch.h
 
 HEADERS += \
-    mainwin.h \
-    noteblock.h \
-    noteblockcontent.h \
-    pch.h \
-        somenotes.h \
-    contentmanager.h
+    src/mainwin.h \
+    src/noteblock.h \
+    src/noteblockcontent.h \
+    src/pch.h \
+    src/somenotes.h \
+    src/contentmanager.h
 
 FORMS += \
-        about.ui \
-        noteblock.ui
+    src/about.ui \
+    src/noteblock.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

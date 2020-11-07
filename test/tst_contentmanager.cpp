@@ -1,8 +1,8 @@
-#include <QtTest>
-#include <QCoreApplication>
+#include "../src/contentmanager.h"
+#include "../src/noteblockcontent.h"
 #include <fstream>
-#include "../contentmanager.h"
-#include "../noteblockcontent.h"
+#include <QCoreApplication>
+#include <QtTest>
 
 static const char* FILENAME = "tst_content.txt";
 static const char* BAKFILENAME = "tst_content.txt.bak";
