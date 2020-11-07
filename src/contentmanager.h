@@ -1,5 +1,6 @@
 #ifndef CONTENTMANAGER_H
 #define CONTENTMANAGER_H
+#include <vector>
 #include <QString>
 
 class NoteBlockContent;
