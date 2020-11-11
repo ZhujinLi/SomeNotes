@@ -1,6 +1,7 @@
-#include "noteblockcontent.h"
-#include "contentmanager.h"
 #include "pch.h"
+
+#include "contentmanager.h"
+#include "noteblockcontent.h"
 
 NoteBlockContent::NoteBlockContent(ContentManager *mgr) : m_mgr(mgr) {}
 

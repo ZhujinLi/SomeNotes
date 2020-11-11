@@ -12,9 +12,6 @@ public:
     explicit SomeNotes(QWidget *parent = nullptr);
     ~SomeNotes() override;
 
-public slots:
-    void backup();
-
 private slots:
     void onCommitDataRequest() { m_mgr.save(); }
     void placeholderTextChanged();

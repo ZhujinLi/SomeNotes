@@ -1,5 +1,6 @@
-#include "somenotes.h"
 #include "pch.h"
+
+#include "somenotes.h"
 #include <QCloseEvent>
 #include <QCoreApplication>
 #include <QLayout>
@@ -70,8 +71,6 @@ NoteBlock *SomeNotes::_findOverlappingNoteBlock(NoteBlock *query) {
 
     return nullptr;
 }
-
-void SomeNotes::backup() { m_mgr.backup(); }
 
 void SomeNotes::placeholderTextChanged() {
     const QString &text = m_placeholder->toPlainText();

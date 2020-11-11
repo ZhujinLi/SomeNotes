@@ -28,7 +28,6 @@ private:
 
     void _openDataDir();
     void _about();
-    void _restart();
     void _appear();
     void _initTrayIcon();
     void _recalcGeometryIfNeeded();

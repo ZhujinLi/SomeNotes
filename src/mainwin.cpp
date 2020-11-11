@@ -1,6 +1,7 @@
-#include "mainwin.h"
 #include "pch.h"
 
+#include "mainwin.h"
+#include "ui_about.h"
 #include <QDesktopServices>
 #include <QDesktopWidget>
 #include <QDir>
@@ -11,7 +12,6 @@
 #include <QStyle>
 #include <QVBoxLayout>
 #include <QWindow>
-#include <ui_about.h>
 
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
@@ -52,10 +52,6 @@ void MainWin::_initTrayIcon() {
     connect(showAction, &QAction::triggered, this, &MainWin::_appear);
     trayIconMenu->addAction(showAction);
 
-    QAction *backupAction = new QAction(tr("&Backup"), this);
-    connect(backupAction, &QAction::triggered, m_someNotes, &SomeNotes::backup);
-    trayIconMenu->addAction(backupAction);
-
     QAction *openAction = new QAction(tr("&Open data directory..."), this);
     connect(openAction, &QAction::triggered, this, &MainWin::_openDataDir);
     trayIconMenu->addAction(openAction);
@@ -66,10 +62,6 @@ void MainWin::_initTrayIcon() {
     connect(m_autoStartAction, &QAction::triggered, this, &MainWin::_autoStartChanged);
     trayIconMenu->addAction(m_autoStartAction);
 #endif
-
-    QAction *restartAction = new QAction(tr("&Restart"), this);
-    connect(restartAction, &QAction::triggered, this, &MainWin::_restart);
-    trayIconMenu->addAction(restartAction);
 
     QAction *aboutAction = new QAction(tr("&About..."), this);
     connect(aboutAction, &QAction::triggered, this, &MainWin::_about);
@@ -202,11 +194,6 @@ void MainWin::_about() {
 
     QScreen *screen = dialog->window()->windowHandle()->screen();
     dialog->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, dialog->size(), screen->geometry()));
-}
-
-void MainWin::_restart() {
-    qApp->quit();
-    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
 }
 
 void MainWin::_appear() {

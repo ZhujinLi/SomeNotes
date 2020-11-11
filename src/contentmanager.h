@@ -21,8 +21,6 @@ public:
 
     void save();
 
-    void backup();
-
     void notifyContentChange();
 
 private:

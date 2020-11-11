@@ -1,7 +1,7 @@
-#include "contentmanager.h"
-#include "noteblockcontent.h"
 #include "pch.h"
 
+#include "contentmanager.h"
+#include "noteblockcontent.h"
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -108,14 +108,6 @@ void ContentManager::save() {
 
     m_changeCount = 0;
     qInfo() << "Content saved.";
-}
-
-void ContentManager::backup() {
-    save();
-
-    QString bakFileName = m_filename + ".bak";
-    QFile::remove(bakFileName);
-    QFile::copy(m_filename, bakFileName);
 }
 
 void ContentManager::notifyContentChange() {

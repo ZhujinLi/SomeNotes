@@ -5,7 +5,6 @@
 #include <fstream>
 
 static const char *FILENAME = "tst_content.txt";
-static const char *BAKFILENAME = "tst_content.txt.bak";
 static const char *DELFILENAME = "tst_content.txt.del";
 
 class TstContentManager : public QObject {
@@ -16,16 +15,12 @@ private slots:
         remove(FILENAME);
         assert(!std::ifstream(FILENAME).good());
 
-        remove(BAKFILENAME);
-        assert(!std::ifstream(BAKFILENAME).good());
-
         remove(DELFILENAME);
         assert(!std::ifstream(DELFILENAME).good());
     }
 
     void cleanup() {
         remove(FILENAME);
-        remove(BAKFILENAME);
         remove(DELFILENAME);
     }
 
@@ -62,22 +57,6 @@ private slots:
         QCOMPARE(mgr->getContentCount(), 2u);
         QCOMPARE(mgr->getContent(0)->getText(), text0);
         QCOMPARE(mgr->getContent(1)->getText(), text1);
-        delete mgr;
-    }
-
-    void test_case_backup() {
-        ContentManager *mgr = new ContentManager(FILENAME);
-
-        const QString content = "ccc";
-        mgr->newContent()->setText(content);
-        mgr->backup();
-
-        QFile bakFile(BAKFILENAME);
-        bakFile.open(QIODevice::ReadOnly);
-        QTextStream ts(&bakFile);
-        QCOMPARE(ts.readAll(), "[\n    \"ccc\"\n]\n");
-        bakFile.close();
-
         delete mgr;
     }
 
