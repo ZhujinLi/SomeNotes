@@ -24,12 +24,11 @@ private slots:
         remove(DELFILENAME);
     }
 
-    void test_case_read() {
+    void readsAndParsesContentFile() {
         // Make file
         QFile file(FILENAME);
         file.open(QIODevice::WriteOnly);
-        QTextStream ts(&file);
-        ts << "[\"hello, world\\nthis is the content\", \"the second note\"]";
+        QTextStream(&file) << "[\"hello, world\\nthis is the content\", \"the second note\"]";
         file.close();
 
         ContentManager mgr(FILENAME);
@@ -38,7 +37,7 @@ private slots:
         QCOMPARE(mgr.getContent(1)->getText(), "the second note");
     }
 
-    void test_case_write() {
+    void writesNotesToContentFile() {
         ContentManager *mgr = new ContentManager(FILENAME);
         QCOMPARE(mgr->getContentCount(), 0u);
 
@@ -60,7 +59,7 @@ private slots:
         delete mgr;
     }
 
-    void test_case_crud() {
+    void handlesCRUD() {
         ContentManager *mgr = new ContentManager(FILENAME);
         QCOMPARE(mgr->getContentCount(), 0u);
 
@@ -96,12 +95,11 @@ private slots:
         delete mgr;
     }
 
-    void test_case_broken_file() {
-        // Make file
+    void generatesMessageForBrokenContentFile() {
+        // Make file with invalid format
         QFile file(FILENAME);
         file.open(QIODevice::WriteOnly);
-        QTextStream ts(&file);
-        ts << "[\"hello, world\\nthis is the content\", \"the second note\"";
+        QTextStream(&file) << "[\"hello, world\\nthis is the content\", \"the second note\"";
         file.close();
 
         ContentManager mgr(FILENAME);
@@ -109,28 +107,51 @@ private slots:
         QVERIFY(mgr.getContent(0)->getText().startsWith("File is broken"));
     }
 
-    void test_case_delete() {
+    void handlesDeletion() {
         ContentManager *mgr = new ContentManager(FILENAME);
 
         NoteBlockContent *content = mgr->newContent();
-        content->setText("first note");
-        mgr->deleteContent(content);
-
-        content = mgr->newContent();
-        content->setText("second note");
+        content->setText("some texts to be deleted");
         mgr->deleteContent(content);
 
         QFile delFile(DELFILENAME);
         delFile.open(QIODevice::ReadOnly);
         QTextStream ts(&delFile);
         const QString &s = ts.readAll();
-        qInfo() << "File content: \n" << s;
         QVERIFY(s.contains("----"));
         QVERIFY(s.contains("Deleted"));
-        QVERIFY(s.contains("first note"));
-        QVERIFY(s.contains("second note"));
+        QVERIFY(s.contains("some texts to be deleted"));
         delFile.close();
 
+        delete mgr;
+    }
+
+    void putsNewlyDeletedContentOnTop() {
+        ContentManager *mgr = new ContentManager(FILENAME);
+
+        NoteBlockContent *content1 = mgr->newContent();
+        content1->setText("first note");
+
+        NoteBlockContent *content2 = mgr->newContent();
+        content2->setText("second note");
+
+        mgr->deleteContent(content1);
+        mgr->deleteContent(content2);
+
+        QFile delFile(DELFILENAME);
+        delFile.open(QIODevice::ReadOnly);
+        QTextStream ts(&delFile);
+        const QString &s = ts.readAll();
+
+        int pos1 = s.indexOf("first note");
+        QVERIFY(pos1 != -1);
+
+        int pos2 = s.indexOf("second note");
+        QVERIFY(pos2 != -1);
+
+        QVERIFY(pos2 < pos1);
+
+        delFile.close();
         delete mgr;
     }
 };

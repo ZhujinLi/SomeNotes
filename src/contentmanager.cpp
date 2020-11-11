@@ -63,10 +63,17 @@ NoteBlockContent *ContentManager::_newContent(const QString &text) {
 void ContentManager::_saveDeletedText(const QString &text) {
     QString delFileName = m_filename + ".del";
     QFile f(delFileName);
-    f.open(QIODevice::Append);
-    QTextStream ts(&f);
-    ts << "-------- Deleted at " << QDateTime::currentDateTime().toString() << " --------\n";
-    ts << text << "\n";
+    f.open(QIODevice::ReadWrite);
+
+    QByteArray fileContent = f.readAll();
+
+    QString textWithLabel;
+    QTextStream(&textWithLabel) << "-------- Deleted at " << QDateTime::currentDateTime().toString() << " --------\n"
+                                << text << "\n";
+    fileContent.insert(0, textWithLabel.toUtf8());
+
+    f.resize(0);
+    f.write(fileContent);
     f.close();
 
     m_changeCount = 0;
