@@ -6,10 +6,9 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 
-ContentManager::ContentManager() : ContentManager(g_dataDir + "/content.txt") {}
-
-ContentManager::ContentManager(const QString &filename) : m_filename(filename), m_changeCount(0) {
-    QFile f(filename);
+ContentManager::ContentManager(const QString &fileName, const QString &trashFileName)
+    : m_fileName(fileName), m_trashFileName(trashFileName), m_changeCount(0) {
+    QFile f(fileName);
     f.open(QIODevice::ReadOnly);
 
     QTextStream ts(&f);
@@ -60,15 +59,14 @@ NoteBlockContent *ContentManager::_newContent(const QString &text) {
     return content;
 }
 
-void ContentManager::_saveDeletedText(const QString &text) {
-    QString delFileName = m_filename + ".del";
-    QFile f(delFileName);
+void ContentManager::_saveTextToTrash(const QString &text) {
+    QFile f(m_trashFileName);
     f.open(QIODevice::ReadWrite);
 
     QByteArray fileContent = f.readAll();
 
     QString textWithLabel;
-    QTextStream(&textWithLabel) << "-------- Deleted at " << QDateTime::currentDateTime().toString() << " --------\n"
+    QTextStream(&textWithLabel) << "-------- Trashed at " << QDateTime::currentDateTime().toString() << " --------\n"
                                 << text << "\n";
     fileContent.insert(0, textWithLabel.toUtf8());
 
@@ -77,15 +75,15 @@ void ContentManager::_saveDeletedText(const QString &text) {
     f.close();
 
     m_changeCount = 0;
-    qInfo() << "Content deleted.";
+    qInfo() << "Content trashed.";
 }
 
-bool ContentManager::deleteContent(NoteBlockContent *content) {
+bool ContentManager::trashContent(NoteBlockContent *content) {
     size_t index = _findIndex(content);
     if (index != SIZE_MAX) {
         const QString &text = content->getText();
         if (!text.isEmpty()) {
-            _saveDeletedText(text);
+            _saveTextToTrash(text);
         }
 
         m_contents.erase(m_contents.begin() + static_cast<int>(index));
@@ -111,7 +109,7 @@ void ContentManager::save() {
 
     QJsonDocument doc(arr);
 
-    QFile f(m_filename);
+    QFile f(m_fileName);
     f.open(QIODevice::WriteOnly);
     QTextStream ts(&f);
     ts << doc.toJson();

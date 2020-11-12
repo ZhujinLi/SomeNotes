@@ -6,7 +6,7 @@
 #include <QLayout>
 #include <QTimer>
 
-SomeNotes::SomeNotes(QWidget *parent) : QWidget(parent) {
+SomeNotes::SomeNotes(QWidget *parent) : QWidget(parent), m_mgr(g_dataDir + "/content.txt", g_dataDir + "/trash.txt") {
     setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
     _setBgColor(SOMENOTES_BG_COLOR);
@@ -47,7 +47,7 @@ void SomeNotes::_focusToNoteBlock(QPlainTextEdit *noteBlock) {
 
 NoteBlock *SomeNotes::_addNoteBlock(NoteBlockContent *content) {
     NoteBlock *noteBlock = new NoteBlock(content, this);
-    connect(noteBlock, &NoteBlock::noteDeleted, this, &SomeNotes::onNoteBlockNoteDeleted);
+    connect(noteBlock, &NoteBlock::noteTrashed, this, &SomeNotes::onNoteBlockNoteTrashed);
     connect(noteBlock, &NoteBlock::trySwap, this, &SomeNotes::onNoteBlockTryMove);
     connect(noteBlock, &NoteBlock::dragProgress, this, &SomeNotes::onNoteBlockDragProgress);
     connect(noteBlock, &NoteBlock::dragReset, this, &SomeNotes::onNoteBlockDragReset);
@@ -90,14 +90,14 @@ void SomeNotes::placeholderTextChanged() {
     }
 }
 
-void SomeNotes::onNoteBlockNoteDeleted(NoteBlock *noteBlock) {
+void SomeNotes::onNoteBlockNoteTrashed(NoteBlock *noteBlock) {
     for (size_t i = 0; i < m_noteBlocks.size(); i++)
         if (m_noteBlocks[i] == noteBlock) {
             layout()->removeWidget(noteBlock);
             m_noteBlocks.erase(m_noteBlocks.begin() + static_cast<int>(i));
             NoteBlockContent *content = noteBlock->getContent();
             delete noteBlock;
-            m_mgr.deleteContent(content);
+            m_mgr.trashContent(content);
             return;
         }
 }
@@ -118,11 +118,11 @@ static qreal _qreal_lerp(qreal a, qreal b, qreal ratio) { return a * (1 - ratio)
 
 void SomeNotes::onNoteBlockDragProgress(bool isVertical, qreal progress, NoteBlock *noteBlock) {
     if (!isVertical && progress < -DRAG_THRESHOLD) {
-        _setBgColor(SOMENOTES_DEL_COLOR);
+        _setBgColor(SOMENOTES_TRASH_COLOR);
         noteBlock->enableHighlight(true);
     } else if (!isVertical && progress < 0) {
         QColor from = SOMENOTES_BG_COLOR;
-        QColor to = SOMENOTES_DEL_COLOR;
+        QColor to = SOMENOTES_TRASH_COLOR;
         qreal ratio = -progress / DRAG_THRESHOLD * 0.5;
         QColor res =
             QColor::fromRgbF(_qreal_lerp(from.redF(), to.redF(), ratio), _qreal_lerp(from.greenF(), to.greenF(), ratio),

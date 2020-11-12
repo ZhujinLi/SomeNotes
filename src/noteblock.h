@@ -21,7 +21,7 @@ public:
     void enableHighlight(bool enable);
 
 signals:
-    void noteDeleted(NoteBlock *o);
+    void noteTrashed(NoteBlock *o);
     void trySwap(NoteBlock *o);
     void dragProgress(bool isVertical, qreal progress, NoteBlock *o);
     void dragReset();
@@ -42,7 +42,7 @@ private:
     enum DragState { DragState_none, DragState_dragging };
     DragState m_dragState;
 
-    enum DragResult { DragResult_none, DragResult_unknown, DragResult_deleted };
+    enum DragResult { DragResult_none, DragResult_unknown, DragResult_trashed };
 
     DragResult _endDragging();
 

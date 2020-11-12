@@ -55,9 +55,9 @@ NoteBlock::DragResult NoteBlock::_endDragging() {
 
     if (m_dragDir == DragDir::DragDir_horizontal) {
         int dx = geometry().x() - m_dragStartGeoPos.x();
-        if (dx < -geometry().width() * DRAG_THRESHOLD) { // delete
-            emit noteDeleted(this);
-            return DragResult_deleted;
+        if (dx < -geometry().width() * DRAG_THRESHOLD) { // Trash
+            emit noteTrashed(this);
+            return DragResult_trashed;
         }
     } else {
         emit trySwap(this);
@@ -142,7 +142,7 @@ NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : QPlainTextEdit(par
 NoteBlockPlaceholder::~NoteBlockPlaceholder() { delete ui; }
 
 void NoteBlock::mouseReleaseEvent(QMouseEvent *event) {
-    if (_endDragging() == DragResult_deleted)
+    if (_endDragging() == DragResult_trashed)
         return;
     QPlainTextEdit::mouseReleaseEvent(event);
 }
