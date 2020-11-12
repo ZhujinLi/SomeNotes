@@ -154,6 +154,32 @@ private slots:
         delFile.close();
         delete mgr;
     }
+
+    void doesNotDeleteEmptyContent() {
+        ContentManager *mgr = new ContentManager(FILENAME);
+
+        NoteBlockContent *content1 = mgr->newContent();
+        content1->setText("first note");
+        mgr->deleteContent(content1);
+
+        QFile delFile1(DELFILENAME);
+        delFile1.open(QIODevice::ReadOnly);
+        QString s1 = QTextStream(&delFile1).readAll();
+        delFile1.close();
+
+        NoteBlockContent *content2 = mgr->newContent();
+        content2->setText("");
+        mgr->deleteContent(content2);
+
+        QFile delFile2(DELFILENAME);
+        delFile2.open(QIODevice::ReadOnly);
+        QString s2 = QTextStream(&delFile2).readAll();
+        delFile2.close();
+
+        QCOMPARE(s1, s2);
+
+        delete mgr;
+    }
 };
 
 QTEST_MAIN(TstContentManager)

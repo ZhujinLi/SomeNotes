@@ -77,13 +77,17 @@ void ContentManager::_saveDeletedText(const QString &text) {
     f.close();
 
     m_changeCount = 0;
-    qInfo() << "Content saved.";
+    qInfo() << "Content deleted.";
 }
 
 bool ContentManager::deleteContent(NoteBlockContent *content) {
     size_t index = _findIndex(content);
     if (index != SIZE_MAX) {
-        _saveDeletedText(content->getText());
+        const QString &text = content->getText();
+        if (!text.isEmpty()) {
+            _saveDeletedText(text);
+        }
+
         m_contents.erase(m_contents.begin() + static_cast<int>(index));
         delete content;
         save();
