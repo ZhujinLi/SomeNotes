@@ -26,7 +26,7 @@ private:
     SomeNotes *m_someNotes;
     QRect m_trayGeo;
 
-    void _openDataDir();
+    void _gotoTrashFile();
     void _about();
     void _appear();
     void _initTrayIcon();

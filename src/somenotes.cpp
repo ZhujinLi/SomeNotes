@@ -6,7 +6,7 @@
 #include <QLayout>
 #include <QTimer>
 
-SomeNotes::SomeNotes(QWidget *parent) : QWidget(parent), m_mgr(g_dataDir + "/content.txt", g_dataDir + "/trash.txt") {
+SomeNotes::SomeNotes(QWidget *parent) : QWidget(parent), m_mgr(CONTENT_PATH(), TRASH_PATH()) {
     setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
     _setBgColor(SOMENOTES_BG_COLOR);

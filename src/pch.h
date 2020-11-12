@@ -25,4 +25,7 @@ static const qreal DRAG_THRESHOLD = 0.75;
 
 inline bool IS_AUX_KEY_DOWN(Qt::KeyboardModifier key) { return QApplication::keyboardModifiers().testFlag(key); }
 
+inline QString CONTENT_PATH() { return g_dataDir + "/content.txt"; }
+inline QString TRASH_PATH() { return g_dataDir + "/trash.txt"; }
+
 #endif // PCH_H

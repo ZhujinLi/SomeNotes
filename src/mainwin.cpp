@@ -52,9 +52,9 @@ void MainWin::_initTrayIcon() {
     connect(showAction, &QAction::triggered, this, &MainWin::_appear);
     trayIconMenu->addAction(showAction);
 
-    QAction *openAction = new QAction(tr("&Open data directory..."), this);
-    connect(openAction, &QAction::triggered, this, &MainWin::_openDataDir);
-    trayIconMenu->addAction(openAction);
+    QAction *trashAction = new QAction(tr("&Trash"), this);
+    connect(trashAction, &QAction::triggered, this, &MainWin::_gotoTrashFile);
+    trayIconMenu->addAction(trashAction);
 
 #ifdef Q_OS_WIN
     m_autoStartAction = new QAction(tr("&Run at startup"), this);
@@ -178,7 +178,7 @@ void MainWin::closeEvent(QCloseEvent *event) {
     event->ignore();
 }
 
-void MainWin::_openDataDir() { QDesktopServices::openUrl(QUrl::fromLocalFile(g_dataDir)); }
+void MainWin::_gotoTrashFile() { QDesktopServices::openUrl(QUrl::fromLocalFile(TRASH_PATH())); }
 
 void MainWin::_about() {
     QDialog *dialog = new QDialog(this);
