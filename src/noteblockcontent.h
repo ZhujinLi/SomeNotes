@@ -1,5 +1,4 @@
-#ifndef NOTEBLOCKCONTENT_H
-#define NOTEBLOCKCONTENT_H
+#pragma once
 
 #include <QString>
 
@@ -17,5 +16,3 @@ private:
     ContentManager *m_mgr;
     QString m_text;
 };
-
-#endif // NOTEBLOCKCONTENT_H

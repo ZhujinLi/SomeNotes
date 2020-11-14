@@ -1,5 +1,5 @@
-#ifndef CONTENTMANAGER_H
-#define CONTENTMANAGER_H
+#pragma once
+
 #include <QString>
 #include <vector>
 
@@ -32,5 +32,3 @@ private:
     NoteBlockContent *_newContent(const QString &text);
     void _saveTextToTrash(const QString &text);
 };
-
-#endif // CONTENTMANAGER_H

@@ -26,8 +26,8 @@ MainWin::MainWin() : QWidget(nullptr), m_trayIcon(nullptr) {
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
     layout()->addWidget(scrollArea);
 
-    m_someNotes = new SomeNotes(scrollArea);
-    scrollArea->setWidget(m_someNotes);
+    m_notesView = new NotesView(scrollArea);
+    scrollArea->setWidget(m_notesView);
 
     _initTrayIcon();
 
@@ -72,7 +72,7 @@ void MainWin::_initTrayIcon() {
 
     trayIcon->setContextMenu(trayIconMenu);
 
-    connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWin::iconActivated);
+    connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWin::_onIconActivated);
 
     m_trayGeo = trayIcon->geometry();
 
@@ -201,7 +201,7 @@ void MainWin::_appear() {
     activateWindow();
 }
 
-void MainWin::iconActivated(QSystemTrayIcon::ActivationReason reason) {
+void MainWin::_onIconActivated(QSystemTrayIcon::ActivationReason reason) {
     switch (reason) {
     case QSystemTrayIcon::DoubleClick:
         _appear();

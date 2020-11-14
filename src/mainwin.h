@@ -1,26 +1,24 @@
+#pragma once
 
-#ifndef MAINWIN_H
-#define MAINWIN_H
-
-#include "somenotes.h"
+#include "notesview.h"
 #include <QSystemTrayIcon>
 #include <QWidget>
 
 class MainWin : public QWidget {
     Q_OBJECT
+
 public:
     MainWin();
 
-signals:
-
-protected:
-    void closeEvent(QCloseEvent *event) override;
-
 private:
     QSystemTrayIcon *m_trayIcon;
+    NotesView *m_notesView;
     bool m_needsRecalcGeometry;
-    SomeNotes *m_someNotes;
     QRect m_trayGeo;
+
+    virtual bool event(QEvent *event) override;
+    virtual void closeEvent(QCloseEvent *event) override;
+    virtual void keyReleaseEvent(QKeyEvent *event) override;
 
     void _gotoTrashFile();
     void _about();
@@ -37,15 +35,5 @@ private:
 #endif
 
 private slots:
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
-
-    // QWidget interface
-protected:
-    void keyReleaseEvent(QKeyEvent *event) override;
-
-    // QObject interface
-public:
-    bool event(QEvent *event) override;
+    void _onIconActivated(QSystemTrayIcon::ActivationReason reason);
 };
-
-#endif // MAINWIN_H

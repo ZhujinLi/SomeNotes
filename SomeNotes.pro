@@ -30,16 +30,16 @@ SOURCES += \
     src/noteblock.cpp \
     src/noteblockcontent.cpp \
     src/common.cpp \
-    src/somenotes.cpp \
-    src/contentmanager.cpp
+    src/contentmanager.cpp \
+    src/notesview.cpp
 
 HEADERS += \
     src/mainwin.h \
     src/noteblock.h \
     src/noteblockcontent.h \
     src/common.h \
-    src/somenotes.h \
-    src/contentmanager.h
+    src/contentmanager.h \
+    src/notesview.h
 
 FORMS += \
     src/about.ui \

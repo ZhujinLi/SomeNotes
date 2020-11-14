@@ -1,5 +1,4 @@
-#ifndef COMMON_H
-#define COMMON_H
+#pragma once
 
 #include <QApplication>
 #include <QColor>
@@ -25,5 +24,3 @@ inline bool IS_AUX_KEY_DOWN(Qt::KeyboardModifier key) { return QApplication::key
 
 inline QString CONTENT_PATH() { return g_dataDir + "/content.txt"; }
 inline QString TRASH_PATH() { return g_dataDir + "/trash.txt"; }
-
-#endif // COMMON_H

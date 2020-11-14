@@ -1,6 +1,4 @@
-
-#ifndef NOTEBLOCK_H
-#define NOTEBLOCK_H
+#pragma once
 
 #include "noteblockcontent.h"
 #include <QPlainTextEdit>
@@ -11,9 +9,10 @@ class NoteBlock;
 
 class NoteBlock : public QPlainTextEdit {
     Q_OBJECT
+
 public:
     explicit NoteBlock(NoteBlockContent *content, QWidget *parent);
-    ~NoteBlock() override;
+    virtual ~NoteBlock() override;
 
     NoteBlockContent *getContent() { return m_content; }
 
@@ -25,6 +24,9 @@ signals:
     void trySwap(NoteBlock *o);
     void dragProgress(bool isVertical, qreal progress, NoteBlock *o);
     void dragReset();
+
+public slots:
+    void on_NoteBlock_textChanged();
 
 private:
     Ui::NoteBlock *ui;
@@ -48,42 +50,20 @@ private:
 
     qreal _heightOfRows(qreal rows) const;
 
-    // QWidget interface
-protected:
-    void mousePressEvent(QMouseEvent *event) override;
-
-    // QWidget interface
-protected:
-    void mouseMoveEvent(QMouseEvent *event) override;
-
-    // QWidget interface
-protected:
-    void keyReleaseEvent(QKeyEvent *event) override;
-
-private slots:
-    void on_NoteBlock_textChanged();
-
-    // QWidget interface
-protected:
-    void mouseReleaseEvent(QMouseEvent *event) override;
-
-    // QWidget interface
-public:
-    QSize sizeHint() const override;
-
-    // QWidget interface
-public:
-    QSize minimumSizeHint() const override;
+    virtual void mousePressEvent(QMouseEvent *event) override;
+    virtual void mouseMoveEvent(QMouseEvent *event) override;
+    virtual void mouseReleaseEvent(QMouseEvent *event) override;
+    virtual void keyReleaseEvent(QKeyEvent *event) override;
+    virtual QSize sizeHint() const override;
+    virtual QSize minimumSizeHint() const override;
 };
 
 class NoteBlockPlaceholder : public QPlainTextEdit {
     Q_OBJECT
 public:
     explicit NoteBlockPlaceholder(QWidget *parent);
-    ~NoteBlockPlaceholder() override;
+    virtual ~NoteBlockPlaceholder() override;
 
 private:
     Ui::NoteBlock *ui;
 };
-
-#endif // NOTEBLOCK_H

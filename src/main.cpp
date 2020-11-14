@@ -1,6 +1,6 @@
 #include "common.h"
 #include "mainwin.h"
-#include "somenotes.h"
+#include "notesview.h"
 #include <QApplication>
 #include <QDir>
 #include <QMainWindow>
