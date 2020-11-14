@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "common.h"
 
 QString g_dataDir;
 

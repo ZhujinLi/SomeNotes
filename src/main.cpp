@@ -1,5 +1,4 @@
-#include "pch.h"
-
+#include "common.h"
 #include "mainwin.h"
 #include "somenotes.h"
 #include <QApplication>

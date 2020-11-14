@@ -1,6 +1,5 @@
-#include "pch.h"
-
 #include "mainwin.h"
+#include "common.h"
 #include "ui_about.h"
 #include <QDesktopServices>
 #include <QDesktopWidget>

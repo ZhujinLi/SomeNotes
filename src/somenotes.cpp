@@ -1,6 +1,5 @@
-#include "pch.h"
-
 #include "somenotes.h"
+#include "common.h"
 #include <QCloseEvent>
 #include <QCoreApplication>
 #include <QLayout>

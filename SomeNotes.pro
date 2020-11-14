@@ -29,18 +29,15 @@ SOURCES += \
     src/mainwin.cpp \
     src/noteblock.cpp \
     src/noteblockcontent.cpp \
-    src/pch.cpp \
+    src/common.cpp \
     src/somenotes.cpp \
     src/contentmanager.cpp
-
-CONFIG += precompile_header
-PRECOMPILED_HEADER = src/pch.h
 
 HEADERS += \
     src/mainwin.h \
     src/noteblock.h \
     src/noteblockcontent.h \
-    src/pch.h \
+    src/common.h \
     src/somenotes.h \
     src/contentmanager.h
 

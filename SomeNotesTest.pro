@@ -7,4 +7,3 @@ TEMPLATE = app
 SOURCES +=  test/tst_contentmanager.cpp \
     src/contentmanager.cpp \
     src/noteblockcontent.cpp \
-    src/pch.cpp

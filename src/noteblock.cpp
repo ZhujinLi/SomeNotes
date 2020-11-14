@@ -1,5 +1,5 @@
 #include "noteblock.h"
-#include "pch.h"
+#include "common.h"
 #include "ui_noteblock.h"
 #include <QScrollBar>
 
