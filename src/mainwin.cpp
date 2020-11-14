@@ -16,7 +16,7 @@
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
 
-MainWin::MainWin(QWidget *parent) : QWidget(parent), m_trayIcon(nullptr) {
+MainWin::MainWin() : QWidget(nullptr), m_trayIcon(nullptr) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
     setLayout(new QVBoxLayout(this));

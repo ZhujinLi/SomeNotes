@@ -12,7 +12,7 @@ class NoteBlock;
 class NoteBlock : public QPlainTextEdit {
     Q_OBJECT
 public:
-    explicit NoteBlock(NoteBlockContent *content, QWidget *parent = nullptr);
+    explicit NoteBlock(NoteBlockContent *content, QWidget *parent);
     ~NoteBlock() override;
 
     NoteBlockContent *getContent() { return m_content; }

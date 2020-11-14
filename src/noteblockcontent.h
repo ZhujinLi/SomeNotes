@@ -7,8 +7,8 @@ class ContentManager;
 
 class NoteBlockContent {
 public:
-    NoteBlockContent(ContentManager *mgr);
-    NoteBlockContent(ContentManager *mgr, const QString &text);
+    explicit NoteBlockContent(ContentManager *mgr);
+    explicit NoteBlockContent(ContentManager *mgr, const QString &text);
 
     void setText(const QString &text);
     const QString &getText() { return m_text; }

@@ -9,7 +9,7 @@ class SomeNotes : public QWidget {
     Q_OBJECT
 
 public:
-    explicit SomeNotes(QWidget *parent = nullptr);
+    explicit SomeNotes(QWidget *parent);
     ~SomeNotes() override;
 
 private slots:

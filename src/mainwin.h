@@ -6,14 +6,10 @@
 #include <QSystemTrayIcon>
 #include <QWidget>
 
-namespace Ui {
-class About;
-}
-
 class MainWin : public QWidget {
     Q_OBJECT
 public:
-    explicit MainWin(QWidget *parent = nullptr);
+    MainWin();
 
 signals:
 
