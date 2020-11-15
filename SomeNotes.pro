@@ -28,9 +28,8 @@ SOURCES += \
     src/main.cpp \
     src/mainwin.cpp \
     src/noteblock.cpp \
-    src/noteblockcontent.cpp \
-    src/common.cpp \
     src/contentmanager.cpp \
+    src/common.cpp \
     src/notesview.cpp
 
 HEADERS += \

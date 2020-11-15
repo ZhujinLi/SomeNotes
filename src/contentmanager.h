@@ -20,13 +20,10 @@ public:
 
     void save();
 
-    void notifyContentChange();
-
 private:
     std::vector<NoteBlockContent *> m_contents;
     QString m_fileName;
     QString m_trashFileName;
-    int m_changeCount;
 
     size_t _findIndex(NoteBlockContent *content);
     NoteBlockContent *_newContent(const QString &text);

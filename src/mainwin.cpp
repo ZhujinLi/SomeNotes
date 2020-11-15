@@ -177,7 +177,7 @@ void MainWin::closeEvent(QCloseEvent *event) {
     event->ignore();
 }
 
-void MainWin::_gotoTrashFile() { QDesktopServices::openUrl(QUrl::fromLocalFile(TRASH_PATH())); }
+void MainWin::_gotoTrashFile() { QDesktopServices::openUrl(QUrl::fromLocalFile(g_dataDir)); }
 
 void MainWin::_about() {
     QDialog *dialog = new QDialog(this);

@@ -6,7 +6,7 @@
 #include <QJsonDocument>
 
 ContentManager::ContentManager(const QString &fileName, const QString &trashFileName)
-    : m_fileName(fileName), m_trashFileName(trashFileName), m_changeCount(0) {
+    : m_fileName(fileName), m_trashFileName(trashFileName) {
     QFile f(fileName);
     f.open(QIODevice::ReadOnly);
 
@@ -47,13 +47,13 @@ ContentManager::~ContentManager() {
 }
 
 NoteBlockContent *ContentManager::newContent() {
-    NoteBlockContent *content = new NoteBlockContent(this);
+    NoteBlockContent *content = new NoteBlockContent();
     m_contents.push_back(content);
     return content;
 }
 
 NoteBlockContent *ContentManager::_newContent(const QString &text) {
-    NoteBlockContent *content = new NoteBlockContent(this, text);
+    NoteBlockContent *content = new NoteBlockContent(text);
     m_contents.push_back(content);
     return content;
 }
@@ -73,7 +73,6 @@ void ContentManager::_saveTextToTrash(const QString &text) {
     f.write(fileContent);
     f.close();
 
-    m_changeCount = 0;
     qInfo() << "Content trashed.";
 }
 
@@ -114,15 +113,7 @@ void ContentManager::save() {
     ts << doc.toJson();
     f.close();
 
-    m_changeCount = 0;
     qInfo() << "Content saved.";
-}
-
-void ContentManager::notifyContentChange() {
-    m_changeCount++;
-    if (m_changeCount >= 20) {
-        save();
-    }
 }
 
 size_t ContentManager::_findIndex(NoteBlockContent *content) {
