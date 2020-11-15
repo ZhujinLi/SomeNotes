@@ -35,7 +35,6 @@ SOURCES += \
 HEADERS += \
     src/mainwin.h \
     src/noteblock.h \
-    src/noteblockcontent.h \
     src/common.h \
     src/contentmanager.h \
     src/notesview.h

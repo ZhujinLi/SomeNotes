@@ -19,7 +19,7 @@ private:
     virtual void keyPressEvent(QKeyEvent *event) override;
 
     void _focusToNoteBlock(QPlainTextEdit *noteBlock);
-    NoteBlock *_addNoteBlock(NoteBlockContent *content);
+    NoteBlock *_addNoteBlock(QString *content);
     void _setBgColor(QColor color);
     NoteBlock *_findOverlappingNoteBlock(NoteBlock *query);
 

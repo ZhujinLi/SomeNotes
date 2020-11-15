@@ -1,6 +1,5 @@
 #pragma once
 
-#include "noteblockcontent.h"
 #include <QPlainTextEdit>
 
 namespace Ui {
@@ -11,10 +10,10 @@ class NoteBlock : public QPlainTextEdit {
     Q_OBJECT
 
 public:
-    explicit NoteBlock(NoteBlockContent *content, QWidget *parent);
+    explicit NoteBlock(QString *content, QWidget *parent);
     virtual ~NoteBlock() override;
 
-    NoteBlockContent *getContent() { return m_content; }
+    QString *getContent() { return m_content; }
 
     void enableTranslucent(bool enable);
     void enableHighlight(bool enable);
@@ -32,7 +31,7 @@ private:
     Ui::NoteBlock *ui;
     QPoint m_dragStartMousePos;
     QPoint m_dragStartGeoPos;
-    NoteBlockContent *const m_content;
+    QString *const m_content;
 
     enum DragDir {
         DragDir_unknown,

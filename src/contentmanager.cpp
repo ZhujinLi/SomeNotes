@@ -1,5 +1,4 @@
 #include "contentmanager.h"
-#include "noteblockcontent.h"
 #include <QDateTime>
 #include <QFile>
 #include <QJsonArray>
@@ -35,25 +34,26 @@ ContentManager::ContentManager(const QString &fileName, const QString &trashFile
     }
 
     if (!parseSucc) {
-        newContent()->setText("File is broken (may be disk damage or incompatible old format), raw content:\n" + text);
+        QString *content = newContent();
+        *content = "File is broken (may be disk damage or incompatible old format), raw content:\n" + text;
     }
 }
 
 ContentManager::~ContentManager() {
     save();
 
-    for (NoteBlockContent *content : m_contents)
+    for (QString *content : m_contents)
         delete content;
 }
 
-NoteBlockContent *ContentManager::newContent() {
-    NoteBlockContent *content = new NoteBlockContent();
+QString *ContentManager::newContent() {
+    QString *content = new QString();
     m_contents.push_back(content);
     return content;
 }
 
-NoteBlockContent *ContentManager::_newContent(const QString &text) {
-    NoteBlockContent *content = new NoteBlockContent(text);
+QString *ContentManager::_newContent(const QString &text) {
+    QString *content = new QString(text);
     m_contents.push_back(content);
     return content;
 }
@@ -76,12 +76,11 @@ void ContentManager::_saveTextToTrash(const QString &text) {
     qInfo() << "Content trashed.";
 }
 
-bool ContentManager::trashContent(NoteBlockContent *content) {
+bool ContentManager::trashContent(QString *content) {
     size_t index = _findIndex(content);
     if (index != SIZE_MAX) {
-        const QString &text = content->getText();
-        if (!text.isEmpty()) {
-            _saveTextToTrash(text);
+        if (!content->isEmpty()) {
+            _saveTextToTrash(*content);
         }
 
         m_contents.erase(m_contents.begin() + static_cast<int>(index));
@@ -92,7 +91,7 @@ bool ContentManager::trashContent(NoteBlockContent *content) {
     return false;
 }
 
-void ContentManager::move(NoteBlockContent *content, int index) {
+void ContentManager::move(QString *content, int index) {
     size_t oldIndex = _findIndex(content);
 
     m_contents.erase(m_contents.begin() + static_cast<int>(oldIndex));
@@ -101,8 +100,8 @@ void ContentManager::move(NoteBlockContent *content, int index) {
 
 void ContentManager::save() {
     QJsonArray arr;
-    for (NoteBlockContent *content : m_contents) {
-        arr.push_back(QJsonValue(content->getText()));
+    for (QString *content : m_contents) {
+        arr.push_back(QJsonValue(*content));
     }
 
     QJsonDocument doc(arr);
@@ -116,7 +115,7 @@ void ContentManager::save() {
     qInfo() << "Content saved.";
 }
 
-size_t ContentManager::_findIndex(NoteBlockContent *content) {
+size_t ContentManager::_findIndex(QString *content) {
     for (size_t i = 0; i < m_contents.size(); i++)
         if (m_contents[i] == content) {
             return i;
