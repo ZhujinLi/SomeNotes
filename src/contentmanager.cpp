@@ -1,8 +1,10 @@
 #include "contentmanager.h"
+#include "common.h"
 #include <QDateTime>
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QTextStream>
 
 ContentManager::ContentManager(const QString &fileName, const QString &trashFileName)
     : m_fileName(fileName), m_trashFileName(trashFileName) {
