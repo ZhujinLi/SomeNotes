@@ -16,7 +16,7 @@ NotesView::NotesView(QWidget *parent) : QWidget(parent), m_mgr(CONTENT_PATH(), T
     layout()->setSpacing(0);
 
     for (size_t i = 0; i < m_mgr.getContentCount(); i++) {
-        QString *content = m_mgr.getContent(i);
+        QSharedPointer<QString> content = m_mgr.getContent(i);
         _addNoteBlock(content);
     }
 
@@ -45,7 +45,7 @@ void NotesView::_focusToNoteBlock(QPlainTextEdit *noteBlock) {
     noteBlock->setTextCursor(cursor);
 }
 
-NoteBlock *NotesView::_addNoteBlock(QString *content) {
+NoteBlock *NotesView::_addNoteBlock(QSharedPointer<QString> content) {
     NoteBlock *noteBlock = new NoteBlock(content, this);
     connect(noteBlock, &NoteBlock::noteTrashed, this, &NotesView::_onNoteBlockNoteTrashed);
     connect(noteBlock, &NoteBlock::trySwap, this, &NotesView::_onNoteBlockTryMove);
@@ -77,7 +77,7 @@ void NotesView::_onPlaceholderTextChanged() {
     if (!text.isEmpty()) {
         layout()->removeWidget(m_placeholder);
 
-        QString *content = m_mgr.newContent();
+        QSharedPointer<QString> content = m_mgr.newContent();
         *content = text;
 
         NoteBlock *noteBlock = _addNoteBlock(content);
@@ -95,7 +95,7 @@ void NotesView::_onNoteBlockNoteTrashed(NoteBlock *noteBlock) {
         if (m_noteBlocks[i] == noteBlock) {
             layout()->removeWidget(noteBlock);
             m_noteBlocks.erase(m_noteBlocks.begin() + static_cast<int>(i));
-            QString *content = noteBlock->getContent();
+            QSharedPointer<QString> content = noteBlock->getContent();
             delete noteBlock;
             m_mgr.trashContent(content);
             return;

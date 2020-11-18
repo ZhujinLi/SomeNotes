@@ -28,32 +28,24 @@ ContentManager::ContentManager(const QString &fileName, const QString &trashFile
                 parseSucc = false;
                 break;
             } else {
-                _newContent(item.toString());
+                QSharedPointer<QString> s(new QString(item.toString()));
+                m_contents.push_back(s);
             }
         }
     }
 
     if (!parseSucc) {
-        QString *content = newContent();
-        *content = "File is broken (may be disk damage or incompatible old format), raw content:\n" + text;
+        m_contents.push_back(QSharedPointer<QString>(
+            new QString("File is broken (may be disk damage or incompatible old format), raw content:\n" + text)));
     }
 }
 
 ContentManager::~ContentManager() {
     save();
-
-    for (QString *content : m_contents)
-        delete content;
 }
 
-QString *ContentManager::newContent() {
-    QString *content = new QString();
-    m_contents.push_back(content);
-    return content;
-}
-
-QString *ContentManager::_newContent(const QString &text) {
-    QString *content = new QString(text);
+QSharedPointer<QString> ContentManager::newContent() {
+    QSharedPointer<QString> content = QSharedPointer<QString>(new QString());
     m_contents.push_back(content);
     return content;
 }
@@ -76,31 +68,34 @@ void ContentManager::_saveTextToTrash(const QString &text) {
     qInfo() << "Content trashed.";
 }
 
-bool ContentManager::trashContent(QString *content) {
-    size_t index = _findIndex(content);
-    if (index != SIZE_MAX) {
+bool ContentManager::trashContent(QSharedPointer<QString> content) {
+    int index = m_contents.indexOf(content);
+    if (index != -1) {
         if (!content->isEmpty()) {
             _saveTextToTrash(*content);
         }
 
-        m_contents.erase(m_contents.begin() + static_cast<int>(index));
-        delete content;
+        m_contents.removeAt(index);
         save();
         return true;
     }
     return false;
 }
 
-void ContentManager::move(QString *content, int index) {
-    size_t oldIndex = _findIndex(content);
+void ContentManager::move(QSharedPointer<QString> content, int index) {
+    int oldIndex = m_contents.indexOf(content);
+    if (oldIndex == -1) {
+        qCritical() << "Trying to move a content not existed!";
+        return;
+    }
 
-    m_contents.erase(m_contents.begin() + static_cast<int>(oldIndex));
+    m_contents.erase(m_contents.begin() + oldIndex);
     m_contents.insert(m_contents.begin() + index, content);
 }
 
 void ContentManager::save() {
     QJsonArray arr;
-    for (QString *content : m_contents) {
+    for (QSharedPointer<QString> content : m_contents) {
         arr.push_back(QJsonValue(*content));
     }
 
@@ -113,12 +108,4 @@ void ContentManager::save() {
     f.close();
 
     qInfo() << "Content saved.";
-}
-
-size_t ContentManager::_findIndex(QString *content) {
-    for (size_t i = 0; i < m_contents.size(); i++)
-        if (m_contents[i] == content) {
-            return i;
-        }
-    return SIZE_MAX;
 }

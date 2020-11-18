@@ -10,10 +10,10 @@ class NoteBlock : public QPlainTextEdit {
     Q_OBJECT
 
 public:
-    explicit NoteBlock(QString *content, QWidget *parent);
+    explicit NoteBlock(QSharedPointer<QString> content, QWidget *parent);
     virtual ~NoteBlock() override;
 
-    QString *getContent() { return m_content; }
+    QSharedPointer<QString> getContent() { return m_content; }
 
     void enableTranslucent(bool enable);
     void enableHighlight(bool enable);
@@ -31,7 +31,7 @@ private:
     Ui::NoteBlock *ui;
     QPoint m_dragStartMousePos;
     QPoint m_dragStartGeoPos;
-    QString *const m_content;
+    QSharedPointer<QString> m_content;
 
     enum DragDir {
         DragDir_unknown,

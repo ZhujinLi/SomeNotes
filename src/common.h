@@ -4,6 +4,7 @@
 #include <QColor>
 #include <QSettings>
 #include <QString>
+#include <QDebug>
 
 extern QString g_dataDir;
 extern QSettings g_settings;

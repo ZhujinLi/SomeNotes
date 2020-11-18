@@ -5,7 +5,7 @@
 
 static void _setDocMargin(QPlainTextEdit *o) { o->document()->setDocumentMargin(o->fontMetrics().height() / 3); }
 
-NoteBlock::NoteBlock(QString *content, QWidget *parent)
+NoteBlock::NoteBlock(QSharedPointer<QString> content, QWidget *parent)
     : QPlainTextEdit(parent), ui(new Ui::NoteBlock), m_content(content), m_dragState(DragState_none) {
     ui->setupUi(this);
     enableHighlight(false);

@@ -53,8 +53,8 @@ private slots:
 
         mgr = new ContentManager(FILE_NAME, TRASH_FILE_NAME);
         QCOMPARE(mgr->getContentCount(), 2u);
-        QCOMPARE(mgr->getContent(0), text0);
-        QCOMPARE(mgr->getContent(1), text1);
+        QCOMPARE(*mgr->getContent(0), text0);
+        QCOMPARE(*mgr->getContent(1), text1);
         delete mgr;
     }
 
@@ -74,9 +74,8 @@ private slots:
         *mgr->getContent(1) = "BBBB";
         QCOMPARE(*mgr->getContent(1), "BBBB");
 
-        QCOMPARE(mgr->trashContent(nullptr), false);
-        QCOMPARE(mgr->trashContent(reinterpret_cast<QString *>(0x87654321)), false);
-        QString *content1 = mgr->getContent(1);
+        QCOMPARE(mgr->trashContent(QSharedPointer<QString>(new QString("xxx"))), false);
+        QSharedPointer<QString> content1 = mgr->getContent(1);
         QCOMPARE(mgr->trashContent(content1), true);
         QCOMPARE(mgr->trashContent(content1), false);
         QCOMPARE(mgr->getContentCount(), 2u);
@@ -109,7 +108,7 @@ private slots:
     void trashesContent() {
         ContentManager *mgr = new ContentManager(FILE_NAME, TRASH_FILE_NAME);
 
-        QString *content = mgr->newContent();
+        QSharedPointer<QString> content = mgr->newContent();
         *content = "some texts to be trashed";
         mgr->trashContent(content);
 
@@ -128,10 +127,10 @@ private slots:
     void putsLastTrashedFirst() {
         ContentManager *mgr = new ContentManager(FILE_NAME, TRASH_FILE_NAME);
 
-        QString *content1 = mgr->newContent();
+        QSharedPointer<QString> content1 = mgr->newContent();
         *content1 = "first note";
 
-        QString *content2 = mgr->newContent();
+        QSharedPointer<QString> content2 = mgr->newContent();
         *content2 = "second note";
 
         mgr->trashContent(content1);
@@ -157,7 +156,7 @@ private slots:
     void doesNotTrashEmptyContent() {
         ContentManager *mgr = new ContentManager(FILE_NAME, TRASH_FILE_NAME);
 
-        QString *content1 = mgr->newContent();
+        QSharedPointer<QString> content1 = mgr->newContent();
         *content1 = "first note";
         mgr->trashContent(content1);
 
@@ -166,7 +165,7 @@ private slots:
         QString s1 = QTextStream(&trashFile1).readAll();
         trashFile1.close();
 
-        QString *content2 = mgr->newContent();
+        QSharedPointer<QString> content2 = mgr->newContent();
         *content2 = "";
         mgr->trashContent(content2);
 
