@@ -51,7 +51,7 @@ void MainWin::_initTrayIcon() {
     connect(showAction, &QAction::triggered, this, &MainWin::_appear);
     trayIconMenu->addAction(showAction);
 
-    QAction *trashAction = new QAction(tr("&Trash"), this);
+    QAction *trashAction = new QAction(tr("&Open trash..."), this);
     connect(trashAction, &QAction::triggered, this, &MainWin::_gotoTrashFile);
     trayIconMenu->addAction(trashAction);
 
@@ -177,7 +177,7 @@ void MainWin::closeEvent(QCloseEvent *event) {
     event->ignore();
 }
 
-void MainWin::_gotoTrashFile() { QDesktopServices::openUrl(QUrl::fromLocalFile(g_dataDir)); }
+void MainWin::_gotoTrashFile() { QDesktopServices::openUrl(QUrl::fromLocalFile(TRASH_PATH())); }
 
 void MainWin::_about() {
     QDialog *dialog = new QDialog(this);
