@@ -1,12 +1,10 @@
-#ifndef PCH_H
-#define PCH_H
+#pragma once
+
 #include <QApplication>
 #include <QColor>
-#include <QDebug>
-#include <QFile>
 #include <QSettings>
 #include <QString>
-#include <QTextStream>
+#include <QDebug>
 
 extern QString g_dataDir;
 extern QSettings g_settings;
@@ -27,5 +25,3 @@ inline bool IS_AUX_KEY_DOWN(Qt::KeyboardModifier key) { return QApplication::key
 
 inline QString CONTENT_PATH() { return g_dataDir + "/content.txt"; }
 inline QString TRASH_PATH() { return g_dataDir + "/trash.txt"; }
-
-#endif // PCH_H

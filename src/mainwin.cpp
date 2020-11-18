@@ -1,6 +1,5 @@
-#include "pch.h"
-
 #include "mainwin.h"
+#include "common.h"
 #include "ui_about.h"
 #include <QDesktopServices>
 #include <QDesktopWidget>
@@ -16,7 +15,7 @@
 #define SETTING_WIDTH "width"
 #define SETTING_HEIGHT "height"
 
-MainWin::MainWin(QWidget *parent) : QWidget(parent), m_trayIcon(nullptr) {
+MainWin::MainWin() : QWidget(nullptr), m_trayIcon(nullptr) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
     setLayout(new QVBoxLayout(this));
@@ -27,8 +26,8 @@ MainWin::MainWin(QWidget *parent) : QWidget(parent), m_trayIcon(nullptr) {
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
     layout()->addWidget(scrollArea);
 
-    m_someNotes = new SomeNotes(scrollArea);
-    scrollArea->setWidget(m_someNotes);
+    m_notesView = new NotesView(scrollArea);
+    scrollArea->setWidget(m_notesView);
 
     _initTrayIcon();
 
@@ -52,7 +51,7 @@ void MainWin::_initTrayIcon() {
     connect(showAction, &QAction::triggered, this, &MainWin::_appear);
     trayIconMenu->addAction(showAction);
 
-    QAction *trashAction = new QAction(tr("&Trash"), this);
+    QAction *trashAction = new QAction(tr("&Open trash..."), this);
     connect(trashAction, &QAction::triggered, this, &MainWin::_gotoTrashFile);
     trayIconMenu->addAction(trashAction);
 
@@ -73,7 +72,7 @@ void MainWin::_initTrayIcon() {
 
     trayIcon->setContextMenu(trayIconMenu);
 
-    connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWin::iconActivated);
+    connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWin::_onIconActivated);
 
     m_trayGeo = trayIcon->geometry();
 
@@ -202,7 +201,7 @@ void MainWin::_appear() {
     activateWindow();
 }
 
-void MainWin::iconActivated(QSystemTrayIcon::ActivationReason reason) {
+void MainWin::_onIconActivated(QSystemTrayIcon::ActivationReason reason) {
     switch (reason) {
     case QSystemTrayIcon::DoubleClick:
         _appear();

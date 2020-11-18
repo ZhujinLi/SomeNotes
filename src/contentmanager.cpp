@@ -1,13 +1,13 @@
-#include "pch.h"
-
 #include "contentmanager.h"
-#include "noteblockcontent.h"
+#include "common.h"
 #include <QDateTime>
+#include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QTextStream>
 
 ContentManager::ContentManager(const QString &fileName, const QString &trashFileName)
-    : m_fileName(fileName), m_trashFileName(trashFileName), m_changeCount(0) {
+    : m_fileName(fileName), m_trashFileName(trashFileName) {
     QFile f(fileName);
     f.open(QIODevice::ReadOnly);
 
@@ -30,31 +30,24 @@ ContentManager::ContentManager(const QString &fileName, const QString &trashFile
                 parseSucc = false;
                 break;
             } else {
-                _newContent(item.toString());
+                QSharedPointer<QString> s(new QString(item.toString()));
+                m_contents.push_back(s);
             }
         }
     }
 
     if (!parseSucc) {
-        newContent()->setText("File is broken (may be disk damage or incompatible old format), raw content:\n" + text);
+        m_contents.push_back(QSharedPointer<QString>(
+            new QString("File is broken (may be disk damage or incompatible old format), raw content:\n" + text)));
     }
 }
 
 ContentManager::~ContentManager() {
     save();
-
-    for (NoteBlockContent *content : m_contents)
-        delete content;
 }
 
-NoteBlockContent *ContentManager::newContent() {
-    NoteBlockContent *content = new NoteBlockContent(this);
-    m_contents.push_back(content);
-    return content;
-}
-
-NoteBlockContent *ContentManager::_newContent(const QString &text) {
-    NoteBlockContent *content = new NoteBlockContent(this, text);
+QSharedPointer<QString> ContentManager::newContent() {
+    QSharedPointer<QString> content = QSharedPointer<QString>(new QString());
     m_contents.push_back(content);
     return content;
 }
@@ -74,37 +67,38 @@ void ContentManager::_saveTextToTrash(const QString &text) {
     f.write(fileContent);
     f.close();
 
-    m_changeCount = 0;
     qInfo() << "Content trashed.";
 }
 
-bool ContentManager::trashContent(NoteBlockContent *content) {
-    size_t index = _findIndex(content);
-    if (index != SIZE_MAX) {
-        const QString &text = content->getText();
-        if (!text.isEmpty()) {
-            _saveTextToTrash(text);
+bool ContentManager::trashContent(QSharedPointer<QString> content) {
+    int index = m_contents.indexOf(content);
+    if (index != -1) {
+        if (!content->isEmpty()) {
+            _saveTextToTrash(*content);
         }
 
-        m_contents.erase(m_contents.begin() + static_cast<int>(index));
-        delete content;
+        m_contents.removeAt(index);
         save();
         return true;
     }
     return false;
 }
 
-void ContentManager::move(NoteBlockContent *content, int index) {
-    size_t oldIndex = _findIndex(content);
+void ContentManager::move(QSharedPointer<QString> content, int index) {
+    int oldIndex = m_contents.indexOf(content);
+    if (oldIndex == -1) {
+        qCritical() << "Trying to move a content not existed!";
+        return;
+    }
 
-    m_contents.erase(m_contents.begin() + static_cast<int>(oldIndex));
+    m_contents.erase(m_contents.begin() + oldIndex);
     m_contents.insert(m_contents.begin() + index, content);
 }
 
 void ContentManager::save() {
     QJsonArray arr;
-    for (NoteBlockContent *content : m_contents) {
-        arr.push_back(QJsonValue(content->getText()));
+    for (QSharedPointer<QString> content : m_contents) {
+        arr.push_back(QJsonValue(*content));
     }
 
     QJsonDocument doc(arr);
@@ -115,21 +109,5 @@ void ContentManager::save() {
     ts << doc.toJson();
     f.close();
 
-    m_changeCount = 0;
     qInfo() << "Content saved.";
-}
-
-void ContentManager::notifyContentChange() {
-    m_changeCount++;
-    if (m_changeCount >= 20) {
-        save();
-    }
-}
-
-size_t ContentManager::_findIndex(NoteBlockContent *content) {
-    for (size_t i = 0; i < m_contents.size(); i++)
-        if (m_contents[i] == content) {
-            return i;
-        }
-    return SIZE_MAX;
 }

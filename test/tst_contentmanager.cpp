@@ -1,5 +1,4 @@
 #include "../src/contentmanager.h"
-#include "../src/noteblockcontent.h"
 #include <QCoreApplication>
 #include <QtTest>
 #include <fstream>
@@ -33,8 +32,8 @@ private slots:
 
         ContentManager mgr(FILE_NAME, TRASH_FILE_NAME);
         QCOMPARE(mgr.getContentCount(), 2u);
-        QCOMPARE(mgr.getContent(0)->getText(), "hello, world\nthis is the content");
-        QCOMPARE(mgr.getContent(1)->getText(), "the second note");
+        QCOMPARE(*mgr.getContent(0), "hello, world\nthis is the content");
+        QCOMPARE(*mgr.getContent(1), "the second note");
     }
 
     void writesNotesToContentFile() {
@@ -43,19 +42,19 @@ private slots:
 
         const QString text0 = "hello, world\nsecond line\n";
         auto content0 = mgr->newContent();
-        content0->setText(text0);
+        *content0 = text0;
 
         const QString text1 = "second record";
         auto content1 = mgr->newContent();
-        content1->setText(text1);
+        *content1 = text1;
 
         mgr->save();
         delete mgr;
 
         mgr = new ContentManager(FILE_NAME, TRASH_FILE_NAME);
         QCOMPARE(mgr->getContentCount(), 2u);
-        QCOMPARE(mgr->getContent(0)->getText(), text0);
-        QCOMPARE(mgr->getContent(1)->getText(), text1);
+        QCOMPARE(*mgr->getContent(0), text0);
+        QCOMPARE(*mgr->getContent(1), text1);
         delete mgr;
     }
 
@@ -63,34 +62,33 @@ private slots:
         ContentManager *mgr = new ContentManager(FILE_NAME, TRASH_FILE_NAME);
         QCOMPARE(mgr->getContentCount(), 0u);
 
-        mgr->newContent()->setText("aaaa");
-        mgr->newContent()->setText("bbbb");
-        mgr->newContent()->setText("cccc");
+        *mgr->newContent() = "aaaa";
+        *mgr->newContent() = "bbbb";
+        *mgr->newContent() = "cccc";
 
         QCOMPARE(mgr->getContentCount(), 3u);
-        QCOMPARE(mgr->getContent(0)->getText(), "aaaa");
-        QCOMPARE(mgr->getContent(1)->getText(), "bbbb");
-        QCOMPARE(mgr->getContent(2)->getText(), "cccc");
+        QCOMPARE(*mgr->getContent(0), "aaaa");
+        QCOMPARE(*mgr->getContent(1), "bbbb");
+        QCOMPARE(*mgr->getContent(2), "cccc");
 
-        mgr->getContent(1)->setText("BBBB");
-        QCOMPARE(mgr->getContent(1)->getText(), "BBBB");
+        *mgr->getContent(1) = "BBBB";
+        QCOMPARE(*mgr->getContent(1), "BBBB");
 
-        QCOMPARE(mgr->trashContent(nullptr), false);
-        QCOMPARE(mgr->trashContent(reinterpret_cast<NoteBlockContent *>(0x87654321)), false);
-        NoteBlockContent *content1 = mgr->getContent(1);
+        QCOMPARE(mgr->trashContent(QSharedPointer<QString>(new QString("xxx"))), false);
+        QSharedPointer<QString> content1 = mgr->getContent(1);
         QCOMPARE(mgr->trashContent(content1), true);
         QCOMPARE(mgr->trashContent(content1), false);
         QCOMPARE(mgr->getContentCount(), 2u);
-        QCOMPARE(mgr->getContent(0)->getText(), "aaaa");
-        QCOMPARE(mgr->getContent(1)->getText(), "cccc");
+        QCOMPARE(*mgr->getContent(0), "aaaa");
+        QCOMPARE(*mgr->getContent(1), "cccc");
 
         mgr->move(mgr->getContent(0), 1);
-        QCOMPARE(mgr->getContent(0)->getText(), "cccc");
-        QCOMPARE(mgr->getContent(1)->getText(), "aaaa");
+        QCOMPARE(*mgr->getContent(0), "cccc");
+        QCOMPARE(*mgr->getContent(1), "aaaa");
 
         mgr->move(mgr->getContent(1), 0);
-        QCOMPARE(mgr->getContent(0)->getText(), "aaaa");
-        QCOMPARE(mgr->getContent(1)->getText(), "cccc");
+        QCOMPARE(*mgr->getContent(0), "aaaa");
+        QCOMPARE(*mgr->getContent(1), "cccc");
 
         delete mgr;
     }
@@ -104,14 +102,14 @@ private slots:
 
         ContentManager mgr(FILE_NAME, TRASH_FILE_NAME);
         QCOMPARE(mgr.getContentCount(), 1u);
-        QVERIFY(mgr.getContent(0)->getText().startsWith("File is broken"));
+        QVERIFY(mgr.getContent(0)->startsWith("File is broken"));
     }
 
     void trashesContent() {
         ContentManager *mgr = new ContentManager(FILE_NAME, TRASH_FILE_NAME);
 
-        NoteBlockContent *content = mgr->newContent();
-        content->setText("some texts to be trashed");
+        QSharedPointer<QString> content = mgr->newContent();
+        *content = "some texts to be trashed";
         mgr->trashContent(content);
 
         QFile trashFile(TRASH_FILE_NAME);
@@ -129,11 +127,11 @@ private slots:
     void putsLastTrashedFirst() {
         ContentManager *mgr = new ContentManager(FILE_NAME, TRASH_FILE_NAME);
 
-        NoteBlockContent *content1 = mgr->newContent();
-        content1->setText("first note");
+        QSharedPointer<QString> content1 = mgr->newContent();
+        *content1 = "first note";
 
-        NoteBlockContent *content2 = mgr->newContent();
-        content2->setText("second note");
+        QSharedPointer<QString> content2 = mgr->newContent();
+        *content2 = "second note";
 
         mgr->trashContent(content1);
         mgr->trashContent(content2);
@@ -158,8 +156,8 @@ private slots:
     void doesNotTrashEmptyContent() {
         ContentManager *mgr = new ContentManager(FILE_NAME, TRASH_FILE_NAME);
 
-        NoteBlockContent *content1 = mgr->newContent();
-        content1->setText("first note");
+        QSharedPointer<QString> content1 = mgr->newContent();
+        *content1 = "first note";
         mgr->trashContent(content1);
 
         QFile trashFile1(TRASH_FILE_NAME);
@@ -167,8 +165,8 @@ private slots:
         QString s1 = QTextStream(&trashFile1).readAll();
         trashFile1.close();
 
-        NoteBlockContent *content2 = mgr->newContent();
-        content2->setText("");
+        QSharedPointer<QString> content2 = mgr->newContent();
+        *content2 = "";
         mgr->trashContent(content2);
 
         QFile trashFile2(TRASH_FILE_NAME);

@@ -1,18 +1,18 @@
 #include "noteblock.h"
-#include "pch.h"
+#include "common.h"
 #include "ui_noteblock.h"
 #include <QScrollBar>
 
 static void _setDocMargin(QPlainTextEdit *o) { o->document()->setDocumentMargin(o->fontMetrics().height() / 3); }
 
-NoteBlock::NoteBlock(NoteBlockContent *content, QWidget *parent)
+NoteBlock::NoteBlock(QSharedPointer<QString> content, QWidget *parent)
     : QPlainTextEdit(parent), ui(new Ui::NoteBlock), m_content(content), m_dragState(DragState_none) {
     ui->setupUi(this);
     enableHighlight(false);
     enableTranslucent(false);
     setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
 
-    setPlainText(content->getText());
+    setPlainText(*content);
     _setDocMargin(this);
 }
 
@@ -119,7 +119,7 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void NoteBlock::on_NoteBlock_textChanged() {
-    m_content->setText(toPlainText());
+    *m_content = toPlainText();
     updateGeometry();
 }
 

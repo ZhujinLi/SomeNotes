@@ -28,21 +28,16 @@ SOURCES += \
     src/main.cpp \
     src/mainwin.cpp \
     src/noteblock.cpp \
-    src/noteblockcontent.cpp \
-    src/pch.cpp \
-    src/somenotes.cpp \
-    src/contentmanager.cpp
-
-CONFIG += precompile_header
-PRECOMPILED_HEADER = src/pch.h
+    src/contentmanager.cpp \
+    src/common.cpp \
+    src/notesview.cpp
 
 HEADERS += \
     src/mainwin.h \
     src/noteblock.h \
-    src/noteblockcontent.h \
-    src/pch.h \
-    src/somenotes.h \
-    src/contentmanager.h
+    src/common.h \
+    src/contentmanager.h \
+    src/notesview.h
 
 FORMS += \
     src/about.ui \
