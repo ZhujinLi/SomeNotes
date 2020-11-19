@@ -55,6 +55,7 @@ private:
     virtual void keyReleaseEvent(QKeyEvent *event) override;
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
+    virtual void resizeEvent(QResizeEvent *event) override;
 };
 
 class NoteBlockPlaceholder : public QPlainTextEdit {

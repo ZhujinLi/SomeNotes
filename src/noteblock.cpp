@@ -153,3 +153,8 @@ QSize NoteBlock::sizeHint() const {
 }
 
 QSize NoteBlock::minimumSizeHint() const { return sizeHint(); }
+
+void NoteBlock::resizeEvent(QResizeEvent *event) {
+    updateGeometry();
+    QPlainTextEdit::resizeEvent(event);
+}
