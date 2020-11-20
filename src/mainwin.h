@@ -24,9 +24,9 @@ private:
     QAction *m_landscapeAction;
     QSize m_expectedWindowSize;
 
-    virtual bool event(QEvent *event) override;
     virtual void closeEvent(QCloseEvent *event) override;
     virtual void keyReleaseEvent(QKeyEvent *event) override;
+    virtual void paintEvent(QPaintEvent *event) override;
 
     void _gotoTrashFile();
     void _about();

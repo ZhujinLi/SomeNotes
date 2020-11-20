@@ -95,16 +95,27 @@ void MainWin::_recalcGeometryIfNeeded() {
         return;
     m_needsRecalcGeometry = false;
 
+    // Centered at the tray icon position
     QRect trayGeometry = m_trayIcon->geometry();
+    int gap = trayGeometry.height() / 4;
+
     int w = m_expectedWindowSize.width();
     int h = m_expectedWindowSize.height();
 
-    bool isTrayAtTop = trayGeometry.y() == 0;
-    if (isTrayAtTop) {
-        setGeometry(trayGeometry.center().x() - w / 2, trayGeometry.bottom() + trayGeometry.height() / 4, w, h);
+    QPoint leftTop;
+    if (trayGeometry.y() == 0) { // The tray is on the top
+        leftTop = QPoint(trayGeometry.center().x() - w / 2, trayGeometry.bottom() + gap);
     } else {
-        setGeometry(trayGeometry.center().x() - w / 2, trayGeometry.top() - trayGeometry.height() / 4 - h, w, h);
+        leftTop = QPoint(trayGeometry.center().x() - w / 2, trayGeometry.top() - gap - h);
     }
+
+    // Make sure the area is inside the screen
+    int screenWidth = window()->windowHandle()->screen()->size().width();
+    if (leftTop.x() + w > screenWidth - gap) {
+        leftTop.setX(screenWidth - gap - w);
+    }
+
+    setGeometry(QRect(leftTop, m_expectedWindowSize));
 }
 
 void MainWin::_setViewMode(ViewMode viewMode) {
@@ -130,6 +141,8 @@ void MainWin::_setViewMode(ViewMode viewMode) {
     }
     m_expectedWindowSize = size;
     m_needsRecalcGeometry = true;
+
+    repaint();
 }
 
 #ifdef Q_OS_WIN
@@ -217,11 +230,13 @@ void MainWin::_onIconActivated(QSystemTrayIcon::ActivationReason reason) {
     }
 }
 
-bool MainWin::event(QEvent *event) {
-    if (m_trayIcon && m_trayIcon->geometry() != m_trayGeo) {
+void MainWin::paintEvent(QPaintEvent *event) {
+    if (m_trayIcon != nullptr && m_trayIcon->geometry() != m_trayGeo) {
         m_trayGeo = m_trayIcon->geometry();
         m_needsRecalcGeometry = true;
     }
+
     _recalcGeometryIfNeeded();
-    return QWidget::event(event);
+
+    QWidget::paintEvent(event);
 }
