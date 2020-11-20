@@ -4,6 +4,11 @@
 #include <QSystemTrayIcon>
 #include <QWidget>
 
+enum class ViewMode {
+    Portrait = 0,
+    Landscape,
+};
+
 class MainWin : public QWidget {
     Q_OBJECT
 
@@ -15,6 +20,9 @@ private:
     NotesView *m_notesView;
     bool m_needsRecalcGeometry;
     QRect m_trayGeo;
+    QAction *m_portraitAction;
+    QAction *m_landscapeAction;
+    QSize m_expectedWindowSize;
 
     virtual bool event(QEvent *event) override;
     virtual void closeEvent(QCloseEvent *event) override;
@@ -25,6 +33,10 @@ private:
     void _appear();
     void _initTrayIcon();
     void _recalcGeometryIfNeeded();
+
+    void _setPortraitMode() { _setViewMode(ViewMode::Portrait); }
+    void _setLandscapeMode() { _setViewMode(ViewMode::Landscape); }
+    void _setViewMode(ViewMode viewMode);
 
 #ifdef Q_OS_WIN
     QAction *m_autoStartAction;

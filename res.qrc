@@ -3,5 +3,6 @@
         <file>images/app.png</file>
         <file>images/checked.png</file>
         <file>images/unchecked.png</file>
+        <file>images/selected.png</file>
     </qresource>
 </RCC>

@@ -9,7 +9,6 @@
 extern QString g_dataDir;
 extern QSettings g_settings;
 
-static const Qt::KeyboardModifier RESIZE_MOD_KEY = Qt::ControlModifier;
 static const Qt::KeyboardModifier SCROOL_MOD_KEY = Qt::ShiftModifier;
 static const Qt::KeyboardModifier DRAG_MOD_KEY = Qt::AltModifier;
 static const Qt::Key DRAG_KEY = Qt::Key_Alt;

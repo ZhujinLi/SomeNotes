@@ -12,8 +12,7 @@
 #include <QVBoxLayout>
 #include <QWindow>
 
-#define SETTING_WIDTH "width"
-#define SETTING_HEIGHT "height"
+#define SETTING_VIEW_MODE "view_mode"
 
 MainWin::MainWin() : QWidget(nullptr), m_trayIcon(nullptr) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
@@ -31,14 +30,10 @@ MainWin::MainWin() : QWidget(nullptr), m_trayIcon(nullptr) {
 
     _initTrayIcon();
 
-    if (!g_settings.contains(SETTING_WIDTH) || !g_settings.contains(SETTING_HEIGHT)) {
-        int w = m_trayIcon->geometry().width() * 10;
-        setGeometry(0, 0, w, int(w * 1.5f));
-    } else {
-        setGeometry(0, 0, g_settings.value(SETTING_WIDTH).toInt(), g_settings.value(SETTING_HEIGHT).toInt());
-    }
-
-    m_needsRecalcGeometry = true;
+    ViewMode viewMode = ViewMode::Portrait;
+    if (g_settings.contains(SETTING_VIEW_MODE))
+        viewMode = static_cast<ViewMode>(g_settings.value(SETTING_VIEW_MODE).toInt());
+    _setViewMode(viewMode);
 }
 
 void MainWin::_initTrayIcon() {
@@ -51,16 +46,30 @@ void MainWin::_initTrayIcon() {
     connect(showAction, &QAction::triggered, this, &MainWin::_appear);
     trayIconMenu->addAction(showAction);
 
-    QAction *trashAction = new QAction(tr("&Open trash..."), this);
-    connect(trashAction, &QAction::triggered, this, &MainWin::_gotoTrashFile);
-    trayIconMenu->addAction(trashAction);
-
 #ifdef Q_OS_WIN
     m_autoStartAction = new QAction(tr("&Run at startup"), this);
     _updateAutoStartIcon();
     connect(m_autoStartAction, &QAction::triggered, this, &MainWin::_autoStartChanged);
     trayIconMenu->addAction(m_autoStartAction);
 #endif
+
+    trayIconMenu->addSeparator();
+
+    m_portraitAction = new QAction(tr("&Portrait"), this);
+    connect(m_portraitAction, &QAction::triggered, this, &MainWin::_setPortraitMode);
+    m_portraitAction->setIcon(QIcon(":/images/selected.png"));
+    trayIconMenu->addAction(m_portraitAction);
+
+    m_landscapeAction = new QAction(tr("&Landscape"), this);
+    connect(m_landscapeAction, &QAction::triggered, this, &MainWin::_setLandscapeMode);
+    m_landscapeAction->setIcon(QIcon(":/images/selected.png"));
+    trayIconMenu->addAction(m_landscapeAction);
+
+    trayIconMenu->addSeparator();
+
+    QAction *trashAction = new QAction(tr("&Trash"), this);
+    connect(trashAction, &QAction::triggered, this, &MainWin::_gotoTrashFile);
+    trayIconMenu->addAction(trashAction);
 
     QAction *aboutAction = new QAction(tr("&About..."), this);
     connect(aboutAction, &QAction::triggered, this, &MainWin::_about);
@@ -87,8 +96,8 @@ void MainWin::_recalcGeometryIfNeeded() {
     m_needsRecalcGeometry = false;
 
     QRect trayGeometry = m_trayIcon->geometry();
-    int w = width();
-    int h = height();
+    int w = m_expectedWindowSize.width();
+    int h = m_expectedWindowSize.height();
 
     bool isTrayAtTop = trayGeometry.y() == 0;
     if (isTrayAtTop) {
@@ -96,9 +105,31 @@ void MainWin::_recalcGeometryIfNeeded() {
     } else {
         setGeometry(trayGeometry.center().x() - w / 2, trayGeometry.top() - trayGeometry.height() / 4 - h, w, h);
     }
+}
 
-    g_settings.setValue(SETTING_WIDTH, width());
-    g_settings.setValue(SETTING_HEIGHT, height());
+void MainWin::_setViewMode(ViewMode viewMode) {
+    // Save to disk
+    g_settings.setValue(SETTING_VIEW_MODE, static_cast<int>(viewMode));
+
+    // Update menu icons
+    m_portraitAction->setIconVisibleInMenu(viewMode == ViewMode::Portrait);
+    m_landscapeAction->setIconVisibleInMenu(viewMode == ViewMode::Landscape);
+
+    // Update window size
+    QSize size;
+    switch (viewMode) {
+    case ViewMode::Portrait:
+        size.setWidth(m_trayIcon->geometry().width() * 15);
+        size.setHeight(size.width() * 1.5);
+        break;
+    case ViewMode::Landscape:
+    default:
+        size.setWidth(m_trayIcon->geometry().width() * 40);
+        size.setHeight(size.width() / 2.0);
+        break;
+    }
+    m_expectedWindowSize = size;
+    m_needsRecalcGeometry = true;
 }
 
 #ifdef Q_OS_WIN
@@ -138,30 +169,6 @@ void MainWin::keyReleaseEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Escape:
         hide();
-        break;
-    case Qt::Key_Right:
-        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
-            this->setGeometry(geometry().x(), geometry().y(), width() - 10, height());
-            m_needsRecalcGeometry = true;
-        }
-        break;
-    case Qt::Key_Left:
-        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
-            this->setGeometry(geometry().x(), geometry().y(), width() + 10, height());
-            m_needsRecalcGeometry = true;
-        }
-        break;
-    case Qt::Key_Down:
-        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
-            this->setGeometry(geometry().x(), geometry().y(), width(), height() - 10);
-            m_needsRecalcGeometry = true;
-        }
-        break;
-    case Qt::Key_Up:
-        if (IS_AUX_KEY_DOWN(RESIZE_MOD_KEY)) {
-            this->setGeometry(geometry().x(), geometry().y(), width(), height() + 10);
-            m_needsRecalcGeometry = true;
-        }
         break;
     case DRAG_KEY:
         QApplication::restoreOverrideCursor();
