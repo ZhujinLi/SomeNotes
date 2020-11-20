@@ -10,7 +10,7 @@ NoteBlock::NoteBlock(QSharedPointer<QString> content, QWidget *parent)
     ui->setupUi(this);
     enableHighlight(false);
     enableTranslucent(false);
-    setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
+    setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Fixed);
 
     setPlainText(*content);
     _setDocMargin(this);
@@ -136,7 +136,7 @@ void NoteBlock::keyReleaseEvent(QKeyEvent *event) {
 NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : QPlainTextEdit(parent), ui(new Ui::NoteBlock) {
     ui->setupUi(this);
     _setDocMargin(this);
-    setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Expanding);
 }
 
 NoteBlockPlaceholder::~NoteBlockPlaceholder() { delete ui; }
