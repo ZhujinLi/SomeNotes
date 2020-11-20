@@ -4,5 +4,6 @@
         <file>images/checked.png</file>
         <file>images/unchecked.png</file>
         <file>images/selected.png</file>
+        <file>images/unselected.png</file>
     </qresource>
 </RCC>

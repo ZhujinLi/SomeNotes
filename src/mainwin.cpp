@@ -57,12 +57,10 @@ void MainWin::_initTrayIcon() {
 
     m_portraitAction = new QAction(tr("&Portrait"), this);
     connect(m_portraitAction, &QAction::triggered, this, &MainWin::_setPortraitMode);
-    m_portraitAction->setIcon(QIcon(":/images/selected.png"));
     trayIconMenu->addAction(m_portraitAction);
 
     m_landscapeAction = new QAction(tr("&Landscape"), this);
     connect(m_landscapeAction, &QAction::triggered, this, &MainWin::_setLandscapeMode);
-    m_landscapeAction->setIcon(QIcon(":/images/selected.png"));
     trayIconMenu->addAction(m_landscapeAction);
 
     trayIconMenu->addSeparator();
@@ -123,8 +121,10 @@ void MainWin::_setViewMode(ViewMode viewMode) {
     g_settings.setValue(SETTING_VIEW_MODE, static_cast<int>(viewMode));
 
     // Update menu icons
-    m_portraitAction->setIconVisibleInMenu(viewMode == ViewMode::Portrait);
-    m_landscapeAction->setIconVisibleInMenu(viewMode == ViewMode::Landscape);
+    m_portraitAction->setIcon(viewMode == ViewMode::Portrait ? QIcon(":/images/selected.png")
+                                                             : QIcon(":/images/unselected.png"));
+    m_landscapeAction->setIcon(viewMode == ViewMode::Landscape ? QIcon(":/images/selected.png")
+                                                               : QIcon(":/images/unselected.png"));
 
     // Update window size
     QSize size;
