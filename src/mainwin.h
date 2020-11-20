@@ -22,7 +22,6 @@ private:
     QRect m_trayGeo;
     QAction *m_portraitAction;
     QAction *m_landscapeAction;
-    QSize m_expectedWindowSize;
 
     virtual void closeEvent(QCloseEvent *event) override;
     virtual void keyReleaseEvent(QKeyEvent *event) override;

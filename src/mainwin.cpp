@@ -93,12 +93,26 @@ void MainWin::_recalcGeometryIfNeeded() {
         return;
     m_needsRecalcGeometry = false;
 
+    // Calculate size according to view mode
+    QSize size;
+    switch (static_cast<ViewMode>(g_settings.value(SETTING_VIEW_MODE).toInt())) {
+    case ViewMode::Portrait:
+        size.setWidth(m_trayIcon->geometry().width() * 15);
+        size.setHeight(size.width() * 1.5);
+        break;
+    case ViewMode::Landscape:
+    default:
+        size.setWidth(m_trayIcon->geometry().width() * 40);
+        size.setHeight(size.width() / 2.0);
+        break;
+    }
+
     // Centered at the tray icon position
     QRect trayGeometry = m_trayIcon->geometry();
     int gap = trayGeometry.height() / 4;
 
-    int w = m_expectedWindowSize.width();
-    int h = m_expectedWindowSize.height();
+    int w = size.width();
+    int h = size.height();
 
     QPoint leftTop;
     if (trayGeometry.y() == 0) { // The tray is on the top
@@ -113,7 +127,7 @@ void MainWin::_recalcGeometryIfNeeded() {
         leftTop.setX(screenWidth - gap - w);
     }
 
-    setGeometry(QRect(leftTop, m_expectedWindowSize));
+    setGeometry(QRect(leftTop, size));
 }
 
 void MainWin::_setViewMode(ViewMode viewMode) {
@@ -126,20 +140,6 @@ void MainWin::_setViewMode(ViewMode viewMode) {
     m_landscapeAction->setIcon(viewMode == ViewMode::Landscape ? QIcon(":/images/selected.png")
                                                                : QIcon(":/images/unselected.png"));
 
-    // Update window size
-    QSize size;
-    switch (viewMode) {
-    case ViewMode::Portrait:
-        size.setWidth(m_trayIcon->geometry().width() * 15);
-        size.setHeight(size.width() * 1.5);
-        break;
-    case ViewMode::Landscape:
-    default:
-        size.setWidth(m_trayIcon->geometry().width() * 40);
-        size.setHeight(size.width() / 2.0);
-        break;
-    }
-    m_expectedWindowSize = size;
     m_needsRecalcGeometry = true;
 
     repaint();
