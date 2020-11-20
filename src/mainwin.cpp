@@ -97,12 +97,12 @@ void MainWin::_recalcGeometryIfNeeded() {
     QSize size;
     switch (static_cast<ViewMode>(g_settings.value(SETTING_VIEW_MODE).toInt())) {
     case ViewMode::Portrait:
-        size.setWidth(m_trayIcon->geometry().width() * 15);
+        size.setWidth(m_trayIcon->geometry().height() * 9);
         size.setHeight(size.width() * 1.5);
         break;
     case ViewMode::Landscape:
     default:
-        size.setWidth(m_trayIcon->geometry().width() * 40);
+        size.setWidth(m_trayIcon->geometry().height() * 22);
         size.setHeight(size.width() / 2.0);
         break;
     }
