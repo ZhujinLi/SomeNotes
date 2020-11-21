@@ -12,8 +12,6 @@
 #include <QVBoxLayout>
 #include <QWindow>
 
-#define SETTING_VIEW_MODE "view_mode"
-
 MainWin::MainWin() : QWidget(nullptr), m_trayIcon(nullptr) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
@@ -31,8 +29,8 @@ MainWin::MainWin() : QWidget(nullptr), m_trayIcon(nullptr) {
     _initTrayIcon();
 
     ViewMode viewMode = ViewMode::Portrait;
-    if (g_settings.contains(SETTING_VIEW_MODE))
-        viewMode = static_cast<ViewMode>(g_settings.value(SETTING_VIEW_MODE).toInt());
+    if (g_settings.contains(SETTINGS_NAME_VIEW_MODE))
+        viewMode = static_cast<ViewMode>(g_settings.value(SETTINGS_NAME_VIEW_MODE).toInt());
     _setViewMode(viewMode);
 }
 
@@ -95,7 +93,7 @@ void MainWin::_recalcGeometryIfNeeded() {
 
     // Calculate size according to view mode
     QSize size;
-    switch (static_cast<ViewMode>(g_settings.value(SETTING_VIEW_MODE).toInt())) {
+    switch (static_cast<ViewMode>(g_settings.value(SETTINGS_NAME_VIEW_MODE).toInt())) {
     case ViewMode::Portrait:
         size = QSize(300, 450);
         break;
@@ -140,7 +138,7 @@ void MainWin::_onLandscapeModeSelected() {
 
 void MainWin::_setViewMode(ViewMode viewMode) {
     // Save to disk
-    g_settings.setValue(SETTING_VIEW_MODE, static_cast<int>(viewMode));
+    g_settings.setValue(SETTINGS_NAME_VIEW_MODE, static_cast<int>(viewMode));
 
     // Update menu icons
     m_portraitAction->setIcon(viewMode == ViewMode::Portrait ? QIcon(":/images/selected.png")
