@@ -56,11 +56,11 @@ void MainWin::_initTrayIcon() {
     trayIconMenu->addSeparator();
 
     m_portraitAction = new QAction(tr("&Portrait"), this);
-    connect(m_portraitAction, &QAction::triggered, this, &MainWin::_setPortraitMode);
+    connect(m_portraitAction, &QAction::triggered, this, &MainWin::_onPortraitModeSelected);
     trayIconMenu->addAction(m_portraitAction);
 
     m_landscapeAction = new QAction(tr("&Landscape"), this);
-    connect(m_landscapeAction, &QAction::triggered, this, &MainWin::_setLandscapeMode);
+    connect(m_landscapeAction, &QAction::triggered, this, &MainWin::_onLandscapeModeSelected);
     trayIconMenu->addAction(m_landscapeAction);
 
     trayIconMenu->addSeparator();
@@ -130,6 +130,16 @@ void MainWin::_recalcGeometryIfNeeded() {
     setGeometry(QRect(leftTop, size));
 }
 
+void MainWin::_onPortraitModeSelected() {
+    _setViewMode(ViewMode::Portrait);
+    _recalcGeometryIfNeeded();
+}
+
+void MainWin::_onLandscapeModeSelected() {
+    _setViewMode(ViewMode::Landscape);
+    _recalcGeometryIfNeeded();
+}
+
 void MainWin::_setViewMode(ViewMode viewMode) {
     // Save to disk
     g_settings.setValue(SETTING_VIEW_MODE, static_cast<int>(viewMode));
@@ -141,8 +151,6 @@ void MainWin::_setViewMode(ViewMode viewMode) {
                                                                : QIcon(":/images/unselected.png"));
 
     m_needsRecalcGeometry = true;
-
-    repaint();
 }
 
 #ifdef Q_OS_WIN
@@ -230,7 +238,7 @@ void MainWin::_onIconActivated(QSystemTrayIcon::ActivationReason reason) {
     }
 }
 
-void MainWin::paintEvent(QPaintEvent *event) {
+void MainWin::showEvent(QShowEvent *event) {
     if (m_trayIcon != nullptr && m_trayIcon->geometry() != m_trayGeo) {
         m_trayGeo = m_trayIcon->geometry();
         m_needsRecalcGeometry = true;
@@ -238,5 +246,5 @@ void MainWin::paintEvent(QPaintEvent *event) {
 
     _recalcGeometryIfNeeded();
 
-    QWidget::paintEvent(event);
+    QWidget::showEvent(event);
 }

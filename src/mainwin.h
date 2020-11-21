@@ -25,7 +25,7 @@ private:
 
     virtual void closeEvent(QCloseEvent *event) override;
     virtual void keyReleaseEvent(QKeyEvent *event) override;
-    virtual void paintEvent(QPaintEvent *event) override;
+    virtual void showEvent(QShowEvent *event) override;
 
     void _gotoTrashFile();
     void _about();
@@ -33,8 +33,8 @@ private:
     void _initTrayIcon();
     void _recalcGeometryIfNeeded();
 
-    void _setPortraitMode() { _setViewMode(ViewMode::Portrait); }
-    void _setLandscapeMode() { _setViewMode(ViewMode::Landscape); }
+    void _onPortraitModeSelected();
+    void _onLandscapeModeSelected();
     void _setViewMode(ViewMode viewMode);
 
 #ifdef Q_OS_WIN
