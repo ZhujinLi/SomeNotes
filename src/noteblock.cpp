@@ -62,27 +62,6 @@ void NoteBlock::enableHighlight(bool enable) {
     setPalette(palette);
 }
 
-NoteBlock::DragResult NoteBlock::_endDragging() {
-    emit dragReset();
-
-    if (m_dragState != DragState_dragging)
-        return DragResult_none;
-    m_dragState = DragState_none;
-
-    if (m_dragDir == DragDir::DragDir_horizontal) {
-        int dx = geometry().x() - m_dragStartGeoPos.x();
-        if (dx < -geometry().width() * DRAG_THRESHOLD) { // Trash
-            emit noteTrashed(this);
-            return DragResult_trashed;
-        }
-    } else {
-        emit trySwap(this);
-    }
-
-    updateGeometry();
-    return DragResult_unknown;
-}
-
 void NoteBlock::_onControlBarPressed() {
     m_dragStartMousePos = QCursor::pos();
     m_dragStartGeoPos = geometry().topLeft();
@@ -122,8 +101,23 @@ void NoteBlock::_onControlBarMoved() {
 }
 
 void NoteBlock::_onControlBarReleased() {
-    if (_endDragging() == DragResult_trashed)
+    emit dragReset();
+
+    if (m_dragState != DragState_dragging)
         return;
+    m_dragState = DragState_none;
+
+    if (m_dragDir == DragDir::DragDir_horizontal) {
+        int dx = geometry().x() - m_dragStartGeoPos.x();
+        if (dx < -geometry().width() * DRAG_THRESHOLD) { // Trash
+            emit noteTrashed(this);
+            return;
+        }
+    } else {
+        emit trySwap(this);
+    }
+
+    updateGeometry();
 }
 
 void NoteBlock::_onTextChanged() {

@@ -54,11 +54,7 @@ private:
     enum DragState { DragState_none, DragState_dragging };
     DragState m_dragState;
 
-    enum DragResult { DragResult_none, DragResult_unknown, DragResult_trashed };
-
     ControlBar *m_controlBar;
-
-    DragResult _endDragging();
 
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;

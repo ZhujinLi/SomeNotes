@@ -10,17 +10,8 @@ ControlBar::ControlBar(QWidget *parent) : QFrame(parent) {
     setCursor(QCursor(Qt::CursorShape::OpenHandCursor));
 }
 
-void ControlBar::mousePressEvent(QMouseEvent *event) {
-    emit(pressed());
-    QFrame::mousePressEvent(event);
-}
+void ControlBar::mousePressEvent(QMouseEvent *) { emit(pressed()); }
 
-void ControlBar::mouseReleaseEvent(QMouseEvent *event) {
-    emit(released());
-    QFrame::mouseReleaseEvent(event);
-}
+void ControlBar::mouseReleaseEvent(QMouseEvent *) { emit(released()); }
 
-void ControlBar::mouseMoveEvent(QMouseEvent *event) {
-    emit(moved());
-    QFrame::mouseMoveEvent(event);
-}
+void ControlBar::mouseMoveEvent(QMouseEvent *) { emit(moved()); }
