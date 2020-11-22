@@ -1,11 +1,13 @@
 #include "noteblock.h"
 #include "common.h"
+#include "controlbar.h"
 #include "ui_noteblock.h"
 #include <QScrollBar>
 
 NoteBlockBase::NoteBlockBase(QWidget *parent) : QPlainTextEdit(parent), m_ui(new Ui::NoteBlock) {
     m_ui->setupUi(this);
     layout()->setMargin(0);
+    layout()->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
     document()->setDocumentMargin(fontMetrics().height() / 3);
 }
 
@@ -20,6 +22,9 @@ NoteBlock::NoteBlock(QSharedPointer<QString> content, QWidget *parent)
     setPlainText(*content);
 
     connect(this, &QPlainTextEdit::textChanged, this, &NoteBlock::_onTextChanged);
+
+    ControlBar *controlBar = new ControlBar(this);
+    layout()->addWidget(controlBar);
 }
 
 NoteBlock::~NoteBlock() {}
@@ -156,7 +161,6 @@ void NoteBlock::resizeEvent(QResizeEvent *event) {
 
 NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : NoteBlockBase(parent) {
     setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Expanding);
-    _ui()->ControlLine->setVisible(false);
 }
 
 NoteBlockPlaceholder::~NoteBlockPlaceholder() {}

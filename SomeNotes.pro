@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    src/controlbar.cpp \
     src/main.cpp \
     src/mainwin.cpp \
     src/noteblock.cpp \
@@ -33,6 +34,7 @@ SOURCES += \
     src/notesview.cpp
 
 HEADERS += \
+    src/controlbar.h \
     src/mainwin.h \
     src/noteblock.h \
     src/common.h \

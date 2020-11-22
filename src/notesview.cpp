@@ -32,7 +32,7 @@ NotesView::NotesView(QWidget *parent) : QWidget(parent), m_mgr(CONTENT_PATH(), T
 }
 
 NotesView::~NotesView() {
-    // since mgr is shared
+    // Since mgr is shared
     for (NoteBlock *note : m_noteBlocks)
         delete note;
     delete layout();

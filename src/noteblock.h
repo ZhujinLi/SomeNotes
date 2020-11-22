@@ -10,7 +10,7 @@ class NoteBlockBase : public QPlainTextEdit {
     Q_OBJECT
 
 protected:
-    NoteBlockBase(QWidget *parent);
+    explicit NoteBlockBase(QWidget *parent);
     virtual ~NoteBlockBase() override;
 
     Ui::NoteBlock *_ui() { return m_ui; }

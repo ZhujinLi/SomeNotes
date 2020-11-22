@@ -119,36 +119,7 @@
   <property name="lineWrapMode">
    <enum>QPlainTextEdit::WidgetWidth</enum>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item alignment="Qt::AlignHCenter|Qt::AlignTop">
-    <widget class="Line" name="ControlLine">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>50</width>
-       <height>5</height>
-      </size>
-     </property>
-     <property name="cursor">
-      <cursorShape>OpenHandCursor</cursorShape>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-  </layout>
+  <layout class="QVBoxLayout" name="verticalLayout"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
