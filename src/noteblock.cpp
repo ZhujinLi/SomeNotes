@@ -3,22 +3,25 @@
 #include "ui_noteblock.h"
 #include <QScrollBar>
 
-static void _setDocMargin(QPlainTextEdit *o) { o->document()->setDocumentMargin(o->fontMetrics().height() / 3); }
+NoteBlockBase::NoteBlockBase(QWidget *parent) : QPlainTextEdit(parent), m_ui(new Ui::NoteBlock) {
+    m_ui->setupUi(this);
+    document()->setDocumentMargin(fontMetrics().height() / 3);
+}
+
+NoteBlockBase::~NoteBlockBase() { delete m_ui; }
 
 NoteBlock::NoteBlock(QSharedPointer<QString> content, QWidget *parent)
-    : QPlainTextEdit(parent), ui(new Ui::NoteBlock), m_content(content), m_dragState(DragState_none) {
-    ui->setupUi(this);
+    : NoteBlockBase(parent), m_content(content), m_dragState(DragState_none) {
     enableHighlight(false);
     enableTranslucent(false);
     setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Fixed);
 
     setPlainText(*content);
-    _setDocMargin(this);
 
     connect(this, &QPlainTextEdit::textChanged, this, &NoteBlock::_onTextChanged);
 }
 
-NoteBlock::~NoteBlock() { delete ui; }
+NoteBlock::~NoteBlock() {}
 
 void NoteBlock::enableTranslucent(bool enable) {
     int alpha = enable ? 0x40 : 0xff;
@@ -67,11 +70,6 @@ NoteBlock::DragResult NoteBlock::_endDragging() {
 
     updateGeometry();
     return DragResult_unknown;
-}
-
-qreal NoteBlock::_heightOfRows(qreal rows) const {
-    return rows * fontMetrics().height() + (document()->documentMargin() + frameWidth()) * 2 + contentsMargins().top() +
-           contentsMargins().bottom();
 }
 
 void NoteBlock::mousePressEvent(QMouseEvent *event) {
@@ -141,16 +139,10 @@ void NoteBlock::keyReleaseEvent(QKeyEvent *event) {
     QPlainTextEdit::keyReleaseEvent(event);
 }
 
-NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : QPlainTextEdit(parent), ui(new Ui::NoteBlock) {
-    ui->setupUi(this);
-    _setDocMargin(this);
-    setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Expanding);
-}
-
-NoteBlockPlaceholder::~NoteBlockPlaceholder() { delete ui; }
-
 QSize NoteBlock::sizeHint() const {
-    int h = static_cast<int>(_heightOfRows(document()->size().height()));
+    int rows = document()->size().height();
+    int h = static_cast<int>(rows * fontMetrics().height() + (document()->documentMargin() + frameWidth()) * 2 +
+                             contentsMargins().top() + contentsMargins().bottom());
     return {width(), h};
 }
 
@@ -160,3 +152,9 @@ void NoteBlock::resizeEvent(QResizeEvent *event) {
     updateGeometry();
     QPlainTextEdit::resizeEvent(event);
 }
+
+NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : NoteBlockBase(parent) {
+    setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Expanding);
+}
+
+NoteBlockPlaceholder::~NoteBlockPlaceholder() {}
