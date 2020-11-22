@@ -23,12 +23,13 @@ NoteBlock::NoteBlock(QSharedPointer<QString> content, QWidget *parent)
 
     connect(this, &QPlainTextEdit::textChanged, this, &NoteBlock::_onTextChanged);
 
-    ControlBar *controlBar = new ControlBar(this);
-    layout()->addWidget(controlBar);
+    m_controlBar = new ControlBar(this);
+    m_controlBar->setVisible(false);
+    layout()->addWidget(m_controlBar);
 
-    connect(controlBar, &ControlBar::pressed, this, &NoteBlock::_onControlBarPressed);
-    connect(controlBar, &ControlBar::moved, this, &NoteBlock::_onControlBarMoved);
-    connect(controlBar, &ControlBar::released, this, &NoteBlock::_onControlBarReleased);
+    connect(m_controlBar, &ControlBar::pressed, this, &NoteBlock::_onControlBarPressed);
+    connect(m_controlBar, &ControlBar::moved, this, &NoteBlock::_onControlBarMoved);
+    connect(m_controlBar, &ControlBar::released, this, &NoteBlock::_onControlBarReleased);
 }
 
 NoteBlock::~NoteBlock() {}
@@ -142,6 +143,16 @@ QSize NoteBlock::minimumSizeHint() const { return sizeHint(); }
 void NoteBlock::resizeEvent(QResizeEvent *event) {
     updateGeometry();
     QPlainTextEdit::resizeEvent(event);
+}
+
+void NoteBlock::focusInEvent(QFocusEvent *event) {
+    m_controlBar->setVisible(true);
+    NoteBlockBase::focusInEvent(event);
+}
+
+void NoteBlock::focusOutEvent(QFocusEvent *event) {
+    m_controlBar->setVisible(false);
+    NoteBlockBase::focusOutEvent(event);
 }
 
 NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : NoteBlockBase(parent) {

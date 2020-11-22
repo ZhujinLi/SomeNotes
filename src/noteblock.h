@@ -1,5 +1,7 @@
 #pragma once
 
+#include "controlbar.h"
+
 #include <QPlainTextEdit>
 
 namespace Ui {
@@ -54,11 +56,15 @@ private:
 
     enum DragResult { DragResult_none, DragResult_unknown, DragResult_trashed };
 
+    ControlBar *m_controlBar;
+
     DragResult _endDragging();
 
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
     virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void focusInEvent(QFocusEvent *event) override;
+    virtual void focusOutEvent(QFocusEvent *event) override;
 
 private slots:
     void _onTextChanged();
