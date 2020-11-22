@@ -120,7 +120,7 @@
    <enum>QPlainTextEdit::WidgetWidth</enum>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+   <item alignment="Qt::AlignHCenter|Qt::AlignTop">
     <widget class="Line" name="ControlLine">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
