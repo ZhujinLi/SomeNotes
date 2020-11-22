@@ -24,9 +24,6 @@ signals:
     void dragProgress(bool isVertical, qreal progress, NoteBlock *o);
     void dragReset();
 
-public slots:
-    void on_NoteBlock_textChanged();
-
 private:
     Ui::NoteBlock *ui;
     QPoint m_dragStartMousePos;
@@ -56,6 +53,9 @@ private:
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
     virtual void resizeEvent(QResizeEvent *event) override;
+
+private slots:
+    void _onTextChanged();
 };
 
 class NoteBlockPlaceholder : public QPlainTextEdit {

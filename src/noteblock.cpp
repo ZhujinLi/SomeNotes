@@ -14,6 +14,8 @@ NoteBlock::NoteBlock(QSharedPointer<QString> content, QWidget *parent)
 
     setPlainText(*content);
     _setDocMargin(this);
+
+    connect(this, &QPlainTextEdit::textChanged, this, &NoteBlock::_onTextChanged);
 }
 
 NoteBlock::~NoteBlock() { delete ui; }
@@ -118,7 +120,13 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
-void NoteBlock::on_NoteBlock_textChanged() {
+void NoteBlock::mouseReleaseEvent(QMouseEvent *event) {
+    if (_endDragging() == DragResult_trashed)
+        return;
+    QPlainTextEdit::mouseReleaseEvent(event);
+}
+
+void NoteBlock::_onTextChanged() {
     *m_content = toPlainText();
     updateGeometry();
 }
@@ -140,12 +148,6 @@ NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : QPlainTextEdit(par
 }
 
 NoteBlockPlaceholder::~NoteBlockPlaceholder() { delete ui; }
-
-void NoteBlock::mouseReleaseEvent(QMouseEvent *event) {
-    if (_endDragging() == DragResult_trashed)
-        return;
-    QPlainTextEdit::mouseReleaseEvent(event);
-}
 
 QSize NoteBlock::sizeHint() const {
     int h = static_cast<int>(_heightOfRows(document()->size().height()));
