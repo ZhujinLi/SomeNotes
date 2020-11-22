@@ -1,24 +1,38 @@
 #include "noteblock.h"
 #include "common.h"
+#include "controlbar.h"
 #include "ui_noteblock.h"
 #include <QScrollBar>
 
-static void _setDocMargin(QPlainTextEdit *o) { o->document()->setDocumentMargin(o->fontMetrics().height() / 3); }
+NoteBlockBase::NoteBlockBase(QWidget *parent) : QPlainTextEdit(parent), m_ui(new Ui::NoteBlock) {
+    m_ui->setupUi(this);
+    layout()->setMargin(0);
+    layout()->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    document()->setDocumentMargin(fontMetrics().height() / 3);
+}
+
+NoteBlockBase::~NoteBlockBase() { delete m_ui; }
 
 NoteBlock::NoteBlock(QSharedPointer<QString> content, QWidget *parent)
-    : QPlainTextEdit(parent), ui(new Ui::NoteBlock), m_content(content), m_dragState(DragState_none) {
-    ui->setupUi(this);
+    : NoteBlockBase(parent), m_content(content), m_dragState(DragState_none) {
     enableHighlight(false);
     enableTranslucent(false);
     setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Fixed);
 
     setPlainText(*content);
-    _setDocMargin(this);
 
     connect(this, &QPlainTextEdit::textChanged, this, &NoteBlock::_onTextChanged);
+
+    m_controlBar = new ControlBar(this);
+    m_controlBar->setVisible(false);
+    layout()->addWidget(m_controlBar);
+
+    connect(m_controlBar, &ControlBar::pressed, this, &NoteBlock::_onControlBarPressed);
+    connect(m_controlBar, &ControlBar::moved, this, &NoteBlock::_onControlBarMoved);
+    connect(m_controlBar, &ControlBar::released, this, &NoteBlock::_onControlBarReleased);
 }
 
-NoteBlock::~NoteBlock() { delete ui; }
+NoteBlock::~NoteBlock() {}
 
 void NoteBlock::enableTranslucent(bool enable) {
     int alpha = enable ? 0x40 : 0xff;
@@ -48,54 +62,22 @@ void NoteBlock::enableHighlight(bool enable) {
     setPalette(palette);
 }
 
-NoteBlock::DragResult NoteBlock::_endDragging() {
-    emit dragReset();
-
-    if (m_dragState != DragState_dragging)
-        return DragResult_none;
-    m_dragState = DragState_none;
-
-    if (m_dragDir == DragDir::DragDir_horizontal) {
-        int dx = geometry().x() - m_dragStartGeoPos.x();
-        if (dx < -geometry().width() * DRAG_THRESHOLD) { // Trash
-            emit noteTrashed(this);
-            return DragResult_trashed;
-        }
-    } else {
-        emit trySwap(this);
-    }
-
-    updateGeometry();
-    return DragResult_unknown;
+void NoteBlock::_onControlBarPressed() {
+    m_dragStartMousePos = QCursor::pos();
+    m_dragStartGeoPos = geometry().topLeft();
+    m_dragDir = DragDir::DragDir_unknown;
 }
 
-qreal NoteBlock::_heightOfRows(qreal rows) const {
-    return rows * fontMetrics().height() + (document()->documentMargin() + frameWidth()) * 2 + contentsMargins().top() +
-           contentsMargins().bottom();
-}
-
-void NoteBlock::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton && IS_AUX_KEY_DOWN(DRAG_MOD_KEY)) {
-        m_dragStartMousePos = QCursor::pos();
-        m_dragStartGeoPos = geometry().topLeft();
-        m_dragDir = DragDir::DragDir_unknown;
-    } else {
-        QPlainTextEdit::mousePressEvent(event);
-    }
-}
-
-void NoteBlock::mouseMoveEvent(QMouseEvent *event) {
+void NoteBlock::_onControlBarMoved() {
     QPoint deltaPos = QCursor::pos() - m_dragStartMousePos;
 
-    // currently only left dragging is supported
+    // Currently only left dragging is supported
     deltaPos.setX(qMin(deltaPos.x(), 0));
-
-    bool dragPrecond = (event->buttons() & Qt::LeftButton) && IS_AUX_KEY_DOWN(DRAG_MOD_KEY);
 
     bool dragValid =
         (m_dragState == DragState_dragging) || deltaPos.manhattanLength() > QApplication::startDragDistance();
 
-    if (dragPrecond && dragValid) {
+    if (dragValid) {
         if (m_dragDir == DragDir::DragDir_unknown) {
             m_dragDir = abs(deltaPos.x()) > abs(deltaPos.y()) ? DragDir::DragDir_horizontal : DragDir::DragDir_vertical;
             raise();
@@ -115,15 +97,27 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event) {
         }
 
         m_dragState = DragState_dragging;
-    } else if (!dragPrecond) {
-        QPlainTextEdit::mouseMoveEvent(event);
     }
 }
 
-void NoteBlock::mouseReleaseEvent(QMouseEvent *event) {
-    if (_endDragging() == DragResult_trashed)
+void NoteBlock::_onControlBarReleased() {
+    emit dragReset();
+
+    if (m_dragState != DragState_dragging)
         return;
-    QPlainTextEdit::mouseReleaseEvent(event);
+    m_dragState = DragState_none;
+
+    if (m_dragDir == DragDir::DragDir_horizontal) {
+        int dx = geometry().x() - m_dragStartGeoPos.x();
+        if (dx < -geometry().width() * DRAG_THRESHOLD) { // Trash
+            emit noteTrashed(this);
+            return;
+        }
+    } else {
+        emit trySwap(this);
+    }
+
+    updateGeometry();
 }
 
 void NoteBlock::_onTextChanged() {
@@ -131,26 +125,10 @@ void NoteBlock::_onTextChanged() {
     updateGeometry();
 }
 
-void NoteBlock::keyReleaseEvent(QKeyEvent *event) {
-    switch (event->key()) {
-    case DRAG_KEY:
-        QApplication::restoreOverrideCursor();
-        _endDragging();
-        break;
-    }
-    QPlainTextEdit::keyReleaseEvent(event);
-}
-
-NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : QPlainTextEdit(parent), ui(new Ui::NoteBlock) {
-    ui->setupUi(this);
-    _setDocMargin(this);
-    setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Expanding);
-}
-
-NoteBlockPlaceholder::~NoteBlockPlaceholder() { delete ui; }
-
 QSize NoteBlock::sizeHint() const {
-    int h = static_cast<int>(_heightOfRows(document()->size().height()));
+    int rows = document()->size().height();
+    int h = static_cast<int>(rows * fontMetrics().height() + (document()->documentMargin() + frameWidth()) * 2 +
+                             contentsMargins().top() + contentsMargins().bottom());
     return {width(), h};
 }
 
@@ -160,3 +138,19 @@ void NoteBlock::resizeEvent(QResizeEvent *event) {
     updateGeometry();
     QPlainTextEdit::resizeEvent(event);
 }
+
+void NoteBlock::focusInEvent(QFocusEvent *event) {
+    m_controlBar->setVisible(true);
+    NoteBlockBase::focusInEvent(event);
+}
+
+void NoteBlock::focusOutEvent(QFocusEvent *event) {
+    m_controlBar->setVisible(false);
+    NoteBlockBase::focusOutEvent(event);
+}
+
+NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : NoteBlockBase(parent) {
+    setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Expanding);
+}
+
+NoteBlockPlaceholder::~NoteBlockPlaceholder() {}

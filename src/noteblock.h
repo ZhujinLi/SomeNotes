@@ -1,12 +1,27 @@
 #pragma once
 
+#include "controlbar.h"
+
 #include <QPlainTextEdit>
 
 namespace Ui {
 class NoteBlock;
 }
 
-class NoteBlock : public QPlainTextEdit {
+class NoteBlockBase : public QPlainTextEdit {
+    Q_OBJECT
+
+protected:
+    explicit NoteBlockBase(QWidget *parent);
+    virtual ~NoteBlockBase() override;
+
+    Ui::NoteBlock *_ui() { return m_ui; }
+
+private:
+    Ui::NoteBlock *m_ui;
+};
+
+class NoteBlock : public NoteBlockBase {
     Q_OBJECT
 
 public:
@@ -25,7 +40,6 @@ signals:
     void dragReset();
 
 private:
-    Ui::NoteBlock *ui;
     QPoint m_dragStartMousePos;
     QPoint m_dragStartGeoPos;
     QSharedPointer<QString> m_content;
@@ -40,30 +54,25 @@ private:
     enum DragState { DragState_none, DragState_dragging };
     DragState m_dragState;
 
-    enum DragResult { DragResult_none, DragResult_unknown, DragResult_trashed };
+    ControlBar *m_controlBar;
 
-    DragResult _endDragging();
-
-    qreal _heightOfRows(qreal rows) const;
-
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void keyReleaseEvent(QKeyEvent *event) override;
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
     virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void focusInEvent(QFocusEvent *event) override;
+    virtual void focusOutEvent(QFocusEvent *event) override;
 
 private slots:
     void _onTextChanged();
+    void _onControlBarPressed();
+    void _onControlBarMoved();
+    void _onControlBarReleased();
 };
 
-class NoteBlockPlaceholder : public QPlainTextEdit {
+class NoteBlockPlaceholder : public NoteBlockBase {
     Q_OBJECT
+
 public:
     explicit NoteBlockPlaceholder(QWidget *parent);
     virtual ~NoteBlockPlaceholder() override;
-
-private:
-    Ui::NoteBlock *ui;
 };

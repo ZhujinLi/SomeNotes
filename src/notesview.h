@@ -16,8 +16,6 @@ private:
     std::vector<NoteBlock *> m_noteBlocks;
     NoteBlockPlaceholder *m_placeholder;
 
-    virtual void keyPressEvent(QKeyEvent *event) override;
-
     void _focusToNoteBlock(QPlainTextEdit *noteBlock);
     NoteBlock *_addNoteBlock(QSharedPointer<QString> content);
     void _setBgColor(QColor color);

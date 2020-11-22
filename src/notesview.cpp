@@ -32,7 +32,7 @@ NotesView::NotesView(QWidget *parent) : QWidget(parent), m_mgr(CONTENT_PATH(), T
 }
 
 NotesView::~NotesView() {
-    // since mgr is shared
+    // Since mgr is shared
     for (NoteBlock *note : m_noteBlocks)
         delete note;
     delete layout();
@@ -154,14 +154,4 @@ void NotesView::_onNoteBlockDragReset() {
         note->enableTranslucent(false);
         note->enableHighlight(false);
     }
-}
-
-void NotesView::keyPressEvent(QKeyEvent *event) {
-    switch (event->key()) {
-    case DRAG_KEY:
-        QApplication::setOverrideCursor(Qt::OpenHandCursor);
-        break;
-    default:;
-    }
-    QWidget::keyPressEvent(event);
 }
