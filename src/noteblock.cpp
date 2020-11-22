@@ -5,6 +5,8 @@
 
 NoteBlockBase::NoteBlockBase(QWidget *parent) : QPlainTextEdit(parent), m_ui(new Ui::NoteBlock) {
     m_ui->setupUi(this);
+    layout()->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    layout()->setMargin(0);
     document()->setDocumentMargin(fontMetrics().height() / 3);
 }
 
@@ -155,6 +157,7 @@ void NoteBlock::resizeEvent(QResizeEvent *event) {
 
 NoteBlockPlaceholder::NoteBlockPlaceholder(QWidget *parent) : NoteBlockBase(parent) {
     setSizePolicy(QSizePolicy::Policy::Ignored, QSizePolicy::Policy::Expanding);
+    _ui()->ControlLine->setVisible(false);
 }
 
 NoteBlockPlaceholder::~NoteBlockPlaceholder() {}

@@ -13,6 +13,8 @@ protected:
     NoteBlockBase(QWidget *parent);
     virtual ~NoteBlockBase() override;
 
+    Ui::NoteBlock *_ui() { return m_ui; }
+
 private:
     Ui::NoteBlock *m_ui;
 };
