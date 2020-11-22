@@ -56,16 +56,15 @@ private:
 
     DragResult _endDragging();
 
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void keyReleaseEvent(QKeyEvent *event) override;
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
     virtual void resizeEvent(QResizeEvent *event) override;
 
 private slots:
     void _onTextChanged();
+    void _onControlBarPressed();
+    void _onControlBarMoved();
+    void _onControlBarReleased();
 };
 
 class NoteBlockPlaceholder : public NoteBlockBase {

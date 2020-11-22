@@ -187,9 +187,6 @@ void MainWin::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_Escape:
         hide();
         break;
-    case DRAG_KEY:
-        QApplication::restoreOverrideCursor();
-        break;
     default:
         break;
     }

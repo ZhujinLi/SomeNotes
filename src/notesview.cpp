@@ -155,13 +155,3 @@ void NotesView::_onNoteBlockDragReset() {
         note->enableHighlight(false);
     }
 }
-
-void NotesView::keyPressEvent(QKeyEvent *event) {
-    switch (event->key()) {
-    case DRAG_KEY:
-        QApplication::setOverrideCursor(Qt::OpenHandCursor);
-        break;
-    default:;
-    }
-    QWidget::keyPressEvent(event);
-}

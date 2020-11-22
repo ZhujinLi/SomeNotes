@@ -25,6 +25,10 @@ NoteBlock::NoteBlock(QSharedPointer<QString> content, QWidget *parent)
 
     ControlBar *controlBar = new ControlBar(this);
     layout()->addWidget(controlBar);
+
+    connect(controlBar, &ControlBar::pressed, this, &NoteBlock::_onControlBarPressed);
+    connect(controlBar, &ControlBar::moved, this, &NoteBlock::_onControlBarMoved);
+    connect(controlBar, &ControlBar::released, this, &NoteBlock::_onControlBarReleased);
 }
 
 NoteBlock::~NoteBlock() {}
@@ -78,28 +82,22 @@ NoteBlock::DragResult NoteBlock::_endDragging() {
     return DragResult_unknown;
 }
 
-void NoteBlock::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton && IS_AUX_KEY_DOWN(DRAG_MOD_KEY)) {
-        m_dragStartMousePos = QCursor::pos();
-        m_dragStartGeoPos = geometry().topLeft();
-        m_dragDir = DragDir::DragDir_unknown;
-    } else {
-        QPlainTextEdit::mousePressEvent(event);
-    }
+void NoteBlock::_onControlBarPressed() {
+    m_dragStartMousePos = QCursor::pos();
+    m_dragStartGeoPos = geometry().topLeft();
+    m_dragDir = DragDir::DragDir_unknown;
 }
 
-void NoteBlock::mouseMoveEvent(QMouseEvent *event) {
+void NoteBlock::_onControlBarMoved() {
     QPoint deltaPos = QCursor::pos() - m_dragStartMousePos;
 
-    // currently only left dragging is supported
+    // Currently only left dragging is supported
     deltaPos.setX(qMin(deltaPos.x(), 0));
-
-    bool dragPrecond = (event->buttons() & Qt::LeftButton) && IS_AUX_KEY_DOWN(DRAG_MOD_KEY);
 
     bool dragValid =
         (m_dragState == DragState_dragging) || deltaPos.manhattanLength() > QApplication::startDragDistance();
 
-    if (dragPrecond && dragValid) {
+    if (dragValid) {
         if (m_dragDir == DragDir::DragDir_unknown) {
             m_dragDir = abs(deltaPos.x()) > abs(deltaPos.y()) ? DragDir::DragDir_horizontal : DragDir::DragDir_vertical;
             raise();
@@ -119,30 +117,17 @@ void NoteBlock::mouseMoveEvent(QMouseEvent *event) {
         }
 
         m_dragState = DragState_dragging;
-    } else if (!dragPrecond) {
-        QPlainTextEdit::mouseMoveEvent(event);
     }
 }
 
-void NoteBlock::mouseReleaseEvent(QMouseEvent *event) {
+void NoteBlock::_onControlBarReleased() {
     if (_endDragging() == DragResult_trashed)
         return;
-    QPlainTextEdit::mouseReleaseEvent(event);
 }
 
 void NoteBlock::_onTextChanged() {
     *m_content = toPlainText();
     updateGeometry();
-}
-
-void NoteBlock::keyReleaseEvent(QKeyEvent *event) {
-    switch (event->key()) {
-    case DRAG_KEY:
-        QApplication::restoreOverrideCursor();
-        _endDragging();
-        break;
-    }
-    QPlainTextEdit::keyReleaseEvent(event);
 }
 
 QSize NoteBlock::sizeHint() const {
