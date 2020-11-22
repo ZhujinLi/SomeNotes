@@ -8,7 +8,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: SomeNotesTest
+        working-directory: test
 
     steps:
     - uses: actions/checkout@v2
