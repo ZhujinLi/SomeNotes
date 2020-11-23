@@ -36,7 +36,12 @@ MainWin::MainWin() : QWidget(nullptr), m_trayIcon(nullptr) {
 
 void MainWin::_initTrayIcon() {
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
+
+#ifdef Q_OS_MACOS
+    trayIcon->setIcon(QIcon(":/images/app_s.png"));
+#else
     trayIcon->setIcon(QIcon(":/images/app.png"));
+#endif
 
     QMenu *trayIconMenu = new QMenu(this);
 
