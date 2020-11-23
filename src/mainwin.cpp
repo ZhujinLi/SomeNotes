@@ -68,7 +68,7 @@ void MainWin::_initTrayIcon() {
 
     trayIconMenu->addSeparator();
 
-    QAction *trashAction = new QAction(tr("&Trash"), this);
+    QAction *trashAction = new QAction(tr("&Trash..."), this);
     connect(trashAction, &QAction::triggered, this, &MainWin::_gotoTrashFile);
     trayIconMenu->addAction(trashAction);
 
