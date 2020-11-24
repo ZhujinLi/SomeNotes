@@ -2,7 +2,7 @@
 
 #include <QSharedPointer>
 #include <QString>
-#include <vector>
+#include <QVector>
 
 class ContentManager {
 public:
