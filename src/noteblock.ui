@@ -103,8 +103,7 @@
   </property>
   <property name="font">
    <font>
-    <family>Segoe UI</family>
-    <pointsize>11</pointsize>
+    <family>Arial</family>
    </font>
   </property>
   <property name="autoFillBackground">

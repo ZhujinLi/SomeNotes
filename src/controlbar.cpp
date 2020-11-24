@@ -3,7 +3,7 @@
 
 ControlBar::ControlBar(QWidget *parent) : QFrame(parent) {
     setFrameShape(QFrame::HLine);
-    setMinimumSize(QSize(50, 9));
+    setMinimumSize(QSize(50, 7));
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
     setFrameShadow(QFrame::Shadow::Sunken);
     setLineWidth(1);

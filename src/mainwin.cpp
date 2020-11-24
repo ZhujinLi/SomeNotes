@@ -100,11 +100,11 @@ void MainWin::_recalcGeometryIfNeeded() {
     QSize size;
     switch (static_cast<ViewMode>(g_settings.value(SETTINGS_NAME_VIEW_MODE).toInt())) {
     case ViewMode::Portrait:
-        size = QSize(350, 500);
+        size = QSize(300, 450);
         break;
     case ViewMode::Landscape:
     default:
-        size = QSize(800, 400);
+        size = QSize(700, 350);
         break;
     }
 
