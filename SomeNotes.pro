@@ -24,6 +24,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+# For embedded font
+CONFIG += resources_big
+
 SOURCES += \
     src/controlbar.cpp \
     src/main.cpp \
@@ -54,7 +57,7 @@ RESOURCES += \
     res.qrc
 
 # For Windows
-RC_ICONS = images/app.ico
+RC_ICONS = res/app.ico
 
 # For Mac
-ICON = images/app.icns
+ICON = res/app.icns

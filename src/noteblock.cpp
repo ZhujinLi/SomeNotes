@@ -2,16 +2,52 @@
 #include "common.h"
 #include "controlbar.h"
 #include "ui_noteblock.h"
+#include <QFontDatabase>
 #include <QScrollBar>
+
+class EmbeddedFontInitializer {
+public:
+    EmbeddedFontInitializer() {
+        bool succ = false;
+
+        int id = QFontDatabase::addApplicationFont(":/res/msyh.ttc");
+        if (id != -1) {
+            QStringList families = QFontDatabase::applicationFontFamilies(id);
+            if (families.size() > 0) {
+                m_font = new QFont(families[0]);
+                succ = true;
+            }
+        }
+
+        if (!succ) {
+            m_font = nullptr;
+            qWarning() << "Embedded font can't be loaded!";
+        }
+    }
+
+    ~EmbeddedFontInitializer() { delete m_font; }
+
+    const QFont *font() { return m_font; }
+
+private:
+    QFont *m_font;
+};
 
 NoteBlockBase::NoteBlockBase(QWidget *parent) : QPlainTextEdit(parent), m_ui(new Ui::NoteBlock) {
     m_ui->setupUi(this);
     layout()->setMargin(0);
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
+    // Try to use the embedded font for cross-platform support
     QFont font = this->font();
-    font.setPixelSize(13);
+    static EmbeddedFontInitializer embeddedFontInitializer;
+    if (embeddedFontInitializer.font() != nullptr)
+        font = *embeddedFontInitializer.font();
+
+    font.setPixelSize(14); // Note that using point size can result in different sizes on macOS and Windows
     setFont(font);
+
+    document()->setDocumentMargin(fontMetrics().height() / 3);
 }
 
 NoteBlockBase::~NoteBlockBase() { delete m_ui; }
@@ -129,7 +165,7 @@ void NoteBlock::_onTextChanged() {
 }
 
 QSize NoteBlock::sizeHint() const {
-    int rows = document()->size().height();
+    qreal rows = document()->size().height();
     int h = static_cast<int>(rows * fontMetrics().height() + (document()->documentMargin() + frameWidth()) * 2 +
                              contentsMargins().top() + contentsMargins().bottom());
     return {width(), h};
