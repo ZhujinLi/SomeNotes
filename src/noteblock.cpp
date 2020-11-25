@@ -10,7 +10,7 @@ NoteBlockBase::NoteBlockBase(QWidget *parent) : QPlainTextEdit(parent), m_ui(new
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
     QFont font = this->font();
-    font.setPixelSize(15);
+    font.setPixelSize(14);
     setFont(font);
 
     document()->setDocumentMargin(fontMetrics().height() / 3);
@@ -131,7 +131,7 @@ void NoteBlock::_onTextChanged() {
 }
 
 QSize NoteBlock::sizeHint() const {
-    int rows = document()->size().height();
+    qreal rows = document()->size().height();
     int h = static_cast<int>(rows * fontMetrics().height() + (document()->documentMargin() + frameWidth()) * 2 +
                              contentsMargins().top() + contentsMargins().bottom());
     return {width(), h};
