@@ -12,9 +12,9 @@ public:
 
     ~ContentManager();
 
-    size_t getContentCount() { return m_contents.size(); }
+    int getContentCount() { return m_contents.size(); }
 
-    QSharedPointer<QString> getContent(size_t index) { return QSharedPointer<QString>(m_contents[index]); }
+    QSharedPointer<QString> getContent(int index) { return QSharedPointer<QString>(m_contents[index]); }
 
     QSharedPointer<QString> newContent();
 

@@ -15,7 +15,7 @@ NotesView::NotesView(QWidget *parent) : QWidget(parent), m_mgr(CONTENT_PATH(), T
     layout()->setMargin(0);
     layout()->setSpacing(0);
 
-    for (size_t i = 0; i < m_mgr.getContentCount(); i++) {
+    for (int i = 0; i < m_mgr.getContentCount(); i++) {
         QSharedPointer<QString> content = m_mgr.getContent(i);
         _addNoteBlock(content);
     }
