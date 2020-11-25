@@ -36,6 +36,7 @@ MainWin::MainWin() : QWidget(nullptr), m_trayIcon(nullptr) {
 
 void MainWin::_initTrayIcon() {
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setToolTip("SomeNotes");
 
 #ifdef Q_OS_MACOS
     trayIcon->setIcon(QIcon(":/res/app_s.png"));
