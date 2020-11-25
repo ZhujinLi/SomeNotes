@@ -10,8 +10,10 @@ NoteBlockBase::NoteBlockBase(QWidget *parent) : QPlainTextEdit(parent), m_ui(new
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
     QFont font = this->font();
-    font.setPixelSize(13);
+    font.setPixelSize(15);
     setFont(font);
+
+    document()->setDocumentMargin(fontMetrics().height() / 3);
 }
 
 NoteBlockBase::~NoteBlockBase() { delete m_ui; }
