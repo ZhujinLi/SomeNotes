@@ -6,5 +6,6 @@
         <file>res/selected.png</file>
         <file>res/unselected.png</file>
         <file>res/app_s.png</file>
+        <file>res/msyh.ttc</file>
     </qresource>
 </RCC>

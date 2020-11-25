@@ -24,6 +24,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+# For embedded font
+CONFIG += resources_big
+
 SOURCES += \
     src/controlbar.cpp \
     src/main.cpp \
