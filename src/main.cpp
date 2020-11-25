@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     QDir().mkpath(g_dataDir);
 
     MainWin w;
-    w.setWindowIcon(QIcon(":/images/app.png"));
+    w.setWindowIcon(QIcon(":/res/app.png"));
 
     return a.exec();
 }

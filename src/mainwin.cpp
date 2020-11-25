@@ -38,9 +38,9 @@ void MainWin::_initTrayIcon() {
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
 
 #ifdef Q_OS_MACOS
-    trayIcon->setIcon(QIcon(":/images/app_s.png"));
+    trayIcon->setIcon(QIcon(":/res/app_s.png"));
 #else
-    trayIcon->setIcon(QIcon(":/images/app.png"));
+    trayIcon->setIcon(QIcon(":/res/app.png"));
 #endif
 
     QMenu *trayIconMenu = new QMenu(this);
@@ -146,10 +146,10 @@ void MainWin::_setViewMode(ViewMode viewMode) {
     g_settings.setValue(SETTINGS_NAME_VIEW_MODE, static_cast<int>(viewMode));
 
     // Update menu icons
-    m_portraitAction->setIcon(viewMode == ViewMode::Portrait ? QIcon(":/images/selected.png")
-                                                             : QIcon(":/images/unselected.png"));
-    m_landscapeAction->setIcon(viewMode == ViewMode::Landscape ? QIcon(":/images/selected.png")
-                                                               : QIcon(":/images/unselected.png"));
+    m_portraitAction->setIcon(viewMode == ViewMode::Portrait ? QIcon(":/res/selected.png")
+                                                             : QIcon(":/res/unselected.png"));
+    m_landscapeAction->setIcon(viewMode == ViewMode::Landscape ? QIcon(":/res/selected.png")
+                                                               : QIcon(":/res/unselected.png"));
 
     m_needsRecalcGeometry = true;
 }
@@ -183,7 +183,7 @@ void MainWin::_autoStartChanged() {
 }
 
 void MainWin::_updateAutoStartIcon() {
-    m_autoStartAction->setIcon(_isAutoStart() ? QIcon(":/images/checked.png") : QIcon(":/images/unchecked.png"));
+    m_autoStartAction->setIcon(_isAutoStart() ? QIcon(":/res/checked.png") : QIcon(":/res/unchecked.png"));
 }
 #endif
 

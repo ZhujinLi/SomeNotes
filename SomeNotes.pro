@@ -54,7 +54,7 @@ RESOURCES += \
     res.qrc
 
 # For Windows
-RC_ICONS = images/app.ico
+RC_ICONS = res/app.ico
 
 # For Mac
-ICON = images/app.icns
+ICON = res/app.icns
