@@ -109,13 +109,13 @@ void MainWin::_recalcGeometryIfNeeded() {
         break;
     }
 
-    int screenWidth = window()->windowHandle()->screen()->size().width();
+    QSize screenSize = window()->windowHandle()->screen()->size();
 
     QRect trayGeometry = m_trayIcon->geometry();
 
     // With old Qt versions like 5.13.2, the tray's geometry is measure in physical screen space, which is inconsistent
     // with other components here. So we need this patch to correct it.
-    if (trayGeometry.x() > screenWidth) {
+    if (trayGeometry.x() > screenSize.width()) {
         int dpiFactor = qRound(qApp->devicePixelRatio());
         QPoint lt(trayGeometry.x() / dpiFactor, trayGeometry.y() / dpiFactor);
         QSize sz(trayGeometry.size().width() / dpiFactor, trayGeometry.size().height() / dpiFactor);
@@ -128,14 +128,14 @@ void MainWin::_recalcGeometryIfNeeded() {
 
     // Centered at the tray icon position
     QPoint leftTop;
-    if (trayGeometry.y() == 0) { // The tray is on the top
+    if (trayGeometry.y() < screenSize.height() / 2) { // The tray is on the top
         leftTop = QPoint(trayGeometry.center().x() - w / 2, trayGeometry.bottom() + gap);
     } else {
         leftTop = QPoint(trayGeometry.center().x() - w / 2, trayGeometry.top() - gap - h);
     }
 
     // Make sure the area is inside the screen
-    leftTop.setX(qMin(leftTop.x(), screenWidth - gap - w));
+    leftTop.setX(qMin(leftTop.x(), screenSize.width() - gap - w));
 
     setGeometry(QRect(leftTop, size));
 }
